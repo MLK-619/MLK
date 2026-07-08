@@ -3,98 +3,254 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حاسبة التكاليف التشغيلية</title>
+<title>Aventus | حاسبة التكاليف التشغيلية</title>
 <style>
   :root{
-    --bg:#0f172a;
-    --card:#1e293b;
-    --card2:#243449;
-    --text:#e2e8f0;
-    --muted:#94a3b8;
-    --accent:#22c55e;
-    --accent2:#3b82f6;
+    --bg:#0a0e1a;
+    --bg2:#0d1526;
+    --card:#111a2e;
+    --card2:#17203a;
+    --text:#e8ecf5;
+    --muted:#8b96ad;
+    --gold:#c9a227;
+    --gold-light:#e6c14d;
     --danger:#ef4444;
-    --border:#334155;
+    --border:#22304a;
+    --success:#2fbf71;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
     font-family:"Segoe UI", Tahoma, Arial, sans-serif;
-    background:linear-gradient(180deg,#0f172a,#111827);
+    background:
+      radial-gradient(circle at 20% 0%, rgba(201,162,39,.08), transparent 40%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
     color:var(--text);
     min-height:100vh;
-    padding:24px 12px 60px;
   }
-  .wrap{max-width:900px;margin:0 auto;}
-  h1{
+
+  /* ===== شاشة تسجيل الدخول ===== */
+  #login-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .login-card{
+    width:100%;
+    max-width:400px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:36px 32px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .brand{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    margin-bottom:28px;
+  }
+  .brand-mark{
+    width:56px;height:56px;
+    border-radius:14px;
+    background:linear-gradient(135deg,var(--gold-light),var(--gold));
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:1.5rem;color:#1a1400;
+    letter-spacing:-1px;
+    box-shadow:0 8px 24px rgba(201,162,39,.35);
+  }
+  .brand-name{
+    font-size:1.4rem;
+    font-weight:800;
+    letter-spacing:.5px;
+    background:linear-gradient(90deg,var(--gold-light),var(--gold));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .brand-name span{color:var(--text);-webkit-text-fill-color:var(--text);font-weight:400;}
+  .brand-tagline{color:var(--muted);font-size:.82rem;}
+
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;
+    font-size:.82rem;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .field input{
+    width:100%;
+    background:var(--card2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:11px 14px;
+    border-radius:10px;
+    font-size:.95rem;
+  }
+  .field input:focus{outline:none;border-color:var(--gold);}
+
+  .login-btn{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(90deg,var(--gold),var(--gold-light));
+    color:#1a1400;
+    font-weight:700;
+    font-size:.98rem;
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .login-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(201,162,39,.3);}
+  .login-hint{
     text-align:center;
-    font-size:1.8rem;
-    margin-bottom:4px;
+    color:var(--muted);
+    font-size:.78rem;
+    margin-top:16px;
+    line-height:1.6;
+  }
+  .login-error{
+    color:var(--danger);
+    font-size:.82rem;
+    text-align:center;
+    margin-top:10px;
+    min-height:1em;
+  }
+
+  /* ===== تطبيق الحاسبة ===== */
+  #app-screen{display:none;}
+  header.topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 28px;
+    background:rgba(17,26,46,.85);
+    border-bottom:1px solid var(--border);
+    backdrop-filter:blur(6px);
+    position:sticky;top:0;z-index:10;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .topbar-brand{display:flex;align-items:center;gap:10px;}
+  .topbar-brand .brand-mark{width:38px;height:38px;font-size:1.05rem;border-radius:10px;}
+  .topbar-brand .brand-name{font-size:1.1rem;}
+  .topbar-user{
+    display:flex;align-items:center;gap:14px;
+    color:var(--muted);font-size:.88rem;
+  }
+  .topbar-user b{color:var(--text);}
+  .logout-btn{
+    background:var(--card2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:8px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:.85rem;
+  }
+  .logout-btn:hover{border-color:var(--danger);color:var(--danger);}
+
+  .wrap{max-width:960px;margin:0 auto;padding:28px 16px 60px;}
+  h1.page-title{
+    text-align:center;
+    font-size:1.7rem;
+    margin:6px 0 4px;
+    font-weight:800;
   }
   .subtitle{
     text-align:center;
     color:var(--muted);
-    margin-bottom:28px;
-    font-size:.95rem;
+    margin-bottom:26px;
+    font-size:.92rem;
   }
+
+  .toolbar{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .toolbar button{
+    background:var(--card2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:9px 16px;
+    border-radius:9px;
+    cursor:pointer;
+    font-size:.85rem;
+  }
+  .toolbar button:hover{border-color:var(--gold);}
+  .toolbar button.clear-btn:hover{border-color:var(--danger);color:var(--danger);}
+
   .section{
     background:var(--card);
     border:1px solid var(--border);
-    border-radius:14px;
-    padding:18px 20px;
+    border-radius:16px;
+    padding:20px 22px;
     margin-bottom:20px;
   }
   .section h2{
     display:flex;
     align-items:center;
-    gap:8px;
-    font-size:1.15rem;
-    margin:0 0 14px;
+    gap:10px;
+    font-size:1.1rem;
+    margin:0 0 16px;
+    font-weight:700;
+  }
+  .section h2 .icon{
+    width:34px;height:34px;
+    border-radius:9px;
+    background:var(--card2);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;
+    color:var(--gold);
   }
   .section h2 .badge{
-    font-size:.75rem;
+    margin-right:auto;
+    font-size:.72rem;
     background:var(--card2);
     color:var(--muted);
-    padding:2px 10px;
+    padding:3px 10px;
     border-radius:999px;
   }
-  table{
-    width:100%;
-    border-collapse:collapse;
-  }
+  table{width:100%;border-collapse:collapse;}
   th{
     text-align:right;
-    font-size:.8rem;
+    font-size:.76rem;
     color:var(--muted);
     padding:6px 8px;
     font-weight:600;
   }
-  td{
-    padding:6px 8px;
-  }
+  td{padding:6px 8px;}
   input[type=text], input[type=number]{
     width:100%;
     background:var(--card2);
     border:1px solid var(--border);
     color:var(--text);
-    padding:8px 10px;
+    padding:9px 10px;
     border-radius:8px;
-    font-size:.95rem;
+    font-size:.92rem;
   }
-  input:focus{outline:2px solid var(--accent2);}
+  input:focus{outline:none;border-color:var(--gold);}
   .row-total{
     white-space:nowrap;
-    font-weight:600;
-    color:var(--accent);
-    min-width:90px;
+    font-weight:700;
+    color:var(--gold-light);
+    min-width:110px;
     text-align:left;
+    font-variant-numeric:tabular-nums;
   }
   .del-btn{
     background:transparent;
     border:none;
     color:var(--danger);
     cursor:pointer;
-    font-size:1.1rem;
+    font-size:1.05rem;
     padding:4px 8px;
     border-radius:6px;
   }
@@ -103,187 +259,251 @@
     margin-top:10px;
     background:var(--card2);
     border:1px dashed var(--border);
-    color:var(--accent2);
-    padding:8px 14px;
-    border-radius:8px;
+    color:var(--gold-light);
+    padding:9px 16px;
+    border-radius:9px;
     cursor:pointer;
-    font-size:.9rem;
+    font-size:.88rem;
   }
-  .add-btn:hover{border-color:var(--accent2);}
+  .add-btn:hover{border-color:var(--gold);}
   .section-total{
-    margin-top:12px;
+    margin-top:14px;
     text-align:left;
-    font-size:1rem;
+    font-size:.98rem;
     color:var(--muted);
+    border-top:1px dashed var(--border);
+    padding-top:12px;
   }
-  .section-total b{color:var(--text);}
+  .section-total b{color:var(--text);font-variant-numeric:tabular-nums;}
+
   .summary{
-    background:linear-gradient(135deg,#065f46,#064e3b);
-    border:1px solid #14532d;
+    background:linear-gradient(135deg,#1a1508,#0f1626);
+    border:1px solid #3a2f10;
   }
+  .summary h2{color:var(--gold-light);}
   .summary-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
     gap:14px;
-    margin-top:10px;
+    margin-top:6px;
   }
   .summary-card{
-    background:rgba(0,0,0,.2);
-    border-radius:10px;
-    padding:14px 16px;
-  }
-  .summary-card .label{
-    font-size:.8rem;
-    color:#a7f3d0;
-    margin-bottom:4px;
-  }
-  .summary-card .value{
-    font-size:1.4rem;
-    font-weight:700;
-  }
-  .summary-card.grand .value{color:#4ade80;font-size:1.7rem;}
-  .currency-row{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    justify-content:flex-end;
-    margin-bottom:18px;
-    flex-wrap:wrap;
-  }
-  .currency-row label{color:var(--muted);font-size:.9rem;}
-  select{
-    background:var(--card2);
+    background:rgba(0,0,0,.25);
     border:1px solid var(--border);
-    color:var(--text);
-    padding:8px 10px;
-    border-radius:8px;
+    border-radius:12px;
+    padding:16px 18px;
   }
-  .empty-hint{
+  .summary-card .label{font-size:.8rem;color:var(--muted);margin-bottom:6px;}
+  .summary-card .value{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums;}
+  .summary-card.grand{
+    border-color:var(--gold);
+    background:rgba(201,162,39,.08);
+  }
+  .summary-card.grand .value{color:var(--gold-light);font-size:1.7rem;}
+
+  footer.app-footer{
+    text-align:center;
     color:var(--muted);
-    font-size:.85rem;
-    padding:10px 4px;
+    font-size:.78rem;
+    padding:20px 0 40px;
   }
+  footer.app-footer b{color:var(--gold-light);}
+
   @media print{
-    .add-btn,.del-btn,.currency-row{display:none;}
+    header.topbar,.toolbar,.add-btn,.del-btn,footer.app-footer{display:none;}
     body{background:#fff;color:#000;}
     .section,.summary{border:1px solid #ccc;background:#fff;}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>حاسبة التكاليف التشغيلية</h1>
-  <p class="subtitle">احسب إجمالي تكاليف تشغيل نشاطك: الرواتب، الإيجارات، والمشتريات</p>
 
-  <div class="currency-row">
-    <label for="currency">العملة:</label>
-    <select id="currency">
-      <option value="ر.س">ريال سعودي (ر.س)</option>
-      <option value="د.إ">درهم إماراتي (د.إ)</option>
-      <option value="ج.م">جنيه مصري (ج.م)</option>
-      <option value="د.ك">دينار كويتي (د.ك)</option>
-      <option value="$">دولار ($)</option>
-      <option value="€">يورو (€)</option>
-    </select>
-  </div>
-
-  <!-- الرواتب -->
-  <div class="section" data-section="salaries">
-    <h2>الرواتب <span class="badge">Salaries</span></h2>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:40%">اسم الموظف / الوظيفة</th>
-          <th style="width:25%">الراتب الشهري</th>
-          <th style="width:15%">العدد</th>
-          <th style="width:15%">الإجمالي</th>
-          <th style="width:5%"></th>
-        </tr>
-      </thead>
-      <tbody id="salaries-body"></tbody>
-    </table>
-    <button class="add-btn" onclick="addRow('salaries')">+ إضافة راتب</button>
-    <div class="section-total">إجمالي الرواتب: <b id="salaries-total">0</b> <span id="salaries-cur"></span></div>
-  </div>
-
-  <!-- الإيجارات -->
-  <div class="section" data-section="rents">
-    <h2>الإيجارات <span class="badge">Rents</span></h2>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:40%">البند (محل / مكتب / معدات...)</th>
-          <th style="width:25%">القيمة الشهرية</th>
-          <th style="width:15%">العدد</th>
-          <th style="width:15%">الإجمالي</th>
-          <th style="width:5%"></th>
-        </tr>
-      </thead>
-      <tbody id="rents-body"></tbody>
-    </table>
-    <button class="add-btn" onclick="addRow('rents')">+ إضافة إيجار</button>
-    <div class="section-total">إجمالي الإيجارات: <b id="rents-total">0</b> <span id="rents-cur"></span></div>
-  </div>
-
-  <!-- المشتريات -->
-  <div class="section" data-section="purchases">
-    <h2>المشتريات <span class="badge">Purchases</span></h2>
-    <table>
-      <thead>
-        <tr>
-          <th style="width:40%">اسم الصنف</th>
-          <th style="width:25%">سعر الوحدة</th>
-          <th style="width:15%">الكمية</th>
-          <th style="width:15%">الإجمالي</th>
-          <th style="width:5%"></th>
-        </tr>
-      </thead>
-      <tbody id="purchases-body"></tbody>
-    </table>
-    <button class="add-btn" onclick="addRow('purchases')">+ إضافة مشترى</button>
-    <div class="section-total">إجمالي المشتريات: <b id="purchases-total">0</b> <span id="purchases-cur"></span></div>
-  </div>
-
-  <!-- الملخص -->
-  <div class="section summary">
-    <h2>الملخص الإجمالي</h2>
-    <div class="summary-grid">
-      <div class="summary-card">
-        <div class="label">إجمالي الرواتب</div>
-        <div class="value" id="sum-salaries">0</div>
+<!-- ===== صفحة تسجيل الدخول ===== -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div class="brand-name">Aventus <span>| أفنتوس</span></div>
+      <div class="brand-tagline">إدارة التكاليف التشغيلية بذكاء</div>
+    </div>
+    <form id="login-form">
+      <div class="field">
+        <label for="username">اسم المستخدم</label>
+        <input type="text" id="username" placeholder="أدخل اسم المستخدم" autocomplete="username" required>
       </div>
-      <div class="summary-card">
-        <div class="label">إجمالي الإيجارات</div>
-        <div class="value" id="sum-rents">0</div>
+      <div class="field">
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" placeholder="أدخل كلمة المرور" autocomplete="current-password" required>
       </div>
-      <div class="summary-card">
-        <div class="label">إجمالي المشتريات</div>
-        <div class="value" id="sum-purchases">0</div>
-      </div>
-      <div class="summary-card grand">
-        <div class="label">إجمالي التكاليف التشغيلية</div>
-        <div class="value" id="sum-grand">0</div>
-      </div>
+      <button type="submit" class="login-btn">تسجيل الدخول</button>
+      <div class="login-error" id="login-error"></div>
+    </form>
+    <div class="login-hint">
+      هذه بيئة تجريبية: يمكنك الدخول بأي اسم مستخدم وكلمة مرور.<br>
+      بياناتك تُحفظ محلياً على جهازك فقط.
     </div>
   </div>
 </div>
 
+<!-- ===== تطبيق الحاسبة ===== -->
+<div id="app-screen">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-mark">A</div>
+      <div class="brand-name">Aventus <span>| أفنتوس</span></div>
+    </div>
+    <div class="topbar-user">
+      مرحباً، <b id="welcome-user">-</b>
+      <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <h1 class="page-title">حاسبة التكاليف التشغيلية</h1>
+    <p class="subtitle">احسب إجمالي تكاليف تشغيل نشاطك بالريال العماني: الرواتب، الإيجارات، والمشتريات</p>
+
+    <div class="toolbar">
+      <button class="clear-btn" onclick="clearAll()">🗑 مسح كل البيانات</button>
+      <button onclick="window.print()">🖨 طباعة / حفظ PDF</button>
+    </div>
+
+    <!-- الرواتب -->
+    <div class="section" data-section="salaries">
+      <h2><span class="icon">👥</span> الرواتب <span class="badge">Salaries</span></h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:38%">اسم الموظف / الوظيفة</th>
+            <th style="width:24%">الراتب الشهري (ر.ع.)</th>
+            <th style="width:14%">العدد</th>
+            <th style="width:19%">الإجمالي</th>
+            <th style="width:5%"></th>
+          </tr>
+        </thead>
+        <tbody id="salaries-body"></tbody>
+      </table>
+      <button class="add-btn" onclick="addRow('salaries')">+ إضافة راتب</button>
+      <div class="section-total">إجمالي الرواتب: <b id="salaries-total">0.000</b> ر.ع.</div>
+    </div>
+
+    <!-- الإيجارات -->
+    <div class="section" data-section="rents">
+      <h2><span class="icon">🏢</span> الإيجارات <span class="badge">Rents</span></h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:38%">البند (محل / مكتب / معدات...)</th>
+            <th style="width:24%">القيمة الشهرية (ر.ع.)</th>
+            <th style="width:14%">العدد</th>
+            <th style="width:19%">الإجمالي</th>
+            <th style="width:5%"></th>
+          </tr>
+        </thead>
+        <tbody id="rents-body"></tbody>
+      </table>
+      <button class="add-btn" onclick="addRow('rents')">+ إضافة إيجار</button>
+      <div class="section-total">إجمالي الإيجارات: <b id="rents-total">0.000</b> ر.ع.</div>
+    </div>
+
+    <!-- المشتريات -->
+    <div class="section" data-section="purchases">
+      <h2><span class="icon">🛒</span> المشتريات <span class="badge">Purchases</span></h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:38%">اسم الصنف</th>
+            <th style="width:24%">سعر الوحدة (ر.ع.)</th>
+            <th style="width:14%">الكمية</th>
+            <th style="width:19%">الإجمالي</th>
+            <th style="width:5%"></th>
+          </tr>
+        </thead>
+        <tbody id="purchases-body"></tbody>
+      </table>
+      <button class="add-btn" onclick="addRow('purchases')">+ إضافة مشترى</button>
+      <div class="section-total">إجمالي المشتريات: <b id="purchases-total">0.000</b> ر.ع.</div>
+    </div>
+
+    <!-- الملخص -->
+    <div class="section summary">
+      <h2><span class="icon">📊</span> الملخص الإجمالي</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <div class="label">إجمالي الرواتب</div>
+          <div class="value" id="sum-salaries">0.000 ر.ع.</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">إجمالي الإيجارات</div>
+          <div class="value" id="sum-rents">0.000 ر.ع.</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">إجمالي المشتريات</div>
+          <div class="value" id="sum-purchases">0.000 ر.ع.</div>
+        </div>
+        <div class="summary-card grand">
+          <div class="label">إجمالي التكاليف التشغيلية</div>
+          <div class="value" id="sum-grand">0.000 ر.ع.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    &copy; <span id="year"></span> <b>Aventus</b> — جميع الحقوق محفوظة
+  </footer>
+</div>
+
 <script>
-const sections = {
-  salaries: { placeholders: ["اسم الموظف", "0"] },
-  rents: { placeholders: ["اسم البند", "0"] },
-  purchases: { placeholders: ["اسم الصنف", "0"] },
+const STORAGE_USER_KEY = 'aventus_user';
+const STORAGE_DATA_KEY = 'aventus_cost_data';
+const SECTIONS = ['salaries', 'rents', 'purchases'];
+const PLACEHOLDERS = {
+  salaries: 'اسم الموظف',
+  rents: 'اسم البند',
+  purchases: 'اسم الصنف',
 };
 
-function currency(){
-  return document.getElementById('currency').value;
+/* ---------- تسجيل الدخول ---------- */
+function showApp(username){
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  document.getElementById('welcome-user').textContent = username;
 }
 
+function showLogin(){
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+document.getElementById('login-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const errorBox = document.getElementById('login-error');
+
+  if(!username || !password){
+    errorBox.textContent = 'الرجاء إدخال اسم المستخدم وكلمة المرور';
+    return;
+  }
+  errorBox.textContent = '';
+  localStorage.setItem(STORAGE_USER_KEY, username);
+  showApp(username);
+});
+
+function logout(){
+  localStorage.removeItem(STORAGE_USER_KEY);
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  showLogin();
+}
+
+/* ---------- تنسيق الأرقام ---------- */
 function formatNum(n){
-  return n.toLocaleString('en-US', {maximumFractionDigits: 2});
+  return n.toLocaleString('en-US', {minimumFractionDigits: 3, maximumFractionDigits: 3});
 }
 
-function addRow(section, values){
+/* ---------- إدارة الصفوف ---------- */
+function addRow(section, values, skipSave){
   const body = document.getElementById(section + '-body');
   const tr = document.createElement('tr');
   const nameVal = values?.name ?? '';
@@ -291,24 +511,32 @@ function addRow(section, values){
   const qtyVal = values?.qty ?? 1;
 
   tr.innerHTML = `
-    <td><input type="text" class="name-input" placeholder="${sections[section].placeholders[0]}" value="${nameVal}"></td>
-    <td><input type="number" class="price-input" min="0" step="any" placeholder="0" value="${priceVal}"></td>
+    <td><input type="text" class="name-input" placeholder="${PLACEHOLDERS[section]}" value="${escapeHtml(nameVal)}"></td>
+    <td><input type="number" class="price-input" min="0" step="any" placeholder="0.000" value="${priceVal}"></td>
     <td><input type="number" class="qty-input" min="0" step="any" value="${qtyVal}"></td>
-    <td class="row-total">0</td>
+    <td class="row-total">0.000</td>
     <td><button class="del-btn" title="حذف" onclick="removeRow(this,'${section}')">✕</button></td>
   `;
   body.appendChild(tr);
 
   tr.querySelectorAll('input').forEach(inp => {
-    inp.addEventListener('input', () => calcSection(section));
+    inp.addEventListener('input', () => { calcSection(section); saveData(); });
   });
 
   calcSection(section);
+  if(!skipSave) saveData();
 }
 
 function removeRow(btn, section){
   btn.closest('tr').remove();
   calcSection(section);
+  saveData();
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 
 function calcSection(section){
@@ -326,29 +554,66 @@ function calcSection(section){
 }
 
 function updateSummary(){
-  const cur = currency();
-  ['salaries','rents','purchases'].forEach(s => {
-    document.getElementById(s + '-cur').textContent = cur;
+  const totals = {};
+  SECTIONS.forEach(s => {
+    totals[s] = parseFloat(document.getElementById(s + '-total').textContent.replace(/,/g,'')) || 0;
+    document.getElementById('sum-' + s).textContent = `${formatNum(totals[s])} ر.ع.`;
   });
-
-  const salaries = parseFloat(document.getElementById('salaries-total').textContent.replace(/,/g,'')) || 0;
-  const rents = parseFloat(document.getElementById('rents-total').textContent.replace(/,/g,'')) || 0;
-  const purchases = parseFloat(document.getElementById('purchases-total').textContent.replace(/,/g,'')) || 0;
-  const grand = salaries + rents + purchases;
-
-  document.getElementById('sum-salaries').textContent = `${formatNum(salaries)} ${cur}`;
-  document.getElementById('sum-rents').textContent = `${formatNum(rents)} ${cur}`;
-  document.getElementById('sum-purchases').textContent = `${formatNum(purchases)} ${cur}`;
-  document.getElementById('sum-grand').textContent = `${formatNum(grand)} ${cur}`;
+  const grand = totals.salaries + totals.rents + totals.purchases;
+  document.getElementById('sum-grand').textContent = `${formatNum(grand)} ر.ع.`;
 }
 
-document.getElementById('currency').addEventListener('change', updateSummary);
+/* ---------- الحفظ التلقائي (Local Storage) ---------- */
+function saveData(){
+  const data = {};
+  SECTIONS.forEach(section => {
+    data[section] = [];
+    document.querySelectorAll(`#${section}-body tr`).forEach(tr => {
+      data[section].push({
+        name: tr.querySelector('.name-input').value,
+        price: tr.querySelector('.price-input').value,
+        qty: tr.querySelector('.qty-input').value,
+      });
+    });
+  });
+  localStorage.setItem(STORAGE_DATA_KEY, JSON.stringify(data));
+}
 
-// صفوف افتراضية
-addRow('salaries', {name:'', price:'', qty:1});
-addRow('rents', {name:'', price:'', qty:1});
-addRow('purchases', {name:'', price:'', qty:1});
-updateSummary();
+function loadData(){
+  const raw = localStorage.getItem(STORAGE_DATA_KEY);
+  let data = null;
+  if(raw){
+    try{ data = JSON.parse(raw); }catch(e){ data = null; }
+  }
+  SECTIONS.forEach(section => {
+    document.getElementById(section + '-body').innerHTML = '';
+    const rows = (data && data[section] && data[section].length) ? data[section] : [{name:'',price:'',qty:1}];
+    rows.forEach(row => addRow(section, row, true));
+  });
+  updateSummary();
+}
+
+function clearAll(){
+  if(!confirm('هل أنت متأكد من مسح جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء.')) return;
+  localStorage.removeItem(STORAGE_DATA_KEY);
+  SECTIONS.forEach(section => {
+    document.getElementById(section + '-body').innerHTML = '';
+    addRow(section, {name:'',price:'',qty:1}, true);
+  });
+  updateSummary();
+  saveData();
+}
+
+/* ---------- التهيئة ---------- */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+const savedUser = localStorage.getItem(STORAGE_USER_KEY);
+if(savedUser){
+  showApp(savedUser);
+}else{
+  showLogin();
+}
+loadData();
 </script>
 </body>
 </html>
