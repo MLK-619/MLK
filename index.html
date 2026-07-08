@@ -411,10 +411,11 @@
       <table>
         <thead>
           <tr>
-            <th style="width:38%">اسم الصنف</th>
-            <th style="width:24%">سعر الوحدة (ر.ع.)</th>
-            <th style="width:14%">الكمية</th>
-            <th style="width:19%">الإجمالي</th>
+            <th style="width:26%">اسم الصنف</th>
+            <th style="width:22%">اسم الشركة</th>
+            <th style="width:18%">سعر الوحدة (ر.ع.)</th>
+            <th style="width:12%">الكمية</th>
+            <th style="width:17%">الإجمالي</th>
             <th style="width:5%"></th>
           </tr>
         </thead>
@@ -507,11 +508,17 @@ function addRow(section, values, skipSave){
   const body = document.getElementById(section + '-body');
   const tr = document.createElement('tr');
   const nameVal = values?.name ?? '';
+  const companyVal = values?.company ?? '';
   const priceVal = values?.price ?? '';
   const qtyVal = values?.qty ?? 1;
 
+  const companyCell = section === 'purchases'
+    ? `<td><input type="text" class="company-input" placeholder="اسم الشركة الموردة" value="${escapeHtml(companyVal)}"></td>`
+    : '';
+
   tr.innerHTML = `
     <td><input type="text" class="name-input" placeholder="${PLACEHOLDERS[section]}" value="${escapeHtml(nameVal)}"></td>
+    ${companyCell}
     <td><input type="number" class="price-input" min="0" step="any" placeholder="0.000" value="${priceVal}"></td>
     <td><input type="number" class="qty-input" min="0" step="any" value="${qtyVal}"></td>
     <td class="row-total">0.000</td>
@@ -569,8 +576,10 @@ function saveData(){
   SECTIONS.forEach(section => {
     data[section] = [];
     document.querySelectorAll(`#${section}-body tr`).forEach(tr => {
+      const companyInput = tr.querySelector('.company-input');
       data[section].push({
         name: tr.querySelector('.name-input').value,
+        company: companyInput ? companyInput.value : undefined,
         price: tr.querySelector('.price-input').value,
         qty: tr.querySelector('.qty-input').value,
       });
