@@ -65,15 +65,15 @@
   }
   .lang-toggle-btn:hover{border-color:var(--accent);}
   .login-card .toggle-row{position:absolute;top:18px;inset-inline-start:18px;display:flex;gap:8px;}
-  .brand-mark-letter{font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;}
   .brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:24px;}
   .brand-mark{
-    width:56px;height:56px;border-radius:14px;
-    background:linear-gradient(135deg,var(--accent-light),var(--accent));
+    width:56px;height:56px;border-radius:50%;
+    background:#fff;border:2px solid var(--accent);
     display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:1.5rem;color:#fff;letter-spacing:-1px;
     box-shadow:0 8px 24px var(--accent-shadow-35);
+    overflow:hidden;flex:none;
   }
+  .brand-mark svg{width:72%;height:72%;}
   .brand-name{
     font-size:1.4rem;font-weight:800;letter-spacing:.5px;
     background:linear-gradient(90deg,var(--accent),var(--accent-light));
@@ -111,7 +111,7 @@
     display:flex;flex-direction:column;padding:20px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;
   }
   .sidebar-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px;}
-  .sidebar-brand .brand-mark{width:38px;height:38px;font-size:1.05rem;border-radius:10px;flex:none;}
+  .sidebar-brand .brand-mark{width:38px;height:38px;border-radius:50%;flex:none;}
   .sidebar-brand .brand-name{font-size:.88rem;line-height:1.35;}
   .nav-list{list-style:none;margin:0;padding:0;flex:1;}
   .nav-item{
@@ -267,7 +267,7 @@
       <button type="button" class="lang-toggle-btn lang-toggle" onclick="toggleLang()">English</button>
     </div>
     <div class="brand">
-      <div class="brand-mark brand-mark-letter"></div>
+      <div class="brand-mark brand-mark-icon"></div>
       <div class="brand-name brand-name-text"></div>
       <div class="brand-client"><span data-i18n="brandLicensedTo">مرخّص لـ</span> <b data-i18n="clientName">شركة المزن التجارية</b></div>
       <div class="brand-tagline" data-i18n="brandTagline">نظام إدارة فروع الشركات التجارية</div>
@@ -311,7 +311,7 @@
   <div class="app-shell">
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <div class="brand-mark brand-mark-letter"></div>
+        <div class="brand-mark brand-mark-icon"></div>
         <div class="brand-name brand-name-text"></div>
       </div>
       <ul class="nav-list" id="nav-list">
@@ -891,8 +891,14 @@ const BRAND_KEY = 'aventus_erp_brand_v1';
 let BRAND = localStorage.getItem(BRAND_KEY) || 'aventus';
 
 const BRAND_INFO = {
-  aventus: { nameHtml: 'Aventus <span>| أفنتوس</span>', letter: 'A' },
-  chickenville: { nameHtml: 'Chicken Ville <span>| تشكن فل</span>', letter: 'C' },
+  aventus: {
+    nameHtml: 'Aventus <span>| أفنتوس</span>',
+    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 14 L86 83 L66 83 L50 53 L34 83 L14 83 Z" fill="#111111"/></svg>',
+  },
+  chickenville: {
+    nameHtml: 'Chicken Ville <span>| تشكن فل</span>',
+    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M37 31 Q39 18 47 25 Q49 13 56 22 Q61 14 64 27 Q57 31 49 31 Q43 31 37 31 Z" fill="#1e5fae"/><circle cx="48" cy="52" r="25" fill="#f5b800"/><path d="M71 50 L90 43 L90 58 Z" fill="#1e5fae"/><circle cx="57" cy="45" r="3.5" fill="#132743"/></svg>',
+  },
 };
 const BRAND_THEMES = {
   aventus: {
@@ -917,7 +923,7 @@ function applyBrandTheme(){
 }
 function applyBrandDisplay(){
   const info = BRAND_INFO[BRAND];
-  document.querySelectorAll('.brand-mark-letter').forEach(el => { el.textContent = info.letter; });
+  document.querySelectorAll('.brand-mark-icon').forEach(el => { el.innerHTML = info.markSvg; });
   document.querySelectorAll('.brand-name-text').forEach(el => { el.innerHTML = info.nameHtml; });
   document.querySelectorAll('.brand-toggle').forEach(btn => {
     btn.textContent = BRAND === 'aventus' ? BRAND_INFO.chickenville.nameHtml.split(' <span')[0] : BRAND_INFO.aventus.nameHtml.split(' <span')[0];
