@@ -21,6 +21,11 @@
     --danger:#dc2626;
     --border:#dce6f4;
     --success:#0ca30c;
+    --accent-tint-06:rgba(42,120,214,.06);
+    --accent-tint-08:rgba(42,120,214,.08);
+    --accent-tint-12:rgba(42,120,214,.12);
+    --accent-shadow-30:rgba(42,120,214,.3);
+    --accent-shadow-35:rgba(42,120,214,.35);
 
     --cat-1:#2a78d6; --cat-2:#1baf7a; --cat-3:#eda100; --cat-4:#008300;
     --cat-5:#4a3aa7; --cat-6:#e34948; --cat-7:#e87ba4; --cat-8:#eb6834;
@@ -30,7 +35,7 @@
     margin:0;
     font-family:"Cairo","Segoe UI", Tahoma, Arial, sans-serif;
     background:
-      radial-gradient(circle at 20% 0%, rgba(42,120,214,.08), transparent 40%),
+      radial-gradient(circle at 20% 0%, var(--accent-tint-08), transparent 40%),
       linear-gradient(180deg,var(--bg),var(--bg2));
     color:var(--text);
     min-height:100vh;
@@ -59,14 +64,15 @@
     padding:6px 14px;border-radius:999px;cursor:pointer;font-size:.78rem;font-family:inherit;font-weight:600;
   }
   .lang-toggle-btn:hover{border-color:var(--accent);}
-  .login-card .lang-toggle-btn{position:absolute;top:18px;inset-inline-start:18px;}
+  .login-card .toggle-row{position:absolute;top:18px;inset-inline-start:18px;display:flex;gap:8px;}
+  .brand-mark-letter{font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;}
   .brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:24px;}
   .brand-mark{
     width:56px;height:56px;border-radius:14px;
     background:linear-gradient(135deg,var(--accent-light),var(--accent));
     display:flex;align-items:center;justify-content:center;
     font-weight:800;font-size:1.5rem;color:#fff;letter-spacing:-1px;
-    box-shadow:0 8px 24px rgba(42,120,214,.35);
+    box-shadow:0 8px 24px var(--accent-shadow-35);
   }
   .brand-name{
     font-size:1.4rem;font-weight:800;letter-spacing:.5px;
@@ -92,7 +98,7 @@
     color:#fff;font-weight:700;font-size:.98rem;cursor:pointer;font-family:inherit;
     transition:transform .15s ease, box-shadow .15s ease;
   }
-  .login-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(42,120,214,.3);}
+  .login-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px var(--accent-shadow-30);}
   .login-hint{text-align:center;color:var(--muted);font-size:.78rem;margin-top:16px;line-height:1.6;}
   .login-error{color:var(--danger);font-size:.82rem;text-align:center;margin-top:10px;min-height:1em;}
 
@@ -192,14 +198,14 @@
     background:var(--card2);border:1px solid var(--border);color:var(--muted);
     padding:8px 16px;border-radius:999px;cursor:pointer;font-size:.83rem;font-family:inherit;
   }
-  .subtab-btn.active{background:rgba(42,120,214,.12);border-color:var(--accent);color:var(--accent);font-weight:600;}
+  .subtab-btn.active{background:var(--accent-tint-12);border-color:var(--accent);color:var(--accent);font-weight:600;}
   .cost-sub{display:none;}
   .cost-sub.active{display:block;}
 
   /* بطاقات KPI */
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px;}
   .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(20,60,120,.04);}
-  .kpi-card.grand{border-color:var(--accent);background:rgba(42,120,214,.06);}
+  .kpi-card.grand{border-color:var(--accent);background:var(--accent-tint-06);}
   .kpi-label{font-size:.78rem;color:var(--muted);margin-bottom:8px;}
   .kpi-value{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums;}
   .kpi-card.grand .kpi-value{color:var(--accent);font-size:1.55rem;}
@@ -256,10 +262,14 @@
 <!-- ===== شاشة تسجيل الدخول ===== -->
 <div id="login-screen">
   <div class="login-card">
-    <button type="button" class="lang-toggle-btn lang-toggle" onclick="toggleLang()">English</button>
+    <div class="toggle-row">
+      <button type="button" class="lang-toggle-btn brand-toggle" onclick="toggleBrand()"></button>
+      <button type="button" class="lang-toggle-btn lang-toggle" onclick="toggleLang()">English</button>
+    </div>
     <div class="brand">
-      <div class="brand-mark brand-mark-letter">م</div>
-      <div class="brand-name" data-i18n="clientName">شركة المزن التجارية</div>
+      <div class="brand-mark brand-mark-letter"></div>
+      <div class="brand-name brand-name-text"></div>
+      <div class="brand-client"><span data-i18n="brandLicensedTo">مرخّص لـ</span> <b data-i18n="clientName">شركة المزن التجارية</b></div>
       <div class="brand-tagline" data-i18n="brandTagline">نظام إدارة فروع الشركات التجارية</div>
     </div>
 
@@ -301,8 +311,8 @@
   <div class="app-shell">
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <div class="brand-mark brand-mark-letter">م</div>
-        <div class="brand-name" data-i18n="clientName">شركة المزن التجارية</div>
+        <div class="brand-mark brand-mark-letter"></div>
+        <div class="brand-name brand-name-text"></div>
       </div>
       <ul class="nav-list" id="nav-list">
         <li class="nav-item" data-view="dashboard" data-perm="dashboard"><span class="nav-icon">🏠</span> <span data-i18n="navDashboard">لوحة التحكم</span></li>
@@ -314,7 +324,10 @@
         <li class="nav-item" data-view="reports" data-perm="reports"><span class="nav-icon">📊</span> <span data-i18n="navReports">التقارير</span></li>
         <li class="nav-item" data-view="auditlog" data-perm="auditlog"><span class="nav-icon">🛡️</span> <span data-i18n="navAuditlog">سجل التدقيق</span></li>
       </ul>
-      <button type="button" class="lang-toggle-btn lang-toggle" style="width:100%;margin-bottom:10px;" onclick="toggleLang()">English</button>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button type="button" class="lang-toggle-btn brand-toggle" style="flex:1;" onclick="toggleBrand()"></button>
+        <button type="button" class="lang-toggle-btn lang-toggle" style="flex:1;" onclick="toggleLang()">English</button>
+      </div>
       <div class="sidebar-note">
         <b data-i18n="sidebarSecurityNote">ملاحظة أمان:</b> <span data-i18n="sidebarSecurityText">هذا نموذج أولي بواجهة فقط. الحماية الفعلية (تشفير قاعدة البيانات، نسخ احتياطي، شهادة SSL، استضافة آمنة) تُنفَّذ عند بناء الخادم الخلفي (Backend).</span>
       </div>
@@ -549,23 +562,31 @@
         <!-- ============ الموردون والفواتير ============ -->
         <section class="view" id="view-suppliers">
           <h1 class="page-title" data-i18n="suppliersTitle">الموردون والفواتير</h1>
-          <p class="subtitle" data-i18n="suppliersSubtitle">إدارة الشركات الموردة ومتابعة الفواتير المستحقة</p>
-          <div class="toolbar"><div></div><div class="toolbar-right">
-            <button onclick="addSupplier()" data-i18n="btnAddSupplier">+ إضافة مورد</button>
-          </div></div>
+          <p class="subtitle" data-i18n="suppliersSubtitle">إدارة الشركات الموردة ومتابعة الفواتير المستحقة — تُحتسب فواتير الموردين ضمن التكاليف التشغيلية</p>
+          <div class="toolbar">
+            <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);cursor:pointer;">
+              <input type="checkbox" id="overdue-only-filter" style="width:auto;" onchange="renderSuppliers()">
+              <span data-i18n="showOverdueOnly">إظهار الفواتير المتأخرة فقط</span>
+            </label>
+            <div class="toolbar-right">
+              <button onclick="addSupplier()" data-i18n="btnAddSupplier">+ إضافة مورد</button>
+            </div>
+          </div>
           <div class="section">
             <div class="table-scroll">
             <table>
               <thead><tr>
-                <th style="width:14%" data-i18n="thCompanyName">اسم الشركة</th>
-                <th style="width:11%" data-i18n="thContact">رقم التواصل</th>
-                <th style="width:12%" data-i18n="thMaterialType">نوع المواد</th>
-                <th style="width:11%" data-i18n="thInvoiceValue">قيمة الفاتورة</th>
-                <th style="width:10%" data-i18n="thPaid">المدفوع</th>
-                <th style="width:10%" data-i18n="thRemaining">المتبقي</th>
-                <th style="width:11%" data-i18n="thDueDate">تاريخ الاستحقاق</th>
-                <th style="width:11%" data-i18n="thDailyPurchases">مشتريات يومية؟</th>
-                <th style="width:5%"></th>
+                <th style="width:13%" data-i18n="thCompanyName">اسم الشركة</th>
+                <th style="width:10%" data-i18n="thContact">رقم التواصل</th>
+                <th style="width:11%" data-i18n="thMaterialType">نوع المواد</th>
+                <th style="width:11%" data-i18n="thBranch">الفرع</th>
+                <th style="width:10%" data-i18n="thInvoiceValue">قيمة الفاتورة</th>
+                <th style="width:9%" data-i18n="thPaid">المدفوع</th>
+                <th style="width:9%" data-i18n="thRemaining">المتبقي</th>
+                <th style="width:10%" data-i18n="thDueDate">تاريخ الاستحقاق</th>
+                <th style="width:8%" data-i18n="thStatusShort">الحالة</th>
+                <th style="width:5%" data-i18n="thDailyPurchases">مشتريات يومية؟</th>
+                <th style="width:4%"></th>
               </tr></thead>
               <tbody id="suppliers-body"></tbody>
             </table>
@@ -667,7 +688,7 @@
       </div>
 
       <footer class="app-footer">
-        &copy; <span id="year"></span> <b data-i18n="clientName">شركة المزن التجارية</b> — <span data-i18n="footerText">نظام إدارة الفروع</span>
+        &copy; <span id="year"></span> <b class="brand-name-text"></b> — <b data-i18n="clientName">شركة المزن التجارية</b> — <span data-i18n="footerText">نظام إدارة الفروع</span>
       </footer>
     </div>
   </div>
@@ -732,9 +753,10 @@ const I18N = {
     discountsLabel:'الخصومات (ر.ع.)', profitReportTitle:'تقرير الأرباح',
     totalSalesRow:'إجمالي المبيعات (بدون الكاش)', totalExpensesRow:'إجمالي المصروفات', commissionsRow:'عمولات فيزا / طلبات / زادكم',
     discountsRow:'الخصومات', netProfitRow:'صافي الربح',
-    suppliersTitle:'الموردون والفواتير', suppliersSubtitle:'إدارة الشركات الموردة ومتابعة الفواتير المستحقة',
+    suppliersTitle:'الموردون والفواتير', suppliersSubtitle:'إدارة الشركات الموردة ومتابعة الفواتير المستحقة — تُحتسب فواتير الموردين ضمن التكاليف التشغيلية',
     btnAddSupplier:'+ إضافة مورد', thContact:'رقم التواصل', thMaterialType:'نوع المواد',
     thInvoiceValue:'قيمة الفاتورة', thPaid:'المدفوع', thRemaining:'المتبقي', thDailyPurchases:'مشتريات يومية',
+    showOverdueOnly:'إظهار الفواتير المتأخرة فقط', totalSupplierInvoices:'إجمالي فواتير الموردين',
     placeholderCompany:'اسم الشركة', placeholderContact:'رقم التواصل', placeholderMaterialType:'نوع المواد',
     alertDeleteInvoicePerm:'حذف الفواتير متاح لصاحب الصلاحية (المالك) فقط.',
     confirmDeleteInvoice:'هل تريدين حذف هذه الفاتورة؟', titleOwnerOnly:'متاح للمالك فقط',
@@ -811,9 +833,10 @@ const I18N = {
     discountsLabel:'Discounts (OMR)', profitReportTitle:'Profit Report',
     totalSalesRow:'Total Sales (excl. cash)', totalExpensesRow:'Total Expenses', commissionsRow:'Visa / Talabat / Zadkom Commissions',
     discountsRow:'Discounts', netProfitRow:'Net Profit',
-    suppliersTitle:'Suppliers & Invoices', suppliersSubtitle:'Manage supplier companies and track outstanding invoices',
+    suppliersTitle:'Suppliers & Invoices', suppliersSubtitle:'Manage supplier companies and track outstanding invoices — supplier invoices count toward operating costs',
     btnAddSupplier:'+ Add Supplier', thContact:'Contact Number', thMaterialType:'Material Type',
     thInvoiceValue:'Invoice Value', thPaid:'Paid', thRemaining:'Remaining', thDailyPurchases:'Daily Purchases',
+    showOverdueOnly:'Show overdue invoices only', totalSupplierInvoices:'Total Supplier Invoices',
     placeholderCompany:'Company name', placeholderContact:'Contact number', placeholderMaterialType:'Material type',
     alertDeleteInvoicePerm:'Deleting invoices is available to the owner only.',
     confirmDeleteInvoice:'Delete this invoice?', titleOwnerOnly:'Owner only',
@@ -859,6 +882,52 @@ function toggleLang(){
     document.getElementById('welcome-role').textContent = roleLabel(session.role);
     switchView(currentView);
   }
+}
+
+/* =========================================================
+   البراند والثيم (Aventus أسود/أبيض — Chicken Ville أصفر/أزرق)
+========================================================= */
+const BRAND_KEY = 'aventus_erp_brand_v1';
+let BRAND = localStorage.getItem(BRAND_KEY) || 'aventus';
+
+const BRAND_INFO = {
+  aventus: { nameHtml: 'Aventus <span>| أفنتوس</span>', letter: 'A' },
+  chickenville: { nameHtml: 'Chicken Ville <span>| تشكن فل</span>', letter: 'C' },
+};
+const BRAND_THEMES = {
+  aventus: {
+    '--bg':'#f4f4f4', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#eeeeee', '--card3':'#e2e2e2',
+    '--text':'#0d0d0d', '--muted':'#5c5c5c', '--accent':'#111111', '--accent-light':'#3d3d3d',
+    '--border':'#dcdcdc', '--danger':'#b91c1c',
+    '--accent-tint-06':'rgba(17,17,17,.06)', '--accent-tint-08':'rgba(17,17,17,.08)', '--accent-tint-12':'rgba(17,17,17,.12)',
+    '--accent-shadow-30':'rgba(17,17,17,.25)', '--accent-shadow-35':'rgba(17,17,17,.3)',
+  },
+  chickenville: {
+    '--bg':'#fffdf3', '--bg2':'#fffae6', '--card':'#ffffff', '--card2':'#fff3cc', '--card3':'#ffe58a',
+    '--text':'#132743', '--muted':'#63708a', '--accent':'#1e5fae', '--accent-light':'#f5b800',
+    '--border':'#ffe58a', '--danger':'#dc2626',
+    '--accent-tint-06':'rgba(30,95,174,.06)', '--accent-tint-08':'rgba(30,95,174,.08)', '--accent-tint-12':'rgba(30,95,174,.12)',
+    '--accent-shadow-30':'rgba(30,95,174,.3)', '--accent-shadow-35':'rgba(30,95,174,.35)',
+  },
+};
+
+function applyBrandTheme(){
+  const vars = BRAND_THEMES[BRAND];
+  Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+}
+function applyBrandDisplay(){
+  const info = BRAND_INFO[BRAND];
+  document.querySelectorAll('.brand-mark-letter').forEach(el => { el.textContent = info.letter; });
+  document.querySelectorAll('.brand-name-text').forEach(el => { el.innerHTML = info.nameHtml; });
+  document.querySelectorAll('.brand-toggle').forEach(btn => {
+    btn.textContent = BRAND === 'aventus' ? BRAND_INFO.chickenville.nameHtml.split(' <span')[0] : BRAND_INFO.aventus.nameHtml.split(' <span')[0];
+  });
+}
+function toggleBrand(){
+  BRAND = BRAND === 'aventus' ? 'chickenville' : 'aventus';
+  localStorage.setItem(BRAND_KEY, BRAND);
+  applyBrandTheme();
+  applyBrandDisplay();
 }
 
 /* =========================================================
@@ -1073,8 +1142,12 @@ function totalPurchases(branchId){
 function totalOther(branchId){
   return state.otherExpenses.filter(o => !branchId || o.branchId===branchId).reduce((a,o)=>a+num(o.amount),0);
 }
+/* فواتير الموردين تُحتسب كتكلفة تشغيلية بناءً على طلب العميل */
+function totalSuppliers(branchId){
+  return state.suppliers.filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+num(s.invoiceValue),0);
+}
 function totalExpenses(branchId){
-  return totalSalaries(branchId) + totalRents(branchId) + totalPurchases(branchId) + totalOther(branchId);
+  return totalSalaries(branchId) + totalRents(branchId) + totalPurchases(branchId) + totalOther(branchId) + totalSuppliers(branchId);
 }
 function totalSales(branchId, period){
   return filterSalesByPeriod(period).filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+saleTotal(s),0);
@@ -1256,6 +1329,7 @@ function renderCosts(){
     kpiCard(t('totalRents').replace(':',''), formatCurrency(totalRents())),
     kpiCard(t('totalPurchases').replace(':',''), formatCurrency(totalPurchases())),
     kpiCard(t('totalOther').replace(':',''), formatCurrency(totalOther())),
+    kpiCard(t('totalSupplierInvoices'), formatCurrency(totalSuppliers())),
     kpiCard(t('grandTotal'), formatCurrency(totalExpenses()), null, true),
   ].join('');
 }
@@ -1498,7 +1572,7 @@ function renderProfit(){
    الموردون والفواتير
 ========================================================= */
 function addSupplier(){
-  state.suppliers.push({id:uid(), company:'', contact:'', materialType:'', invoiceValue:0, paid:0, dueDate:'', dailyPurchases:false});
+  state.suppliers.push({id:uid(), company:'', contact:'', materialType:'', branchId:(state.branches[0]||{}).id||'', invoiceValue:0, paid:0, dueDate:'', dailyPurchases:false});
   logAction('logAddSupplier');
   renderSuppliers();
 }
@@ -1519,18 +1593,35 @@ function removeSupplier(id){
   logAction('logDeleteSupplier');
   renderSuppliers();
 }
+function supplierStatus(s){
+  const remaining = num(s.invoiceValue) - num(s.paid);
+  const overdue = remaining > 0 && s.dueDate && s.dueDate < todayStr();
+  if(overdue) return {label:t('statusOverdue'), type:'critical'};
+  if(remaining > 0) return {label:t('statusOutstanding'), type:'warning'};
+  return {label:t('statusSettled'), type:'good'};
+}
 function renderSuppliers(){
   const perms = PERMS[session.role];
-  document.getElementById('suppliers-body').innerHTML = state.suppliers.map(s => {
+  const overdueOnly = document.getElementById('overdue-only-filter').checked;
+  const today = todayStr();
+  const rows = state.suppliers.filter(s => {
+    if(!overdueOnly) return true;
     const remaining = num(s.invoiceValue) - num(s.paid);
+    return remaining > 0 && s.dueDate && s.dueDate < today;
+  });
+  document.getElementById('suppliers-body').innerHTML = rows.map(s => {
+    const remaining = num(s.invoiceValue) - num(s.paid);
+    const status = supplierStatus(s);
     return `<tr data-id="${s.id}">
       <td><input type="text" value="${escapeHtml(s.company)}" placeholder="${t('placeholderCompany')}" oninput="updateSupplier('${s.id}','company',this.value)"></td>
       <td><input type="tel" value="${escapeHtml(s.contact)}" placeholder="${t('placeholderContact')}" oninput="updateSupplier('${s.id}','contact',this.value)"></td>
       <td><input type="text" value="${escapeHtml(s.materialType)}" placeholder="${t('placeholderMaterialType')}" oninput="updateSupplier('${s.id}','materialType',this.value)"></td>
+      <td><select onchange="updateSupplier('${s.id}','branchId',this.value)">${branchOptions(s.branchId)}</select></td>
       <td><input type="number" min="0" step="any" value="${s.invoiceValue}" oninput="updateSupplier('${s.id}','invoiceValue',this.value); refreshSupplierRow('${s.id}');"></td>
       <td><input type="number" min="0" step="any" value="${s.paid}" oninput="updateSupplier('${s.id}','paid',this.value); refreshSupplierRow('${s.id}');"></td>
       <td class="row-total supplier-remaining-cell" style="color:${remaining>0?'var(--danger)':'var(--accent)'}">${formatCurrency(remaining)}</td>
-      <td><input type="date" value="${s.dueDate}" onchange="updateSupplier('${s.id}','dueDate',this.value)"></td>
+      <td><input type="date" value="${s.dueDate}" onchange="updateSupplier('${s.id}','dueDate',this.value); refreshSupplierRow('${s.id}');"></td>
+      <td class="supplier-status-cell">${badge(status.label, status.type)}</td>
       <td style="text-align:center;"><input type="checkbox" style="width:auto;" ${s.dailyPurchases?'checked':''} onchange="toggleSupplierDaily('${s.id}', this.checked)" title="${t('thDailyPurchases')}"></td>
       <td><button class="del-btn" ${perms.deleteInvoice?'':'disabled title="'+t('titleOwnerOnly')+'"'} onclick="removeSupplier('${s.id}')">✕</button></td>
     </tr>`;
@@ -1545,6 +1636,8 @@ function refreshSupplierRow(id){
   const cell = tr.querySelector('.supplier-remaining-cell');
   cell.textContent = formatCurrency(remaining);
   cell.style.color = remaining > 0 ? 'var(--danger)' : 'var(--accent)';
+  const status = supplierStatus(s);
+  tr.querySelector('.supplier-status-cell').innerHTML = badge(status.label, status.type);
 }
 
 /* =========================================================
@@ -1564,6 +1657,7 @@ function renderReports(){
     {label:t('subtabRents'), total: totalRents(), color:CAT_COLORS[1]},
     {label:t('subtabPurchases'), total: totalPurchases(), color:CAT_COLORS[2]},
     {label:t('subtabOther'), total: totalOther(), color:CAT_COLORS[3]},
+    {label:t('totalSupplierInvoices'), total: totalSuppliers(), color:CAT_COLORS[4]},
   ];
   const maxExp = Math.max(1, ...expenseCats.map(e=>e.total));
   const expTotal = expenseCats.reduce((a,e)=>a+e.total,0);
@@ -1644,6 +1738,8 @@ function renderAuditLog(){
 document.getElementById('year').textContent = new Date().getFullYear();
 state = loadState();
 applyStaticI18n();
+applyBrandTheme();
+applyBrandDisplay();
 populateStaffBranchSelect();
 
 const savedSession = localStorage.getItem(STORAGE_SESSION_KEY);
