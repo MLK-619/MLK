@@ -684,16 +684,7 @@
         <!-- ============ التقارير ============ -->
         <section class="view" id="view-reports">
           <div class="report-header-logo">
-            <div class="report-logo-mark">
-              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="100" cy="100" r="96" fill="#000000" stroke="#ffffff" stroke-width="4"/>
-                <circle cx="100" cy="100" r="88" fill="none" stroke="#ffffff" stroke-width="1.5"/>
-                <path d="M58 96 L100 44 L122 72" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M74 96 L112 48 L142 96" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-                <text x="100" y="128" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="21" letter-spacing="2" font-weight="bold">AVENTUS</text>
-                <text x="100" y="146" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="11" font-style="italic" letter-spacing="1.5">CAFÉ</text>
-              </svg>
-            </div>
+            <div class="report-logo-mark" id="report-logo-mark"></div>
             <div>
               <h1 class="page-title" data-i18n="reportsTitle">التقارير</h1>
               <p class="subtitle" data-i18n="reportsSubtitle">تقارير شهرية وسنوية</p>
@@ -724,6 +715,22 @@
           <div class="section">
             <h2><span class="icon">📈</span> <span data-i18n="reportProfitTitle">تقرير الأرباح</span></h2>
             <div class="kpi-grid" id="report-profit"></div>
+          </div>
+
+          <div class="section" id="report-all-profits-section" style="display:none;">
+            <h2><span class="icon">🏆</span> <span data-i18n="reportAllProfitsTitle">إجمالي الأرباح لكل الفروع (للمالك فقط)</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thSales">المبيعات</th>
+                <th data-i18n="thExpenses">المصاريف</th>
+                <th data-i18n="thNetProfit">صافي الربح</th>
+              </tr></thead>
+              <tbody id="report-all-profits"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalNetProfitAll">إجمالي صافي الربح لكل الفروع:</span> <b id="report-all-profits-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
 
           <div class="section">
@@ -799,6 +806,19 @@
         <section class="view" id="view-more">
           <h1 class="page-title" data-i18n="moreTitle">المزيد من الميزات</h1>
           <p class="subtitle" data-i18n="moreSubtitle">أدوات إضافية متاحة للمالك</p>
+
+          <div class="section">
+            <h2><span class="icon">🖼️</span> <span data-i18n="moreLogoTitle">شعار التقرير</span></h2>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreLogoDesc">غيّري الشعار الذي يظهر في أعلى صفحة التقارير وعند الطباعة.</p>
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+              <div class="report-logo-mark" id="logo-preview"></div>
+              <label class="add-btn" style="display:inline-block;cursor:pointer;">
+                <span data-i18n="btnUploadLogo">⬆️ رفع شعار جديد</span>
+                <input type="file" accept="image/*" onchange="uploadReportLogo(this.files[0])" style="display:none;">
+              </label>
+              <button class="clear-btn" onclick="resetReportLogo()" data-i18n="btnResetLogo">↩️ استعادة الشعار الافتراضي</button>
+            </div>
+          </div>
 
           <div class="section">
             <h2><span class="icon">🔎</span> <span data-i18n="moreSearchTitle">بحث شامل</span></h2>
@@ -935,6 +955,7 @@ const I18N = {
     statusOverdue:'متأخر', statusOutstanding:'قائم', statusSettled:'مسدد',
     reportPaymentMethodsTitle:'تقرير الكاش والفيزا والتطبيقات',
     reportPurchasesDetailTitle:'تفاصيل جميع المشتريات لكل فرع',
+    reportAllProfitsTitle:'إجمالي الأرباح لكل الفروع (للمالك فقط)', thNetProfit:'صافي الربح', totalNetProfitAll:'إجمالي صافي الربح لكل الفروع:',
     noData:'لا توجد بيانات', noBranches:'لا توجد فروع', noSuppliers:'لا يوجد موردون',
     auditTitle:'سجل التدقيق', auditSubtitle:'سجل لكل عملية إضافة أو تعديل أو حذف (متاح للمالك فقط)',
     btnClearLog:'🗑 مسح السجل', thTime:'الوقت', thUser:'المستخدم', thRoleCol:'الدور', thOperation:'العملية',
@@ -944,13 +965,15 @@ const I18N = {
     logAddPurchase:'إضافة مشترى', logDeletePurchase:'حذف مشترى',
     logAddOther:'إضافة مصروف آخر', logDeleteOther:'حذف مصروف آخر',
     logAddStock:'إضافة مادة خام للمخزون', logDeleteStock:'حذف مادة من المخزون',
-    logAddNote:'إضافة ملاحظة/تذكير',
+    logAddNote:'إضافة ملاحظة/تذكير', logChangeLogo:'تغيير شعار التقرير',
     logAddSale:'إضافة يومية مبيعات', logDeleteSale:'حذف يومية مبيعات',
     logAddSupplier:'إضافة مورد', logDeleteSupplier:'حذف فاتورة مورد',
     logLogin:'تسجيل دخول', logLogout:'تسجيل خروج',
     logBackupDownload:'تنزيل نسخة احتياطية', logBackupRestore:'استعادة نسخة احتياطية', logExportCsv:'تصدير بيانات CSV',
     navMore:'المزيد من الميزات', moreTitle:'المزيد من الميزات', moreSubtitle:'أدوات إضافية متاحة للمالك',
     moreSearchTitle:'بحث شامل', moreSearchPh:'ابحثي بالاسم في الفروع، الموردين، المخزون، المشتريات...',
+    moreLogoTitle:'شعار التقرير', moreLogoDesc:'غيّري الشعار الذي يظهر في أعلى صفحة التقارير وعند الطباعة.',
+    btnUploadLogo:'⬆️ رفع شعار جديد', btnResetLogo:'↩️ استعادة الشعار الافتراضي',
     moreBackupTitle:'النسخ الاحتياطي واستعادة البيانات',
     moreBackupDesc:'نزّلي نسخة من كل بيانات النظام كملف JSON، أو استعيديها لاحقاً على أي جهاز.',
     btnDownloadBackup:'⬇️ تنزيل نسخة احتياطية', btnRestoreBackup:'⬆️ استعادة من نسخة احتياطية',
@@ -1049,6 +1072,7 @@ const I18N = {
     statusOverdue:'Overdue', statusOutstanding:'Outstanding', statusSettled:'Settled',
     reportPaymentMethodsTitle:'Cash, Card & Apps Report',
     reportPurchasesDetailTitle:'All Purchases Detail by Branch',
+    reportAllProfitsTitle:'Total Profits — All Branches (Owner Only)', thNetProfit:'Net Profit', totalNetProfitAll:'Total Net Profit — All Branches:',
     noData:'No data available', noBranches:'No branches', noSuppliers:'No suppliers',
     auditTitle:'Audit Log', auditSubtitle:'Log of every add, edit, or delete operation (owner only)',
     btnClearLog:'🗑 Clear Log', thTime:'Time', thUser:'User', thRoleCol:'Role', thOperation:'Operation',
@@ -1058,13 +1082,15 @@ const I18N = {
     logAddPurchase:'Added purchase', logDeletePurchase:'Deleted purchase',
     logAddOther:'Added other expense', logDeleteOther:'Deleted other expense',
     logAddStock:'Added raw material to inventory', logDeleteStock:'Removed material from inventory',
-    logAddNote:'Added note/reminder',
+    logAddNote:'Added note/reminder', logChangeLogo:'Changed report logo',
     logAddSale:'Added daily sales entry', logDeleteSale:'Deleted daily sales entry',
     logAddSupplier:'Added supplier', logDeleteSupplier:'Deleted supplier invoice',
     logLogin:'Logged in', logLogout:'Logged out',
     logBackupDownload:'Downloaded backup', logBackupRestore:'Restored backup', logExportCsv:'Exported CSV data',
     navMore:'More Features', moreTitle:'More Features', moreSubtitle:'Additional tools available to the owner',
     moreSearchTitle:'Global Search', moreSearchPh:'Search by name across branches, suppliers, inventory, purchases...',
+    moreLogoTitle:'Report Logo', moreLogoDesc:'Change the logo shown at the top of the Reports page and on print.',
+    btnUploadLogo:'⬆️ Upload New Logo', btnResetLogo:'↩️ Restore Default Logo',
     moreBackupTitle:'Backup & Restore',
     moreBackupDesc:'Download all system data as a JSON file, or restore it later on any device.',
     btnDownloadBackup:'⬇️ Download Backup', btnRestoreBackup:'⬆️ Restore from Backup',
@@ -1247,7 +1273,7 @@ function defaultState(){
     suppliers: [],
     stock: [],
     sales: [],
-    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0 },
+    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0, customLogo: null },
     auditLog: [],
     notes: [],
   };
@@ -2034,6 +2060,7 @@ function populateReportBranchSelect(){
   }
 }
 function renderReports(){
+  renderReportLogo();
   populateReportBranchSelect();
   const period = document.getElementById('report-period').value;
   const reportScope = activeBranchId() || document.getElementById('report-branch').value || null;
@@ -2067,6 +2094,28 @@ function renderReports(){
     kpiCard(t('totalExpensesRow'), formatCurrency(expenses)),
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true),
   ].join('');
+
+  const allProfitsSection = document.getElementById('report-all-profits-section');
+  if(session && session.role === 'owner'){
+    allProfitsSection.style.display = '';
+    const branchProfits = state.branches.map(b => {
+      const bs = salesForProfit(b.id, period);
+      const be = totalExpenses(b.id);
+      const bc = commissionsTotal(period, b.id);
+      const bn = bs - be - bc;
+      return {name:b.name, sales:bs, expenses:be, net:bn};
+    });
+    document.getElementById('report-all-profits').innerHTML = branchProfits.map(b => `
+      <tr>
+        <td><bdi>${escapeHtml(b.name)}</bdi></td>
+        <td>${formatCurrency(b.sales)}</td>
+        <td>${formatCurrency(b.expenses)}</td>
+        <td style="color:${b.net>=0?'var(--accent)':'var(--danger)'}">${formatCurrency(b.net)}</td>
+      </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noBranches')}</td></tr>`;
+    document.getElementById('report-all-profits-total').textContent = formatNum(branchProfits.reduce((a,b)=>a+b.net,0) - discounts);
+  }else{
+    allProfitsSection.style.display = 'none';
+  }
 
   const rows = filterSalesByPeriod(period).filter(s => !reportScope || s.branchId===reportScope);
   const methods = paymentMethodsWithTotals(rows);
@@ -2156,6 +2205,43 @@ function renderUsers(){
 function renderMore(){
   document.getElementById('global-search-input').value = '';
   document.getElementById('global-search-results').innerHTML = '';
+  renderReportLogo();
+}
+
+/* =========================================================
+   شعار التقرير
+========================================================= */
+const DEFAULT_REPORT_LOGO_SVG = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="96" fill="#000000" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+  <path d="M58 96 L100 44 L122 72" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M74 96 L112 48 L142 96" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="100" y="128" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="21" letter-spacing="2" font-weight="bold">AVENTUS</text>
+  <text x="100" y="146" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="11" font-style="italic" letter-spacing="1.5">CAFÉ</text>
+</svg>`;
+function renderReportLogo(){
+  const html = state.settings.customLogo
+    ? `<img src="${state.settings.customLogo}" alt="logo" style="width:100%;height:100%;object-fit:cover;">`
+    : DEFAULT_REPORT_LOGO_SVG;
+  document.querySelectorAll('.report-logo-mark').forEach(el => { el.innerHTML = html; });
+}
+function uploadReportLogo(file){
+  if(!file || session.role !== 'owner') return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    state.settings.customLogo = reader.result;
+    saveState();
+    renderReportLogo();
+    logAction('logChangeLogo');
+  };
+  reader.readAsDataURL(file);
+}
+function resetReportLogo(){
+  if(session.role !== 'owner') return;
+  state.settings.customLogo = null;
+  saveState();
+  renderReportLogo();
+  logAction('logChangeLogo');
 }
 
 function runGlobalSearch(){
