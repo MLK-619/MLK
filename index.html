@@ -358,7 +358,7 @@
         <li class="nav-item" data-view="stock" data-perm="stock"><span class="nav-icon">📦</span> <span data-i18n="navStock">المخزون</span></li>
         <li class="nav-item" data-view="sales" data-perm="sales"><span class="nav-icon">🧾</span> <span data-i18n="navSales">المبيعات</span></li>
         <li class="nav-item" data-view="profit" data-perm="profit"><span class="nav-icon">📈</span> <span data-i18n="navProfit">حساب الأرباح</span></li>
-        <li class="nav-item" data-view="suppliers" data-perm="suppliers"><span class="nav-icon">🚚</span> <span data-i18n="navSuppliers">الموردون والفواتير</span></li>
+        <li class="nav-item" data-view="suppliers" data-perm="suppliers"><span class="nav-icon">🚚</span> <span data-i18n="navSuppliers">الفواتير المتأخرة</span></li>
         <li class="nav-item" data-view="reports" data-perm="reports"><span class="nav-icon">📊</span> <span data-i18n="navReports">التقارير</span></li>
         <li class="nav-item" data-view="auditlog" data-perm="auditlog"><span class="nav-icon">🛡️</span> <span data-i18n="navAuditlog">سجل التدقيق</span></li>
         <li class="nav-item" data-view="users" data-perm="users"><span class="nav-icon">👤</span> <span data-i18n="navUsers">إدارة المستخدمين</span></li>
@@ -645,8 +645,8 @@
 
         <!-- ============ الموردون والفواتير ============ -->
         <section class="view" id="view-suppliers">
-          <h1 class="page-title" data-i18n="suppliersTitle">الموردون والفواتير</h1>
-          <p class="subtitle" data-i18n="suppliersSubtitle">إدارة الشركات الموردة ومتابعة الفواتير المستحقة — تُحتسب فواتير الموردين ضمن التكاليف التشغيلية</p>
+          <h1 class="page-title" data-i18n="suppliersTitle">الفواتير المتأخرة</h1>
+          <p class="subtitle" data-i18n="suppliersSubtitle">إدارة الشركات الموردة ومتابعة الفواتير المستحقة والمتأخرة — لا تُحتسب هذه الفواتير ضمن التكاليف التشغيلية</p>
           <div class="toolbar">
             <label style="display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);cursor:pointer;">
               <input type="checkbox" id="overdue-only-filter" style="width:auto;" onchange="renderSuppliers()">
@@ -884,7 +884,7 @@ const I18N = {
     loginHint2:'جميع البيانات تُحفظ محلياً على جهازك فقط.',
     loginHintDefault:'حساب تجريبي: admin / admin123',
     navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navStock:'المخزون', navSales:'المبيعات',
-    navProfit:'حساب الأرباح', navSuppliers:'الموردون والفواتير', navReports:'التقارير', navAuditlog:'سجل التدقيق',
+    navProfit:'حساب الأرباح', navSuppliers:'الفواتير المتأخرة', navReports:'التقارير', navAuditlog:'سجل التدقيق',
     navUsers:'إدارة المستخدمين', usersTitle:'إدارة المستخدمين',
     usersSubtitle:'المالك فقط يقدر يضيف حسابات ويحدد الدور والفرع الثابت لكل مستخدم — لا يختار المستخدم فرعه بنفسه',
     btnAddUser:'+ إضافة مستخدم', errLastOwner:'لا يمكن حذف آخر حساب بصلاحية مالك',
@@ -935,7 +935,7 @@ const I18N = {
     discountsLabel:'الخصومات (ر.ع.)', profitReportTitle:'تقرير الأرباح',
     totalSalesRow:'إجمالي المبيعات (بدون الكاش)', totalExpensesRow:'إجمالي المصروفات', commissionsRow:'عمولات فيزا / طلبات / زادكم',
     discountsRow:'الخصومات', netProfitRow:'صافي الربح',
-    suppliersTitle:'الموردون والفواتير', suppliersSubtitle:'إدارة الشركات الموردة ومتابعة الفواتير المستحقة — تُحتسب فواتير الموردين ضمن التكاليف التشغيلية',
+    suppliersTitle:'الفواتير المتأخرة', suppliersSubtitle:'إدارة الشركات الموردة ومتابعة الفواتير المستحقة والمتأخرة — لا تُحتسب هذه الفواتير ضمن التكاليف التشغيلية',
     btnAddSupplier:'+ إضافة مورد', thContact:'رقم التواصل', thMaterialType:'نوع المواد',
     thInvoiceValue:'قيمة الفاتورة', thPaid:'المدفوع', thRemaining:'المتبقي', thDailyPurchases:'مشتريات يومية',
     showOverdueOnly:'إظهار الفواتير المتأخرة فقط', totalSupplierInvoices:'إجمالي فواتير الموردين',
@@ -998,7 +998,7 @@ const I18N = {
     loginHint2:'All data is stored locally on your device only.',
     loginHintDefault:'Demo account: admin / admin123',
     navDashboard:'Dashboard', navBranches:'Branches', navCosts:'Operating Costs', navStock:'Inventory', navSales:'Sales',
-    navProfit:'Profit Calculation', navSuppliers:'Suppliers & Invoices', navReports:'Reports', navAuditlog:'Audit Log',
+    navProfit:'Profit Calculation', navSuppliers:'Overdue Invoices', navReports:'Reports', navAuditlog:'Audit Log',
     navUsers:'User Management', usersTitle:'User Management',
     usersSubtitle:'Only the owner can add accounts and set each user’s fixed role and branch — users cannot pick their own branch',
     btnAddUser:'+ Add User', errLastOwner:'Cannot delete the last owner account',
@@ -1049,7 +1049,7 @@ const I18N = {
     discountsLabel:'Discounts (OMR)', profitReportTitle:'Profit Report',
     totalSalesRow:'Total Sales (excl. cash)', totalExpensesRow:'Total Expenses', commissionsRow:'Visa / Talabat / Zadkom Commissions',
     discountsRow:'Discounts', netProfitRow:'Net Profit',
-    suppliersTitle:'Suppliers & Invoices', suppliersSubtitle:'Manage supplier companies and track outstanding invoices — supplier invoices count toward operating costs',
+    suppliersTitle:'Overdue Invoices', suppliersSubtitle:'Manage supplier companies and track outstanding/overdue invoices — these invoices are not counted toward operating costs',
     btnAddSupplier:'+ Add Supplier', thContact:'Contact Number', thMaterialType:'Material Type',
     thInvoiceValue:'Invoice Value', thPaid:'Paid', thRemaining:'Remaining', thDailyPurchases:'Daily Purchases',
     showOverdueOnly:'Show overdue invoices only', totalSupplierInvoices:'Total Supplier Invoices',
@@ -1416,12 +1416,12 @@ function totalPurchases(branchId){
 function totalOther(branchId){
   return state.otherExpenses.filter(o => !branchId || o.branchId===branchId).reduce((a,o)=>a+otherExpenseTotal(o),0);
 }
-/* فواتير الموردين تُحتسب كتكلفة تشغيلية بناءً على طلب العميل */
+/* ملاحظة: فواتير الموردين لم تعد تُحتسب ضمن التكاليف التشغيلية بناءً على طلب العميل — أصبحت تُتابع فقط كفواتير متأخرة */
 function totalSuppliers(branchId){
   return state.suppliers.filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+num(s.invoiceValue),0);
 }
 function totalExpenses(branchId){
-  return totalSalaries(branchId) + totalRents(branchId) + totalPurchases(branchId) + totalOther(branchId) + totalSuppliers(branchId);
+  return totalSalaries(branchId) + totalRents(branchId) + totalPurchases(branchId) + totalOther(branchId);
 }
 function totalSales(branchId, period){
   return filterSalesByPeriod(period).filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+saleTotal(s),0);
@@ -1512,7 +1512,6 @@ function renderDashboard(){
     {label:t('subtabRents'), total: totalRents(scope), color:CAT_COLORS[1]},
     {label:t('subtabPurchases'), total: totalPurchases(scope), color:CAT_COLORS[2]},
     {label:t('subtabOther'), total: totalOther(scope), color:CAT_COLORS[3]},
-    {label:t('totalSupplierInvoices'), total: totalSuppliers(scope), color:CAT_COLORS[4]},
   ];
   const maxExpCat = Math.max(1, ...expenseCats.map(e=>e.total));
   const expCatTotal = expenseCats.reduce((a,e)=>a+e.total,0);
@@ -1659,7 +1658,6 @@ function renderCosts(){
     kpiCard(t('totalRents').replace(':',''), formatCurrency(totalRents(scope))),
     kpiCard(t('totalPurchases').replace(':',''), formatCurrency(totalPurchases(scope))),
     kpiCard(t('totalOther').replace(':',''), formatCurrency(totalOther(scope))),
-    kpiCard(t('totalSupplierInvoices'), formatCurrency(totalSuppliers(scope))),
     kpiCard(t('grandTotal'), formatCurrency(totalExpenses(scope)), null, true),
   ].join('');
 }
@@ -1961,7 +1959,7 @@ function renderProfit(){
 }
 
 /* =========================================================
-   الموردون والفواتير
+   الفواتير المتأخرة (الموردون)
 ========================================================= */
 function addSupplier(){
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
@@ -2069,7 +2067,6 @@ function renderReports(){
     {label:t('subtabRents'), total: totalRents(reportScope), color:CAT_COLORS[1]},
     {label:t('subtabPurchases'), total: totalPurchases(reportScope), color:CAT_COLORS[2]},
     {label:t('subtabOther'), total: totalOther(reportScope), color:CAT_COLORS[3]},
-    {label:t('totalSupplierInvoices'), total: totalSuppliers(reportScope), color:CAT_COLORS[4]},
   ];
   const maxExp = Math.max(1, ...expenseCats.map(e=>e.total));
   const expTotal = expenseCats.reduce((a,e)=>a+e.total,0);
