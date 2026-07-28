@@ -61,7 +61,7 @@
   .chooser-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(20,30,60,.12);border-color:#94a3b8;}
   .chooser-mark{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;flex:none;}
   .chooser-mark svg{width:70%;height:70%;}
-  .chooser-mark.aventus{border:3px solid #0f5132;}
+  .chooser-mark.aventus{border:3px solid #1e3a8a;}
   .chooser-mark.chickenville{border:3px solid #16a34a;}
   .chooser-name{font-size:1.15rem;font-weight:800;color:#132743;}
   .chooser-name span{font-weight:400;color:#64748f;}
@@ -335,26 +335,14 @@
         <label for="password" data-i18n="labelPassword">كلمة المرور</label>
         <input type="password" id="password" data-i18n-ph="placeholderPassword" placeholder="أدخل كلمة المرور" autocomplete="current-password" required>
       </div>
-      <div class="field">
-        <label for="role" data-i18n="labelRole">الدور الوظيفي</label>
-        <select id="role">
-          <option value="owner" data-i18n="roleOwner">مالك</option>
-          <option value="manager" data-i18n="roleManager">مدير</option>
-          <option value="accountant" data-i18n="roleAccountant">محاسب</option>
-          <option value="staff" data-i18n="roleStaff">موظف إدخال</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="login-branch" id="login-branch-label" data-i18n="labelLoginBranch">الفرع</label>
-        <select id="login-branch"></select>
-      </div>
       <button type="submit" class="login-btn" data-i18n="btnLogin">تسجيل الدخول</button>
       <div class="login-error" id="login-error"></div>
     </form>
 
     <div class="login-hint">
-      <div data-i18n="loginHint1">نموذج أولي (Prototype): يمكن الدخول بأي بيانات لغرض العرض.</div>
+      <div data-i18n="loginHint1">نموذج أولي (Prototype): الدور والفرع يحدّدهما المالك عند إنشاء الحساب.</div>
       <div data-i18n="loginHint2">جميع البيانات تُحفظ محلياً على جهازك فقط.</div>
+      <div data-i18n="loginHintDefault">حساب تجريبي: admin / admin123</div>
     </div>
     <button type="button" class="back-to-chooser" onclick="goBackToChooser()" data-i18n="backToChooser">‹ تغيير الاختيار</button>
   </div>
@@ -378,6 +366,7 @@
         <li class="nav-item" data-view="suppliers" data-perm="suppliers"><span class="nav-icon">🚚</span> <span data-i18n="navSuppliers">الموردون والفواتير</span></li>
         <li class="nav-item" data-view="reports" data-perm="reports"><span class="nav-icon">📊</span> <span data-i18n="navReports">التقارير</span></li>
         <li class="nav-item" data-view="auditlog" data-perm="auditlog"><span class="nav-icon">🛡️</span> <span data-i18n="navAuditlog">سجل التدقيق</span></li>
+        <li class="nav-item" data-view="users" data-perm="users"><span class="nav-icon">👤</span> <span data-i18n="navUsers">إدارة المستخدمين</span></li>
         <li class="nav-item" data-view="more" data-perm="more"><span class="nav-icon">✨</span> <span data-i18n="navMore">المزيد من الميزات</span></li>
       </ul>
       <div style="display:flex;gap:8px;margin-bottom:10px;">
@@ -762,6 +751,29 @@
           </div>
         </section>
 
+        <!-- ============ إدارة المستخدمين ============ -->
+        <section class="view" id="view-users">
+          <h1 class="page-title" data-i18n="usersTitle">إدارة المستخدمين</h1>
+          <p class="subtitle" data-i18n="usersSubtitle">المالك فقط يقدر يضيف حسابات ويحدد الدور والفرع الثابت لكل مستخدم — لا يختار المستخدم فرعه بنفسه</p>
+          <div class="toolbar"><div></div><div class="toolbar-right">
+            <button onclick="addUser()" data-i18n="btnAddUser">+ إضافة مستخدم</button>
+          </div></div>
+          <div class="section">
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th style="width:22%" data-i18n="labelUsername">اسم المستخدم</th>
+                <th style="width:22%" data-i18n="labelPassword">كلمة المرور</th>
+                <th style="width:20%" data-i18n="labelRole">الدور الوظيفي</th>
+                <th style="width:26%" data-i18n="labelLoginBranch">الفرع الثابت</th>
+                <th style="width:10%"></th>
+              </tr></thead>
+              <tbody id="users-body"></tbody>
+            </table>
+            </div>
+          </div>
+        </section>
+
         <!-- ============ المزيد من الميزات ============ -->
         <section class="view" id="view-more">
           <h1 class="page-title" data-i18n="moreTitle">المزيد من الميزات</h1>
@@ -830,10 +842,17 @@ const I18N = {
     btnLogin:'تسجيل الدخول',
     errFillFields:'الرجاء إدخال اسم المستخدم وكلمة المرور',
     errSelectBranch:'الرجاء اختيار الفرع (يجب إضافة فرع واحد على الأقل أولاً)',
-    loginHint1:'نموذج أولي (Prototype): يمكن الدخول بأي بيانات لغرض العرض.',
+    errInvalidCredentials:'اسم المستخدم أو كلمة المرور غير صحيحة',
+    loginHint1:'نموذج أولي (Prototype): الدور والفرع يحدّدهما المالك عند إنشاء الحساب.',
     loginHint2:'جميع البيانات تُحفظ محلياً على جهازك فقط.',
+    loginHintDefault:'حساب تجريبي: admin / admin123',
     navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navStock:'المخزون', navSales:'المبيعات',
     navProfit:'حساب الأرباح', navSuppliers:'الموردون والفواتير', navReports:'التقارير', navAuditlog:'سجل التدقيق',
+    navUsers:'إدارة المستخدمين', usersTitle:'إدارة المستخدمين',
+    usersSubtitle:'المالك فقط يقدر يضيف حسابات ويحدد الدور والفرع الثابت لكل مستخدم — لا يختار المستخدم فرعه بنفسه',
+    btnAddUser:'+ إضافة مستخدم', errLastOwner:'لا يمكن حذف آخر حساب بصلاحية مالك',
+    confirmDeleteUser:'هل تريدين حذف هذا المستخدم؟',
+    logAddUser:'إضافة مستخدم جديد', logDeleteUser:'حذف مستخدم',
     sidebarSecurityNote:'ملاحظة أمان:',
     sidebarSecurityText:'هذا نموذج أولي بواجهة فقط. الحماية الفعلية (تشفير قاعدة البيانات، نسخ احتياطي، شهادة SSL، استضافة آمنة) تُنفَّذ عند بناء الخادم الخلفي (Backend).',
     welcomeText:'مرحباً،', logout:'تسجيل الخروج',
@@ -933,10 +952,17 @@ const I18N = {
     btnLogin:'Log In',
     errFillFields:'Please enter a username and password',
     errSelectBranch:'Please select a branch (at least one branch must be added first)',
-    loginHint1:'Prototype: you may log in with any credentials for demo purposes.',
+    errInvalidCredentials:'Incorrect username or password',
+    loginHint1:'Prototype: role and branch are set by the owner when the account is created.',
     loginHint2:'All data is stored locally on your device only.',
+    loginHintDefault:'Demo account: admin / admin123',
     navDashboard:'Dashboard', navBranches:'Branches', navCosts:'Operating Costs', navStock:'Inventory', navSales:'Sales',
     navProfit:'Profit Calculation', navSuppliers:'Suppliers & Invoices', navReports:'Reports', navAuditlog:'Audit Log',
+    navUsers:'User Management', usersTitle:'User Management',
+    usersSubtitle:'Only the owner can add accounts and set each user’s fixed role and branch — users cannot pick their own branch',
+    btnAddUser:'+ Add User', errLastOwner:'Cannot delete the last owner account',
+    confirmDeleteUser:'Delete this user?',
+    logAddUser:'Added new user', logDeleteUser:'Deleted user',
     sidebarSecurityNote:'Security note:',
     sidebarSecurityText:'This is a front-end-only prototype. Real protection (database encryption, backups, SSL certificate, secure hosting) is implemented once the backend server is built.',
     welcomeText:'Welcome,', logout:'Log Out',
@@ -1056,7 +1082,7 @@ let BRAND = localStorage.getItem(BRAND_KEY) || 'aventus';
 const BRAND_INFO = {
   aventus: {
     nameHtml: 'Aventus <span>| أفنتوس</span>',
-    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 14 L86 83 L66 83 L50 53 L34 83 L14 83 Z" fill="#0f5132"/></svg>',
+    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 14 L86 83 L66 83 L50 53 L34 83 L14 83 Z" fill="#1e3a8a"/></svg>',
   },
   chickenville: {
     nameHtml: 'Chicken Ville <span>| تشكن فل</span>',
@@ -1065,11 +1091,11 @@ const BRAND_INFO = {
 };
 const BRAND_THEMES = {
   aventus: {
-    '--bg':'#f2f7f4', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#eaf3ee', '--card3':'#d9ebe1',
-    '--text':'#0d1f16', '--muted':'#5c7267', '--accent':'#0f5132', '--accent-light':'#2e7d32',
-    '--border':'#d5e6dc', '--danger':'#b91c1c',
-    '--accent-tint-06':'rgba(15,81,50,.06)', '--accent-tint-08':'rgba(15,81,50,.08)', '--accent-tint-12':'rgba(15,81,50,.12)',
-    '--accent-shadow-30':'rgba(15,81,50,.25)', '--accent-shadow-35':'rgba(15,81,50,.3)',
+    '--bg':'#f1f4fb', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#e9edfa', '--card3':'#d6ddf5',
+    '--text':'#0d1530', '--muted':'#5c6584', '--accent':'#1e3a8a', '--accent-light':'#2563eb',
+    '--border':'#d6ddf5', '--danger':'#b91c1c',
+    '--accent-tint-06':'rgba(30,58,138,.06)', '--accent-tint-08':'rgba(30,58,138,.08)', '--accent-tint-12':'rgba(30,58,138,.12)',
+    '--accent-shadow-30':'rgba(30,58,138,.25)', '--accent-shadow-35':'rgba(30,58,138,.3)',
   },
   chickenville: {
     '--bg':'#f3fbf5', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#e8f9ee', '--card3':'#c9f2d6',
@@ -1132,7 +1158,7 @@ function categoryLabel(key){ return t('cat_' + key); }
 function paymentLabel(key){ return t('pm_' + key); }
 
 const PERMS = {
-  owner:      {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports','auditlog','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
+  owner:      {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
   manager:    {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:true},
   accountant: {nav:['dashboard','costs','stock','sales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false},
   staff:      {nav:['sales','costs','stock'],                                                                         costSubtabs:['purchases'],                            deleteInvoice:false, editBranches:false, manageStockNames:false},
@@ -1181,6 +1207,9 @@ const DEFAULT_BRANCHES = [
 function defaultState(){
   return {
     branches: DEFAULT_BRANCHES.map(([id, name, location]) => ({id, name, location, type:'', employees:0, rent:0, status:'active'})),
+    users: [
+      { id:'u-admin', username:'admin', password:'admin123', role:'owner', branchId:null },
+    ],
     salaries: [],
     rentDue: {},
     purchases: [],
@@ -1221,36 +1250,23 @@ function logAction(key){
 /* =========================================================
    تسجيل الدخول
 ========================================================= */
-function populateLoginBranchSelect(){
-  const role = document.getElementById('role').value;
-  const sel = document.getElementById('login-branch');
-  const allOption = role === 'staff' ? '' : `<option value="">${t('allBranches')}</option>`;
-  sel.innerHTML = allOption + state.branches.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join('');
-  if(!state.branches.length){
-    sel.innerHTML = `<option value="">${t('noBranchesYet')}</option>`;
-  }
-}
-
-document.getElementById('role').addEventListener('change', populateLoginBranchSelect);
-
 document.getElementById('login-form').addEventListener('submit', function(e){
   e.preventDefault();
   const username = document.getElementById('username').value.trim();
   const password = document.getElementById('password').value;
-  const role = document.getElementById('role').value;
   const errorBox = document.getElementById('login-error');
 
   if(!username || !password){
     errorBox.textContent = t('errFillFields');
     return;
   }
-  const branchId = document.getElementById('login-branch').value || null;
-  if(role === 'staff' && !branchId){
-    errorBox.textContent = t('errSelectBranch');
+  const user = state.users.find(u => u.username === username && u.password === password);
+  if(!user){
+    errorBox.textContent = t('errInvalidCredentials');
     return;
   }
   errorBox.textContent = '';
-  session = {username, role, branchId};
+  session = {username: user.username, role: user.role, branchId: user.branchId || null};
   localStorage.setItem(STORAGE_SESSION_KEY, JSON.stringify(session));
   logAction('logLogin');
   startApp();
@@ -1266,7 +1282,6 @@ function logout(){
   document.getElementById('app-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('brand-choose-screen').style.display = 'flex';
-  populateLoginBranchSelect();
 }
 
 /* =========================================================
@@ -1296,7 +1311,7 @@ function startApp(){
 const VIEW_TITLE_KEYS = {
   dashboard:'navDashboard', branches:'navBranches', costs:'navCosts', stock:'navStock',
   sales:'navSales', profit:'navProfit', suppliers:'navSuppliers',
-  reports:'navReports', auditlog:'navAuditlog', more:'navMore',
+  reports:'navReports', auditlog:'navAuditlog', users:'navUsers', more:'navMore',
 };
 
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -1319,6 +1334,7 @@ function switchView(view){
   if(view === 'suppliers') renderSuppliers();
   if(view === 'reports') renderReports();
   if(view === 'auditlog') renderAuditLog();
+  if(view === 'users') renderUsers();
   if(view === 'more') renderMore();
 }
 
@@ -2019,6 +2035,51 @@ function renderAuditLog(){
 }
 
 /* =========================================================
+   إدارة المستخدمين — المالك فقط يحدد الدور والفرع الثابت لكل حساب
+========================================================= */
+function branchOptionsWithAll(selectedId){
+  const sel = selectedId || '';
+  return `<option value="" ${sel===''?'selected':''}>${t('allBranches')}</option>` + branchOptions(selectedId);
+}
+function addUser(){
+  const branchId = (state.branches[0]||{}).id || null;
+  state.users.push({id:uid(), username:'', password:'', role:'staff', branchId});
+  logAction('logAddUser');
+  renderUsers();
+}
+function updateUser(id, field, value){
+  const u = state.users.find(x=>x.id===id);
+  if(!u) return;
+  u[field] = field === 'branchId' ? (value || null) : value;
+  saveState();
+}
+function removeUser(id){
+  const u = state.users.find(x=>x.id===id);
+  if(!u) return;
+  const remainingOwners = state.users.filter(x=>x.role==='owner' && x.id!==id).length;
+  if(u.role==='owner' && remainingOwners===0){
+    alert(t('errLastOwner'));
+    return;
+  }
+  if(!confirm(t('confirmDeleteUser'))) return;
+  state.users = state.users.filter(x=>x.id!==id);
+  logAction('logDeleteUser');
+  renderUsers();
+}
+function renderUsers(){
+  document.getElementById('users-body').innerHTML = state.users.map(u => `
+    <tr data-id="${u.id}">
+      <td><input type="text" value="${escapeHtml(u.username)}" placeholder="${t('labelUsername')}" oninput="updateUser('${u.id}','username',this.value)"></td>
+      <td><input type="text" value="${escapeHtml(u.password)}" placeholder="${t('labelPassword')}" oninput="updateUser('${u.id}','password',this.value)"></td>
+      <td><select onchange="updateUser('${u.id}','role',this.value)">
+        ${['owner','manager','accountant','staff'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${t('role'+r.charAt(0).toUpperCase()+r.slice(1))}</option>`).join('')}
+      </select></td>
+      <td><select onchange="updateUser('${u.id}','branchId',this.value)">${branchOptionsWithAll(u.branchId)}</select></td>
+      <td><button class="del-btn" onclick="removeUser('${u.id}')">✕</button></td>
+    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
+}
+
+/* =========================================================
    المزيد من الميزات (بحث شامل، نسخ احتياطي، تصدير CSV، إعادة تعيين)
 ========================================================= */
 function renderMore(){
@@ -2115,7 +2176,6 @@ state = loadState();
 applyStaticI18n();
 applyBrandTheme();
 applyBrandDisplay();
-populateLoginBranchSelect();
 
 const savedSession = localStorage.getItem(STORAGE_SESSION_KEY);
 if(savedSession){
