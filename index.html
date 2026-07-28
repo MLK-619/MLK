@@ -318,6 +318,7 @@
         <li class="nav-item" data-view="dashboard" data-perm="dashboard"><span class="nav-icon">🏠</span> <span data-i18n="navDashboard">لوحة التحكم</span></li>
         <li class="nav-item" data-view="branches" data-perm="branches"><span class="nav-icon">🏬</span> <span data-i18n="navBranches">الفروع</span></li>
         <li class="nav-item" data-view="costs" data-perm="costs"><span class="nav-icon">💰</span> <span data-i18n="navCosts">التكاليف التشغيلية</span></li>
+        <li class="nav-item" data-view="stock" data-perm="stock"><span class="nav-icon">📦</span> <span data-i18n="navStock">المخزون</span></li>
         <li class="nav-item" data-view="sales" data-perm="sales"><span class="nav-icon">🧾</span> <span data-i18n="navSales">المبيعات</span></li>
         <li class="nav-item" data-view="profit" data-perm="profit"><span class="nav-icon">📈</span> <span data-i18n="navProfit">حساب الأرباح</span></li>
         <li class="nav-item" data-view="suppliers" data-perm="suppliers"><span class="nav-icon">🚚</span> <span data-i18n="navSuppliers">الموردون والفواتير</span></li>
@@ -487,6 +488,32 @@
           <div class="section summary-box">
             <h2><span class="icon">📦</span> <span data-i18n="costsSummaryTitle">إجمالي التكاليف التشغيلية</span></h2>
             <div class="kpi-grid" id="costs-summary"></div>
+          </div>
+        </section>
+
+        <!-- ============ المخزون ============ -->
+        <section class="view" id="view-stock">
+          <h1 class="page-title" data-i18n="stockTitle">المخزون</h1>
+          <p class="subtitle" data-i18n="stockSubtitle">متابعة كميات المواد الخام لكل فرع، مع تنبيه عند انخفاض المخزون</p>
+          <div class="section">
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th style="width:20%" data-i18n="thMaterialName">اسم المادة</th>
+                <th style="width:14%" data-i18n="thBranch">الفرع</th>
+                <th style="width:10%" data-i18n="thUnit">الوحدة</th>
+                <th style="width:11%" data-i18n="thQuantity">الكمية الحالية</th>
+                <th style="width:11%" data-i18n="thMinQty">الحد الأدنى</th>
+                <th style="width:11%" data-i18n="thUnitCost">سعر الوحدة</th>
+                <th style="width:12%" data-i18n="thStockValue">القيمة الإجمالية</th>
+                <th style="width:7%" data-i18n="thStatusShort">الحالة</th>
+                <th style="width:4%"></th>
+              </tr></thead>
+              <tbody id="stock-body"></tbody>
+            </table>
+            </div>
+            <button class="add-btn" onclick="addStockItem()" data-i18n="btnAddMaterial">+ إضافة مادة خام</button>
+            <div class="section-total"><span data-i18n="totalStockValue">إجمالي قيمة المخزون:</span> <b id="stock-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
         </section>
 
@@ -713,7 +740,7 @@ const I18N = {
     errSelectBranch:'الرجاء اختيار الفرع (يجب إضافة فرع واحد على الأقل أولاً)',
     loginHint1:'نموذج أولي (Prototype): يمكن الدخول بأي بيانات لغرض العرض.',
     loginHint2:'جميع البيانات تُحفظ محلياً على جهازك فقط.',
-    navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navSales:'المبيعات',
+    navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navStock:'المخزون', navSales:'المبيعات',
     navProfit:'حساب الأرباح', navSuppliers:'الموردون والفواتير', navReports:'التقارير', navAuditlog:'سجل التدقيق',
     sidebarSecurityNote:'ملاحظة أمان:',
     sidebarSecurityText:'هذا نموذج أولي بواجهة فقط. الحماية الفعلية (تشفير قاعدة البيانات، نسخ احتياطي، شهادة SSL، استضافة آمنة) تُنفَّذ عند بناء الخادم الخلفي (Backend).',
@@ -744,6 +771,11 @@ const I18N = {
     cat_electricity:'كهرباء', cat_water:'ماء', cat_internet:'إنترنت', cat_maintenance:'صيانة',
     cat_marketing:'تسويق', cat_delivery:'توصيل', cat_other:'أخرى',
     costsSummaryTitle:'إجمالي التكاليف التشغيلية', grandTotal:'الإجمالي الكلي',
+    stockTitle:'المخزون', stockSubtitle:'متابعة كميات المواد الخام لكل فرع، مع تنبيه عند انخفاض المخزون',
+    thMaterialName:'اسم المادة', thUnit:'الوحدة', thQuantity:'الكمية الحالية', thMinQty:'الحد الأدنى',
+    thUnitCost:'سعر الوحدة', thStockValue:'القيمة الإجمالية', btnAddMaterial:'+ إضافة مادة خام',
+    totalStockValue:'إجمالي قيمة المخزون:', placeholderMaterialName:'اسم المادة الخام', placeholderUnit:'كجم / لتر / قطعة',
+    statusLowStock:'منخفض', statusInStock:'متوفر',
     salesTitle:'المبيعات', salesSubtitle:'إدخال المبيعات الشهرية حسب طريقة الدفع لكل فرع',
     thMonth:'الشهر', thCash:'كاش', thVisa:'فيزا/بطاقة', thTalabat:'طلبات', thZad:'زادكم', thOther:'أخرى',
     btnAddSale:'+ إضافة مبيعات الشهر', totalSales:'إجمالي المبيعات:', sectionPaymentMethods:'المبيعات حسب طريقة الدفع',
@@ -776,6 +808,7 @@ const I18N = {
     logAddSalary:'إضافة سجل راتب', logDeleteSalary:'حذف سجل راتب',
     logAddPurchase:'إضافة مشترى', logDeletePurchase:'حذف مشترى',
     logAddOther:'إضافة مصروف آخر', logDeleteOther:'حذف مصروف آخر',
+    logAddStock:'إضافة مادة خام للمخزون', logDeleteStock:'حذف مادة من المخزون',
     logAddSale:'إضافة يومية مبيعات', logDeleteSale:'حذف يومية مبيعات',
     logAddSupplier:'إضافة مورد', logDeleteSupplier:'حذف فاتورة مورد',
     logLogin:'تسجيل دخول', logLogout:'تسجيل خروج',
@@ -793,7 +826,7 @@ const I18N = {
     errSelectBranch:'Please select a branch (at least one branch must be added first)',
     loginHint1:'Prototype: you may log in with any credentials for demo purposes.',
     loginHint2:'All data is stored locally on your device only.',
-    navDashboard:'Dashboard', navBranches:'Branches', navCosts:'Operating Costs', navSales:'Sales',
+    navDashboard:'Dashboard', navBranches:'Branches', navCosts:'Operating Costs', navStock:'Inventory', navSales:'Sales',
     navProfit:'Profit Calculation', navSuppliers:'Suppliers & Invoices', navReports:'Reports', navAuditlog:'Audit Log',
     sidebarSecurityNote:'Security note:',
     sidebarSecurityText:'This is a front-end-only prototype. Real protection (database encryption, backups, SSL certificate, secure hosting) is implemented once the backend server is built.',
@@ -824,6 +857,11 @@ const I18N = {
     cat_electricity:'Electricity', cat_water:'Water', cat_internet:'Internet', cat_maintenance:'Maintenance',
     cat_marketing:'Marketing', cat_delivery:'Delivery', cat_other:'Other',
     costsSummaryTitle:'Total Operating Costs', grandTotal:'Grand Total',
+    stockTitle:'Inventory', stockSubtitle:'Track raw material quantities per branch, with alerts when stock runs low',
+    thMaterialName:'Material Name', thUnit:'Unit', thQuantity:'Current Quantity', thMinQty:'Minimum Threshold',
+    thUnitCost:'Unit Cost', thStockValue:'Total Value', btnAddMaterial:'+ Add Raw Material',
+    totalStockValue:'Total Stock Value:', placeholderMaterialName:'Raw material name', placeholderUnit:'kg / L / pc',
+    statusLowStock:'Low', statusInStock:'In Stock',
     salesTitle:'Sales', salesSubtitle:'Enter monthly sales by payment method for each branch',
     thMonth:'Month', thCash:'Cash', thVisa:'Visa/Card', thTalabat:'Talabat', thZad:'Zadkom', thOther:'Other',
     btnAddSale:'+ Add Monthly Sales', totalSales:'Total Sales:', sectionPaymentMethods:'Sales by Payment Method',
@@ -856,6 +894,7 @@ const I18N = {
     logAddSalary:'Added salary record', logDeleteSalary:'Deleted salary record',
     logAddPurchase:'Added purchase', logDeletePurchase:'Deleted purchase',
     logAddOther:'Added other expense', logDeleteOther:'Deleted other expense',
+    logAddStock:'Added raw material to inventory', logDeleteStock:'Removed material from inventory',
     logAddSale:'Added daily sales entry', logDeleteSale:'Deleted daily sales entry',
     logAddSupplier:'Added supplier', logDeleteSupplier:'Deleted supplier invoice',
     logLogin:'Logged in', logLogout:'Logged out',
@@ -953,10 +992,10 @@ function categoryLabel(key){ return t('cat_' + key); }
 function paymentLabel(key){ return t('pm_' + key); }
 
 const PERMS = {
-  owner:      {nav:['dashboard','branches','costs','sales','profit','suppliers','reports','auditlog'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true, lockBranch:false},
-  manager:    {nav:['dashboard','branches','costs','sales','profit','suppliers','reports'],             costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:true, lockBranch:false},
-  accountant: {nav:['dashboard','costs','sales','profit','suppliers','reports'],                        costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, lockBranch:false},
-  staff:      {nav:['sales','costs'],                                                                   costSubtabs:['purchases'],                            deleteInvoice:false, editBranches:false, lockBranch:true},
+  owner:      {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports','auditlog'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true, lockBranch:false},
+  manager:    {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports'],             costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:true, lockBranch:false},
+  accountant: {nav:['dashboard','costs','stock','sales','profit','suppliers','reports'],                        costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, lockBranch:false},
+  staff:      {nav:['sales','costs','stock'],                                                                   costSubtabs:['purchases'],                            deleteInvoice:false, editBranches:false, lockBranch:true},
 };
 
 let state = null;
@@ -993,6 +1032,7 @@ function defaultState(){
     purchases: [],
     otherExpenses: [],
     suppliers: [],
+    stock: [],
     sales: [],
     settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0 },
     auditLog: [],
@@ -1099,7 +1139,7 @@ function startApp(){
    التنقل بين الشاشات
 ========================================================= */
 const VIEW_TITLE_KEYS = {
-  dashboard:'navDashboard', branches:'navBranches', costs:'navCosts',
+  dashboard:'navDashboard', branches:'navBranches', costs:'navCosts', stock:'navStock',
   sales:'navSales', profit:'navProfit', suppliers:'navSuppliers',
   reports:'navReports', auditlog:'navAuditlog',
 };
@@ -1118,6 +1158,7 @@ function switchView(view){
   if(view === 'dashboard') renderDashboard();
   if(view === 'branches') renderBranches();
   if(view === 'costs') renderCosts();
+  if(view === 'stock') renderStock();
   if(view === 'sales') renderSales();
   if(view === 'profit') renderProfit();
   if(view === 'suppliers') renderSuppliers();
@@ -1128,6 +1169,10 @@ function switchView(view){
 /* =========================================================
    دوال حسابية مشتركة
 ========================================================= */
+function branchNameById(id){
+  const b = state.branches.find(x=>x.id===id);
+  return b ? b.name : '—';
+}
 function branchOptions(selectedId){
   return state.branches.map(b => `<option value="${b.id}" ${b.id===selectedId?'selected':''}>${escapeHtml(b.name)}</option>`).join('')
     || `<option value="">${t('noBranches')}</option>`;
@@ -1248,6 +1293,11 @@ function renderDashboard(){
     const remaining = num(s.invoiceValue) - num(s.paid);
     if(remaining > 0 && s.dueDate && s.dueDate < today){
       alerts.push(`🟠 <b><bdi>${escapeHtml(s.company)}</bdi></b> — ${formatCurrency(remaining)}`);
+    }
+  });
+  state.stock.forEach(i => {
+    if(isLowStock(i)){
+      alerts.push(`🟡 <bdi>${escapeHtml(i.name || '—')}</bdi> (${escapeHtml(branchNameById(i.branchId))}): ${formatNum(num(i.quantity))} / ${formatNum(num(i.minQty))} ${escapeHtml(i.unit)}`);
     }
   });
   document.getElementById('dashboard-alerts').innerHTML = alerts.length
@@ -1478,6 +1528,67 @@ function renderOtherExpenses(){
 }
 function renderOtherTotals(){
   document.getElementById('other-total').textContent = formatNum(totalOther());
+}
+
+/* =========================================================
+   المخزون (المواد الخام)
+========================================================= */
+function stockValue(item){ return num(item.quantity) * num(item.unitCost); }
+function isLowStock(item){ return num(item.quantity) <= num(item.minQty); }
+function totalStockValue(branchId){
+  return state.stock.filter(i => !branchId || i.branchId===branchId).reduce((a,i)=>a+stockValue(i),0);
+}
+function addStockItem(){
+  const perms = PERMS[session.role];
+  const branchId = perms.lockBranch ? session.branchId : (state.branches[0]||{}).id || '';
+  state.stock.push({id:uid(), name:'', branchId, unit:'', quantity:0, minQty:0, unitCost:0});
+  logAction('logAddStock');
+  renderStock();
+}
+function updateStockItem(id, field, value){
+  const i = state.stock.find(x=>x.id===id);
+  if(!i) return;
+  i[field] = value;
+  saveState();
+}
+function removeStockItem(id){
+  state.stock = state.stock.filter(i=>i.id!==id);
+  logAction('logDeleteStock');
+  renderStock();
+}
+function renderStock(){
+  const perms = PERMS[session.role];
+  const visibleStock = perms.lockBranch ? state.stock.filter(i=>i.branchId===session.branchId) : state.stock;
+
+  document.getElementById('stock-body').innerHTML = visibleStock.map(i => {
+    const low = isLowStock(i);
+    return `<tr data-id="${i.id}">
+      <td><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateStockItem('${i.id}','name',this.value)"></td>
+      <td><select onchange="updateStockItem('${i.id}','branchId',this.value)" ${perms.lockBranch?'disabled':''}>${branchOptions(i.branchId)}</select></td>
+      <td><input type="text" value="${escapeHtml(i.unit)}" placeholder="${t('placeholderUnit')}" oninput="updateStockItem('${i.id}','unit',this.value)"></td>
+      <td><input type="number" min="0" step="any" value="${i.quantity}" oninput="updateStockItem('${i.id}','quantity',this.value); refreshStockRow('${i.id}');"></td>
+      <td><input type="number" min="0" step="any" value="${i.minQty}" oninput="updateStockItem('${i.id}','minQty',this.value); refreshStockRow('${i.id}');"></td>
+      <td><input type="number" min="0" step="any" value="${i.unitCost}" oninput="updateStockItem('${i.id}','unitCost',this.value); refreshStockRow('${i.id}');"></td>
+      <td class="row-total stock-value-cell">${formatCurrency(stockValue(i))}</td>
+      <td class="stock-status-cell">${low ? badge(t('statusLowStock'),'critical') : badge(t('statusInStock'),'good')}</td>
+      <td><button class="del-btn" onclick="removeStockItem('${i.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  const total = visibleStock.reduce((a,i)=>a+stockValue(i),0);
+  document.getElementById('stock-total').textContent = formatNum(total);
+}
+function refreshStockRow(id){
+  const tr = document.querySelector(`#stock-body tr[data-id="${id}"]`);
+  if(!tr) return;
+  const i = state.stock.find(x => x.id === id);
+  if(!i) return;
+  tr.querySelector('.stock-value-cell').textContent = formatCurrency(stockValue(i));
+  const low = isLowStock(i);
+  tr.querySelector('.stock-status-cell').innerHTML = low ? badge(t('statusLowStock'),'critical') : badge(t('statusInStock'),'good');
+  const perms = PERMS[session.role];
+  const visibleStock = perms.lockBranch ? state.stock.filter(x=>x.branchId===session.branchId) : state.stock;
+  document.getElementById('stock-total').textContent = formatNum(visibleStock.reduce((a,x)=>a+stockValue(x),0));
 }
 
 /* =========================================================
