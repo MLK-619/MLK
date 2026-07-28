@@ -103,6 +103,9 @@
     overflow:hidden;flex:none;
   }
   .brand-mark svg{width:72%;height:72%;}
+  .report-header-logo{display:flex;align-items:center;gap:16px;margin-bottom:6px;}
+  .report-logo-mark{width:64px;height:64px;flex:none;border-radius:50%;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.25);}
+  .report-logo-mark svg{width:100%;height:100%;display:block;}
   .brand-name{
     font-size:1.4rem;font-weight:800;letter-spacing:.5px;
     background:linear-gradient(90deg,var(--accent),var(--accent-light));
@@ -680,8 +683,22 @@
 
         <!-- ============ التقارير ============ -->
         <section class="view" id="view-reports">
-          <h1 class="page-title" data-i18n="reportsTitle">التقارير</h1>
-          <p class="subtitle" data-i18n="reportsSubtitle">تقارير شهرية وسنوية</p>
+          <div class="report-header-logo">
+            <div class="report-logo-mark">
+              <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="100" cy="100" r="96" fill="#000000" stroke="#ffffff" stroke-width="4"/>
+                <circle cx="100" cy="100" r="88" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                <path d="M58 96 L100 44 L122 72" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M74 96 L112 48 L142 96" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <text x="100" y="128" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="21" letter-spacing="2" font-weight="bold">AVENTUS</text>
+                <text x="100" y="146" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="11" font-style="italic" letter-spacing="1.5">CAFÉ</text>
+              </svg>
+            </div>
+            <div>
+              <h1 class="page-title" data-i18n="reportsTitle">التقارير</h1>
+              <p class="subtitle" data-i18n="reportsSubtitle">تقارير شهرية وسنوية</p>
+            </div>
+          </div>
           <div class="toolbar">
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
               <select id="report-period" onchange="renderReports()">
@@ -707,39 +724,6 @@
           <div class="section">
             <h2><span class="icon">📈</span> <span data-i18n="reportProfitTitle">تقرير الأرباح</span></h2>
             <div class="kpi-grid" id="report-profit"></div>
-          </div>
-
-          <div class="section">
-            <h2><span class="icon">⚖️</span> <span data-i18n="reportCompareTitle">مقارنة بين الفروع</span></h2>
-            <div class="table-scroll">
-            <table>
-              <thead><tr>
-                <th data-i18n="thBranch">الفرع</th>
-                <th data-i18n="thSales">المبيعات</th>
-                <th data-i18n="thExpenses">المصاريف</th>
-                <th data-i18n="thNetEstimate">الصافي التقديري</th>
-                <th data-i18n="thComparison">المقارنة</th>
-              </tr></thead>
-              <tbody id="report-branch-compare"></tbody>
-            </table>
-            </div>
-          </div>
-
-          <div class="section">
-            <h2><span class="icon">🚚</span> <span data-i18n="reportSuppliersTitle">تقرير الموردين</span></h2>
-            <div class="table-scroll">
-            <table>
-              <thead><tr>
-                <th data-i18n="thCompanyName">الشركة</th>
-                <th data-i18n="thInvoiceValue">قيمة الفاتورة</th>
-                <th data-i18n="thPaid">المدفوع</th>
-                <th data-i18n="thRemaining">المتبقي</th>
-                <th data-i18n="thDueDateShort">الاستحقاق</th>
-                <th data-i18n="thStatusShort">الحالة</th>
-              </tr></thead>
-              <tbody id="report-suppliers"></tbody>
-            </table>
-            </div>
           </div>
 
           <div class="section">
@@ -2054,7 +2038,6 @@ function renderReports(){
   const period = document.getElementById('report-period').value;
   const reportScope = activeBranchId() || document.getElementById('report-branch').value || null;
   const reportBranches = reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches;
-  const reportSuppliers = reportScope ? state.suppliers.filter(s=>s.branchId===reportScope) : state.suppliers;
 
   const branchSales = reportBranches.map(b => ({name:b.name, total: totalSales(b.id, period)}));
   const maxBS = Math.max(1, ...branchSales.map(b=>b.total));
@@ -2082,40 +2065,8 @@ function renderReports(){
   document.getElementById('report-profit').innerHTML = [
     kpiCard(t('totalSalesRow'), formatCurrency(sales)),
     kpiCard(t('totalExpensesRow'), formatCurrency(expenses)),
-    kpiCard(t('commissionsRow'), formatCurrency(commissions)),
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true),
   ].join('');
-
-  document.getElementById('report-branch-compare').innerHTML = reportBranches.map(b => {
-    const bs = totalSales(b.id, period);
-    const be = totalExpenses(b.id);
-    const bn = salesForProfit(b.id, period) - be;
-    const max = Math.max(bs, be, 1);
-    return `<tr>
-      <td>${escapeHtml(b.name)}</td>
-      <td>${formatCurrency(bs)}</td>
-      <td>${formatCurrency(be)}</td>
-      <td style="color:${bn>=0?'var(--accent)':'var(--danger)'}">${formatCurrency(bn)}</td>
-      <td><div class="mini-bars">
-        <div class="mini-bar" style="width:${(bs/max)*50}%;background:var(--cat-1)"></div>
-        <div class="mini-bar" style="width:${(be/max)*50}%;background:var(--cat-6)"></div>
-      </div></td>
-    </tr>`;
-  }).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noBranches')}</td></tr>`;
-
-  const today = todayStr();
-  document.getElementById('report-suppliers').innerHTML = reportSuppliers.map(s => {
-    const remaining = num(s.invoiceValue) - num(s.paid);
-    const overdue = remaining > 0 && s.dueDate && s.dueDate < today;
-    return `<tr>
-      <td><bdi>${escapeHtml(s.company)}</bdi>${s.dailyPurchases ? ' ' + badge(t('thDailyPurchases'),'good') : ''}</td>
-      <td>${formatCurrency(num(s.invoiceValue))}</td>
-      <td>${formatCurrency(num(s.paid))}</td>
-      <td>${formatCurrency(remaining)}</td>
-      <td>${s.dueDate||'—'}</td>
-      <td>${overdue ? badge(t('statusOverdue'),'critical') : (remaining>0 ? badge(t('statusOutstanding'),'warning') : badge(t('statusSettled'),'good'))}</td>
-    </tr>`;
-  }).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noSuppliers')}</td></tr>`;
 
   const rows = filterSalesByPeriod(period).filter(s => !reportScope || s.branchId===reportScope);
   const methods = paymentMethodsWithTotals(rows);
