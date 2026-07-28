@@ -397,6 +397,21 @@
             <h2><span class="icon">🏆</span> <span data-i18n="sectionBranchSales">المبيعات حسب الفرع</span></h2>
             <div id="dashboard-branch-bars"></div>
           </div>
+          <div class="section" id="dashboard-all-profits-section" style="display:none;">
+            <h2><span class="icon">💎</span> <span data-i18n="reportAllProfitsTitle">إجمالي الأرباح لكل الفروع (للمالك فقط)</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thSales">المبيعات</th>
+                <th data-i18n="thExpenses">المصاريف</th>
+                <th data-i18n="thNetProfit">صافي الربح</th>
+              </tr></thead>
+              <tbody id="dashboard-all-profits"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalNetProfitAll">إجمالي صافي الربح لكل الفروع:</span> <b id="dashboard-all-profits-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
           <div class="section">
             <h2><span class="icon">📊</span> <span data-i18n="sectionExpenseBreakdown">توزيع المصروفات</span></h2>
             <div id="dashboard-expense-bars"></div>
@@ -699,7 +714,10 @@
               </select>
               <select id="report-branch" onchange="renderReports()"></select>
             </div>
-            <div class="toolbar-right"><button onclick="window.print()" data-i18n="btnPrintReport">🖨 طباعة التقرير</button></div>
+            <div class="toolbar-right">
+              <button onclick="shareReport()" data-i18n="btnShareReport">📤 مشاركة التقرير</button>
+              <button onclick="window.print()" data-i18n="btnPrintReport">🖨 طباعة التقرير</button>
+            </div>
           </div>
 
           <div class="section">
@@ -715,22 +733,6 @@
           <div class="section">
             <h2><span class="icon">📈</span> <span data-i18n="reportProfitTitle">تقرير الأرباح</span></h2>
             <div class="kpi-grid" id="report-profit"></div>
-          </div>
-
-          <div class="section" id="report-all-profits-section" style="display:none;">
-            <h2><span class="icon">🏆</span> <span data-i18n="reportAllProfitsTitle">إجمالي الأرباح لكل الفروع (للمالك فقط)</span></h2>
-            <div class="table-scroll">
-            <table>
-              <thead><tr>
-                <th data-i18n="thBranch">الفرع</th>
-                <th data-i18n="thSales">المبيعات</th>
-                <th data-i18n="thExpenses">المصاريف</th>
-                <th data-i18n="thNetProfit">صافي الربح</th>
-              </tr></thead>
-              <tbody id="report-all-profits"></tbody>
-            </table>
-            </div>
-            <div class="section-total"><span data-i18n="totalNetProfitAll">إجمالي صافي الربح لكل الفروع:</span> <b id="report-all-profits-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
 
           <div class="section">
@@ -809,7 +811,8 @@
 
           <div class="section">
             <h2><span class="icon">🖼️</span> <span data-i18n="moreLogoTitle">شعار التقرير</span></h2>
-            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreLogoDesc">غيّري الشعار الذي يظهر في أعلى صفحة التقارير وعند الطباعة.</p>
+            <p class="subtitle" style="margin-bottom:6px;" data-i18n="moreLogoDesc">غيّري الشعار الذي يظهر في أعلى صفحة التقارير وعند الطباعة.</p>
+            <p class="subtitle" style="margin-bottom:14px;"><span data-i18n="moreLogoBrandNote">الشعار الحالي لِـ:</span> <b id="logo-brand-label"></b></p>
             <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
               <div class="report-logo-mark" id="logo-preview"></div>
               <label class="add-btn" style="display:inline-block;cursor:pointer;">
@@ -948,7 +951,9 @@ const I18N = {
     confirmDeleteInvoice:'هل تريدين حذف هذه الفاتورة؟', titleOwnerOnly:'متاح للمالك فقط',
     reportsTitle:'التقارير', reportsSubtitle:'تقارير شهرية وسنوية',
     periodToday:'اليوم', periodMonth:'هذا الشهر', periodYear:'هذه السنة', periodAll:'كل الفترات',
-    btnPrintReport:'🖨 طباعة التقرير', reportBranchSalesTitle:'تقرير مبيعات كل فرع',
+    btnPrintReport:'🖨 طباعة التقرير', btnShareReport:'📤 مشاركة التقرير',
+    shareCopiedMsg:'تم نسخ ملخص التقرير — يمكنك لصقه في أي مكان', shareUnavailableMsg:'المشاركة غير مدعومة في هذا المتصفح',
+    reportBranchSalesTitle:'تقرير مبيعات كل فرع',
     reportExpensesTitle:'تقرير المصروفات (حسب البند)', reportProfitTitle:'تقرير الأرباح',
     reportCompareTitle:'مقارنة بين الفروع', thComparison:'المقارنة', thNetEstimate:'الصافي التقديري',
     reportSuppliersTitle:'تقرير الموردين', thDueDateShort:'الاستحقاق', thStatusShort:'الحالة',
@@ -973,6 +978,7 @@ const I18N = {
     navMore:'المزيد من الميزات', moreTitle:'المزيد من الميزات', moreSubtitle:'أدوات إضافية متاحة للمالك',
     moreSearchTitle:'بحث شامل', moreSearchPh:'ابحثي بالاسم في الفروع، الموردين، المخزون، المشتريات...',
     moreLogoTitle:'شعار التقرير', moreLogoDesc:'غيّري الشعار الذي يظهر في أعلى صفحة التقارير وعند الطباعة.',
+    moreLogoBrandNote:'الشعار الحالي لِـ:',
     btnUploadLogo:'⬆️ رفع شعار جديد', btnResetLogo:'↩️ استعادة الشعار الافتراضي',
     moreBackupTitle:'النسخ الاحتياطي واستعادة البيانات',
     moreBackupDesc:'نزّلي نسخة من كل بيانات النظام كملف JSON، أو استعيديها لاحقاً على أي جهاز.',
@@ -1065,7 +1071,9 @@ const I18N = {
     confirmDeleteInvoice:'Delete this invoice?', titleOwnerOnly:'Owner only',
     reportsTitle:'Reports', reportsSubtitle:'Monthly and yearly reports',
     periodToday:'Today', periodMonth:'This Month', periodYear:'This Year', periodAll:'All Time',
-    btnPrintReport:'🖨 Print Report', reportBranchSalesTitle:'Sales Report by Branch',
+    btnPrintReport:'🖨 Print Report', btnShareReport:'📤 Share Report',
+    shareCopiedMsg:'Report summary copied — you can paste it anywhere', shareUnavailableMsg:'Sharing is not supported in this browser',
+    reportBranchSalesTitle:'Sales Report by Branch',
     reportExpensesTitle:'Expenses Report (by Category)', reportProfitTitle:'Profit Report',
     reportCompareTitle:'Branch Comparison', thComparison:'Comparison', thNetEstimate:'Estimated Net',
     reportSuppliersTitle:'Suppliers Report', thDueDateShort:'Due Date', thStatusShort:'Status',
@@ -1090,6 +1098,7 @@ const I18N = {
     navMore:'More Features', moreTitle:'More Features', moreSubtitle:'Additional tools available to the owner',
     moreSearchTitle:'Global Search', moreSearchPh:'Search by name across branches, suppliers, inventory, purchases...',
     moreLogoTitle:'Report Logo', moreLogoDesc:'Change the logo shown at the top of the Reports page and on print.',
+    moreLogoBrandNote:'Currently editing logo for:',
     btnUploadLogo:'⬆️ Upload New Logo', btnResetLogo:'↩️ Restore Default Logo',
     moreBackupTitle:'Backup & Restore',
     moreBackupDesc:'Download all system data as a JSON file, or restore it later on any device.',
@@ -1225,6 +1234,7 @@ let state = null;
 let session = null;
 let costSub = 'salaries';
 let currentView = 'dashboard';
+let lastReportSummary = '';
 let uidCounter = 1;
 
 function uid(){ return 'id' + (uidCounter++) + '_' + Math.random().toString(36).slice(2,7); }
@@ -1273,7 +1283,7 @@ function defaultState(){
     suppliers: [],
     stock: [],
     sales: [],
-    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0, customLogo: null },
+    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0, customLogo: { aventus: null, chickenville: null } },
     auditLog: [],
     notes: [],
   };
@@ -1285,7 +1295,11 @@ function loadState(){
   if(raw){
     try{
       const parsed = JSON.parse(raw);
-      return Object.assign(base, parsed, { settings: Object.assign(base.settings, parsed.settings || {}) });
+      const merged = Object.assign(base, parsed, { settings: Object.assign(base.settings, parsed.settings || {}) });
+      if(typeof merged.settings.customLogo === 'string' || !merged.settings.customLogo){
+        merged.settings.customLogo = { aventus: (typeof merged.settings.customLogo === 'string' ? merged.settings.customLogo : null), chickenville: null };
+      }
+      return merged;
     }catch(e){ /* fallthrough */ }
   }
   return base;
@@ -1516,6 +1530,28 @@ function renderDashboard(){
   document.getElementById('dashboard-branch-bars').innerHTML = branchSales.length
     ? branchSales.sort((a,b)=>b.total-a.total).map(b => barRow(b.name, b.total, maxSales, 'var(--cat-1)')).join('')
     : `<p style="color:var(--muted);font-size:.85rem;">${t('noBranchesAdded')}</p>`;
+
+  const allProfitsSection = document.getElementById('dashboard-all-profits-section');
+  if(session && session.role === 'owner'){
+    allProfitsSection.style.display = '';
+    const branchProfits = state.branches.map(b => {
+      const bs = salesForProfit(b.id, 'month');
+      const be = totalExpenses(b.id);
+      const bc = commissionsTotal('month', b.id);
+      const bn = bs - be - bc;
+      return {name:b.name, sales:bs, expenses:be, net:bn};
+    });
+    document.getElementById('dashboard-all-profits').innerHTML = branchProfits.map(b => `
+      <tr>
+        <td><bdi>${escapeHtml(b.name)}</bdi></td>
+        <td>${formatCurrency(b.sales)}</td>
+        <td>${formatCurrency(b.expenses)}</td>
+        <td style="color:${b.net>=0?'var(--accent)':'var(--danger)'}">${formatCurrency(b.net)}</td>
+      </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noBranches')}</td></tr>`;
+    document.getElementById('dashboard-all-profits-total').textContent = formatNum(branchProfits.reduce((a,b)=>a+b.net,0) - num(state.settings.discounts));
+  }else{
+    allProfitsSection.style.display = 'none';
+  }
 
   const expenseCats = [
     {label:t('subtabSalaries'), total: totalSalaries(scope), color:CAT_COLORS[0]},
@@ -2046,6 +2082,19 @@ function refreshSupplierRow(id){
 /* =========================================================
    التقارير
 ========================================================= */
+async function shareReport(){
+  const shareData = { title: t('reportsTitle'), text: lastReportSummary };
+  if(navigator.share){
+    try{ await navigator.share(shareData); }catch(e){ /* المستخدم ألغى المشاركة */ }
+    return;
+  }
+  try{
+    await navigator.clipboard.writeText(lastReportSummary);
+    alert(t('shareCopiedMsg'));
+  }catch(e){
+    alert(t('shareUnavailableMsg'));
+  }
+}
 function populateReportBranchSelect(){
   const sel = document.getElementById('report-branch');
   const scope = activeBranchId();
@@ -2095,28 +2144,6 @@ function renderReports(){
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true),
   ].join('');
 
-  const allProfitsSection = document.getElementById('report-all-profits-section');
-  if(session && session.role === 'owner'){
-    allProfitsSection.style.display = '';
-    const branchProfits = state.branches.map(b => {
-      const bs = salesForProfit(b.id, period);
-      const be = totalExpenses(b.id);
-      const bc = commissionsTotal(period, b.id);
-      const bn = bs - be - bc;
-      return {name:b.name, sales:bs, expenses:be, net:bn};
-    });
-    document.getElementById('report-all-profits').innerHTML = branchProfits.map(b => `
-      <tr>
-        <td><bdi>${escapeHtml(b.name)}</bdi></td>
-        <td>${formatCurrency(b.sales)}</td>
-        <td>${formatCurrency(b.expenses)}</td>
-        <td style="color:${b.net>=0?'var(--accent)':'var(--danger)'}">${formatCurrency(b.net)}</td>
-      </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noBranches')}</td></tr>`;
-    document.getElementById('report-all-profits-total').textContent = formatNum(branchProfits.reduce((a,b)=>a+b.net,0) - discounts);
-  }else{
-    allProfitsSection.style.display = 'none';
-  }
-
   const rows = filterSalesByPeriod(period).filter(s => !reportScope || s.branchId===reportScope);
   const methods = paymentMethodsWithTotals(rows);
   const maxM = Math.max(1, ...methods.map(m=>m.total));
@@ -2137,6 +2164,14 @@ function renderReports(){
       <td class="row-total">${formatCurrency(purchaseTotal(p))}</td>
     </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
   document.getElementById('report-purchases-total').textContent = formatNum(reportPurchases.reduce((a,p)=>a+purchaseTotal(p),0));
+
+  lastReportSummary = [
+    `${t('reportsTitle')} — ${branchNameById(reportScope) || t('allBranches')}`,
+    `${t('totalSalesRow')}: ${formatCurrency(sales)}`,
+    `${t('totalExpensesRow')}: ${formatCurrency(expenses)}`,
+    `${t('netProfitRow')}: ${formatCurrency(net)}`,
+    `${t('totalPurchases')} ${formatCurrency(reportPurchases.reduce((a,p)=>a+purchaseTotal(p),0))}`,
+  ].join('\n');
 }
 
 /* =========================================================
@@ -2211,25 +2246,40 @@ function renderMore(){
 /* =========================================================
    شعار التقرير
 ========================================================= */
-const DEFAULT_REPORT_LOGO_SVG = `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+const DEFAULT_REPORT_LOGOS = {
+  aventus: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <circle cx="100" cy="100" r="96" fill="#000000" stroke="#ffffff" stroke-width="4"/>
   <circle cx="100" cy="100" r="88" fill="none" stroke="#ffffff" stroke-width="1.5"/>
   <path d="M58 96 L100 44 L122 72" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
   <path d="M74 96 L112 48 L142 96" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
   <text x="100" y="128" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="21" letter-spacing="2" font-weight="bold">AVENTUS</text>
   <text x="100" y="146" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="11" font-style="italic" letter-spacing="1.5">CAFÉ</text>
-</svg>`;
+</svg>`,
+  chickenville: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="96" fill="#1e3a8a" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+  <path d="M78 66 Q80 54 92 60 Q94 48 104 56 Q112 50 116 62 Q104 66 92 66 Q85 66 78 66 Z" fill="#ffffff"/>
+  <circle cx="94" cy="86" r="22" fill="#ffffff"/>
+  <path d="M138 82 L158 74 L158 92 Z" fill="#ffffff"/>
+  <circle cx="104" cy="80" r="3" fill="#1e3a8a"/>
+  <text x="100" y="128" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="17" letter-spacing="1.5" font-weight="bold">CHICKEN</text>
+  <text x="100" y="146" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="17" letter-spacing="1.5" font-weight="bold">VILLE</text>
+</svg>`,
+};
 function renderReportLogo(){
-  const html = state.settings.customLogo
-    ? `<img src="${state.settings.customLogo}" alt="logo" style="width:100%;height:100%;object-fit:cover;">`
-    : DEFAULT_REPORT_LOGO_SVG;
+  const custom = state.settings.customLogo && state.settings.customLogo[BRAND];
+  const html = custom
+    ? `<img src="${custom}" alt="logo" style="width:100%;height:100%;object-fit:cover;">`
+    : DEFAULT_REPORT_LOGOS[BRAND];
   document.querySelectorAll('.report-logo-mark').forEach(el => { el.innerHTML = html; });
+  const label = document.getElementById('logo-brand-label');
+  if(label) label.textContent = BRAND_INFO[BRAND].nameHtml.replace(/<[^>]+>/g,'').trim();
 }
 function uploadReportLogo(file){
   if(!file || session.role !== 'owner') return;
   const reader = new FileReader();
   reader.onload = () => {
-    state.settings.customLogo = reader.result;
+    state.settings.customLogo[BRAND] = reader.result;
     saveState();
     renderReportLogo();
     logAction('logChangeLogo');
@@ -2238,7 +2288,7 @@ function uploadReportLogo(file){
 }
 function resetReportLogo(){
   if(session.role !== 'owner') return;
-  state.settings.customLogo = null;
+  state.settings.customLogo[BRAND] = null;
   saveState();
   renderReportLogo();
   logAction('logChangeLogo');
