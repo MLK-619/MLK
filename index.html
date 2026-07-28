@@ -62,7 +62,7 @@
   .chooser-mark{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;flex:none;}
   .chooser-mark svg{width:70%;height:70%;}
   .chooser-mark.aventus{border:3px solid #1e3a8a;}
-  .chooser-mark.chickenville{border:3px solid #16a34a;}
+  .chooser-mark.chickenville{border:3px solid #1e3a8a;}
   .chooser-name{font-size:1.15rem;font-weight:800;color:#132743;}
   .chooser-name span{font-weight:400;color:#64748f;}
   .chooser-hint{margin-top:26px;color:#94a3b8;font-size:.8rem;}
@@ -400,8 +400,23 @@
             <div id="dashboard-branch-bars"></div>
           </div>
           <div class="section">
+            <h2><span class="icon">📊</span> <span data-i18n="sectionExpenseBreakdown">توزيع المصروفات</span></h2>
+            <div id="dashboard-expense-bars"></div>
+          </div>
+          <div class="section">
             <h2><span class="icon">⚠️</span> <span data-i18n="sectionAlerts">التنبيهات</span></h2>
             <ul class="alerts-list" id="dashboard-alerts"></ul>
+          </div>
+          <div class="section">
+            <h2><span class="icon">📝</span> <span data-i18n="sectionNotes">ملاحظات وتذكيرات</span></h2>
+            <div class="toolbar" style="margin-bottom:14px;">
+              <div style="display:flex;gap:10px;flex:1;flex-wrap:wrap;">
+                <input type="text" id="note-text-input" data-i18n-ph="notePlaceholder" placeholder="اكتبي ملاحظة أو تذكيراً..." style="flex:2;min-width:180px;">
+                <input type="date" id="note-date-input" style="flex:1;min-width:130px;">
+              </div>
+              <div class="toolbar-right"><button onclick="addNote()" data-i18n="btnAddNote">+ إضافة</button></div>
+            </div>
+            <ul class="alerts-list" id="dashboard-notes"></ul>
           </div>
         </section>
 
@@ -516,9 +531,11 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:24%" data-i18n="thCategory">البند</th>
-                  <th style="width:24%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:22%" data-i18n="thAmount">المبلغ</th>
+                  <th style="width:20%" data-i18n="thCategory">البند</th>
+                  <th style="width:18%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:16%" data-i18n="thQty">الكمية</th>
+                  <th style="width:18%" data-i18n="thUnitPrice">سعر الوحدة</th>
+                  <th style="width:18%" data-i18n="thTotal">الإجمالي</th>
                   <th style="width:5%"></th>
                 </tr></thead>
                 <tbody id="other-body"></tbody>
@@ -589,6 +606,13 @@
         <section class="view" id="view-profit">
           <h1 class="page-title" data-i18n="profitTitle">حساب الأرباح</h1>
           <p class="subtitle" data-i18n="profitSubtitle">صافي الربح = إجمالي المبيعات - إجمالي المصروفات - عمولات التطبيقات - الخصومات</p>
+          <div class="toolbar"><div>
+            <select id="profit-period" onchange="renderProfit()">
+              <option value="month" selected data-i18n="periodMonth">هذا الشهر</option>
+              <option value="year" data-i18n="periodYear">هذه السنة</option>
+              <option value="all" data-i18n="periodAll">كل الفترات</option>
+            </select>
+          </div><div></div></div>
           <div class="section">
             <h2><span class="icon">⚙️</span> <span data-i18n="settingsTitle">إعدادات الحساب</span></h2>
             <div class="table-scroll">
@@ -861,6 +885,8 @@ const I18N = {
     kpiExpensesMonth:'إجمالي المصروفات (شهري)', kpiNetProfit:'صافي الربح التقديري',
     kpiTopBranch:'أفضل فرع مبيعاً', kpiTopSupplier:'أكثر مورد يتم التعامل معه',
     sectionBranchSales:'المبيعات حسب الفرع', sectionAlerts:'التنبيهات',
+    sectionExpenseBreakdown:'توزيع المصروفات', sectionNotes:'ملاحظات وتذكيرات',
+    notePlaceholder:'اكتبي ملاحظة أو تذكيراً...', btnAddNote:'+ إضافة', noNotes:'لا توجد ملاحظات بعد',
     noBranchesAdded:'لا توجد فروع مضافة بعد', noAlerts:'لا توجد تنبيهات حالياً ✅',
     branchesTitle:'إدارة الفروع', branchesSubtitle:'بيانات كل فرع وحالته ومبيعاته ومصاريفه',
     btnAddBranch:'+ إضافة فرع',
@@ -879,8 +905,8 @@ const I18N = {
     btnAddPurchase:'+ إضافة مشترى', totalPurchases:'إجمالي المشتريات:',
     placeholderItemName:'اسم الصنف', placeholderCompanyName:'اسم الشركة الموردة',
     thCategory:'البند', thAmount:'المبلغ', btnAddOtherExpense:'+ إضافة مصروف', totalOther:'إجمالي المصاريف الأخرى:',
-    cat_electricity:'كهرباء', cat_water:'ماء', cat_internet:'إنترنت', cat_maintenance:'صيانة',
-    cat_marketing:'تسويق', cat_delivery:'توصيل', cat_other:'أخرى',
+    cat_electricity:'كهرباء', cat_water:'ماء', cat_wifi:'واي فاي', cat_maintenance:'صيانة',
+    cat_marketing:'تسويق', cat_delivery:'توصيل', cat_packaging:'أدوات تغليف', cat_other:'أخرى',
     costsSummaryTitle:'إجمالي التكاليف التشغيلية', grandTotal:'الإجمالي الكلي',
     stockTitle:'المخزون',
     stockSubtitleOwner:'اسم المادة يحدده المالك فقط؛ يمكن لأي مستخدم تحديث الكمية والتاريخ',
@@ -920,6 +946,7 @@ const I18N = {
     logAddPurchase:'إضافة مشترى', logDeletePurchase:'حذف مشترى',
     logAddOther:'إضافة مصروف آخر', logDeleteOther:'حذف مصروف آخر',
     logAddStock:'إضافة مادة خام للمخزون', logDeleteStock:'حذف مادة من المخزون',
+    logAddNote:'إضافة ملاحظة/تذكير',
     logAddSale:'إضافة يومية مبيعات', logDeleteSale:'حذف يومية مبيعات',
     logAddSupplier:'إضافة مورد', logDeleteSupplier:'حذف فاتورة مورد',
     logLogin:'تسجيل دخول', logLogout:'تسجيل خروج',
@@ -971,6 +998,8 @@ const I18N = {
     kpiExpensesMonth:'Total Expenses (Monthly)', kpiNetProfit:'Estimated Net Profit',
     kpiTopBranch:'Top Selling Branch', kpiTopSupplier:'Most Engaged Supplier',
     sectionBranchSales:'Sales by Branch', sectionAlerts:'Alerts',
+    sectionExpenseBreakdown:'Expense Breakdown', sectionNotes:'Notes & Reminders',
+    notePlaceholder:'Write a note or reminder...', btnAddNote:'+ Add', noNotes:'No notes yet',
     noBranchesAdded:'No branches added yet', noAlerts:'No alerts at this time ✅',
     branchesTitle:'Branch Management', branchesSubtitle:"Each branch's data, status, sales and expenses",
     btnAddBranch:'+ Add Branch',
@@ -989,8 +1018,8 @@ const I18N = {
     btnAddPurchase:'+ Add Purchase', totalPurchases:'Total Purchases:',
     placeholderItemName:'Item name', placeholderCompanyName:'Supplier company name',
     thCategory:'Category', thAmount:'Amount', btnAddOtherExpense:'+ Add Expense', totalOther:'Total Other Expenses:',
-    cat_electricity:'Electricity', cat_water:'Water', cat_internet:'Internet', cat_maintenance:'Maintenance',
-    cat_marketing:'Marketing', cat_delivery:'Delivery', cat_other:'Other',
+    cat_electricity:'Electricity', cat_water:'Water', cat_wifi:'WiFi', cat_maintenance:'Maintenance',
+    cat_marketing:'Marketing', cat_delivery:'Delivery', cat_packaging:'Packaging Supplies', cat_other:'Other',
     costsSummaryTitle:'Total Operating Costs', grandTotal:'Grand Total',
     stockTitle:'Inventory',
     stockSubtitleOwner:'Only the owner can set material names; anyone can update quantity and date',
@@ -1030,6 +1059,7 @@ const I18N = {
     logAddPurchase:'Added purchase', logDeletePurchase:'Deleted purchase',
     logAddOther:'Added other expense', logDeleteOther:'Deleted other expense',
     logAddStock:'Added raw material to inventory', logDeleteStock:'Removed material from inventory',
+    logAddNote:'Added note/reminder',
     logAddSale:'Added daily sales entry', logDeleteSale:'Deleted daily sales entry',
     logAddSupplier:'Added supplier', logDeleteSupplier:'Deleted supplier invoice',
     logLogin:'Logged in', logLogout:'Logged out',
@@ -1086,7 +1116,7 @@ const BRAND_INFO = {
   },
   chickenville: {
     nameHtml: 'Chicken Ville <span>| تشكن فل</span>',
-    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M37 31 Q39 18 47 25 Q49 13 56 22 Q61 14 64 27 Q57 31 49 31 Q43 31 37 31 Z" fill="#16a34a"/><circle cx="48" cy="52" r="25" fill="#ffffff" stroke="#16a34a" stroke-width="4"/><path d="M71 50 L90 43 L90 58 Z" fill="#16a34a"/><circle cx="57" cy="45" r="3.5" fill="#0f5132"/></svg>',
+    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M37 31 Q39 18 47 25 Q49 13 56 22 Q61 14 64 27 Q57 31 49 31 Q43 31 37 31 Z" fill="#1e3a8a"/><circle cx="48" cy="52" r="25" fill="#ffffff" stroke="#1e3a8a" stroke-width="4"/><path d="M71 50 L90 43 L90 58 Z" fill="#1e3a8a"/><circle cx="57" cy="45" r="3.5" fill="#0d1530"/></svg>',
   },
 };
 const BRAND_THEMES = {
@@ -1098,11 +1128,11 @@ const BRAND_THEMES = {
     '--accent-shadow-30':'rgba(30,58,138,.25)', '--accent-shadow-35':'rgba(30,58,138,.3)',
   },
   chickenville: {
-    '--bg':'#f3fbf5', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#e8f9ee', '--card3':'#c9f2d6',
-    '--text':'#0d1f16', '--muted':'#4f7a63', '--accent':'#16a34a', '--accent-light':'#4ade80',
-    '--border':'#c9f2d6', '--danger':'#dc2626',
-    '--accent-tint-06':'rgba(22,163,74,.06)', '--accent-tint-08':'rgba(22,163,74,.08)', '--accent-tint-12':'rgba(22,163,74,.12)',
-    '--accent-shadow-30':'rgba(22,163,74,.3)', '--accent-shadow-35':'rgba(22,163,74,.35)',
+    '--bg':'#f1f4fb', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#e9edfa', '--card3':'#d6ddf5',
+    '--text':'#0d1530', '--muted':'#5c6584', '--accent':'#1e3a8a', '--accent-light':'#2563eb',
+    '--border':'#d6ddf5', '--danger':'#b91c1c',
+    '--accent-tint-06':'rgba(30,58,138,.06)', '--accent-tint-08':'rgba(30,58,138,.08)', '--accent-tint-12':'rgba(30,58,138,.12)',
+    '--accent-shadow-30':'rgba(30,58,138,.25)', '--accent-shadow-35':'rgba(30,58,138,.3)',
   },
 };
 
@@ -1127,6 +1157,7 @@ function toggleBrand(){
   localStorage.setItem(BRAND_KEY, BRAND);
   applyBrandTheme();
   applyBrandDisplay();
+  if(session) switchView(currentView);
 }
 function selectBrandAndContinue(brand){
   BRAND = brand;
@@ -1148,7 +1179,7 @@ const STORAGE_STATE_KEY = 'aventus_erp_state_v1';
 const STORAGE_SESSION_KEY = 'aventus_erp_session_v1';
 
 const CAT_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--cat-7)','var(--cat-8)'];
-const EXPENSE_CATEGORIES = ['electricity','water','internet','maintenance','marketing','delivery','other'];
+const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','other'];
 const BRANCH_STATUS_KEYS = ['active','stopped','preparing'];
 const PAYMENT_METHODS = ['cash','visa','talabat','zad','other'];
 
@@ -1219,6 +1250,7 @@ function defaultState(){
     sales: [],
     settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0 },
     auditLog: [],
+    notes: [],
   };
 }
 
@@ -1351,6 +1383,10 @@ function branchOptions(selectedId){
 }
 function salaryTotal(s){ return num(s.base) + num(s.allowance) - num(s.advance); }
 function purchaseTotal(p){ return num(p.price) * num(p.qty); }
+function otherExpenseTotal(o){
+  if(o.qty != null || o.unitPrice != null) return num(o.qty) * num(o.unitPrice);
+  return num(o.amount) || 0; /* توافق مع سجلات قديمة محفوظة بحقل amount فقط */
+}
 function saleTotal(s){ return num(s.cash)+num(s.visa)+num(s.talabat)+num(s.zad)+num(s.other); }
 
 function totalSalaries(branchId){
@@ -1363,7 +1399,7 @@ function totalPurchases(branchId){
   return state.purchases.filter(p => !branchId || p.branchId===branchId).reduce((a,p)=>a+purchaseTotal(p),0);
 }
 function totalOther(branchId){
-  return state.otherExpenses.filter(o => !branchId || o.branchId===branchId).reduce((a,o)=>a+num(o.amount),0);
+  return state.otherExpenses.filter(o => !branchId || o.branchId===branchId).reduce((a,o)=>a+otherExpenseTotal(o),0);
 }
 /* فواتير الموردين تُحتسب كتكلفة تشغيلية بناءً على طلب العميل */
 function totalSuppliers(branchId){
@@ -1456,6 +1492,21 @@ function renderDashboard(){
     ? branchSales.sort((a,b)=>b.total-a.total).map(b => barRow(b.name, b.total, maxSales, 'var(--cat-1)')).join('')
     : `<p style="color:var(--muted);font-size:.85rem;">${t('noBranchesAdded')}</p>`;
 
+  const expenseCats = [
+    {label:t('subtabSalaries'), total: totalSalaries(scope), color:CAT_COLORS[0]},
+    {label:t('subtabRents'), total: totalRents(scope), color:CAT_COLORS[1]},
+    {label:t('subtabPurchases'), total: totalPurchases(scope), color:CAT_COLORS[2]},
+    {label:t('subtabOther'), total: totalOther(scope), color:CAT_COLORS[3]},
+    {label:t('totalSupplierInvoices'), total: totalSuppliers(scope), color:CAT_COLORS[4]},
+  ];
+  const maxExpCat = Math.max(1, ...expenseCats.map(e=>e.total));
+  const expCatTotal = expenseCats.reduce((a,e)=>a+e.total,0);
+  document.getElementById('dashboard-expense-bars').innerHTML = expCatTotal > 0
+    ? expenseCats.map(e => barRow(e.label, e.total, maxExpCat, e.color, expCatTotal>0?Math.round(e.total/expCatTotal*100)+'%':'0%')).join('')
+    : `<p style="color:var(--muted);font-size:.85rem;">${t('noData')}</p>`;
+
+  renderNotes();
+
   const alerts = [];
   dashBranches.forEach(b => {
     const exp = totalExpenses(b.id);
@@ -1474,6 +1525,38 @@ function renderDashboard(){
   document.getElementById('dashboard-alerts').innerHTML = alerts.length
     ? alerts.map(a => `<li>${a}</li>`).join('')
     : `<li class="ok">${t('noAlerts')}</li>`;
+}
+
+/* --- ملاحظات وتذكيرات --- */
+function addNote(){
+  const textInput = document.getElementById('note-text-input');
+  const dateInput = document.getElementById('note-date-input');
+  const text = textInput.value.trim();
+  if(!text) return;
+  state.notes.push({id:uid(), text, date: dateInput.value || ''});
+  textInput.value = '';
+  dateInput.value = '';
+  logAction('logAddNote');
+  renderNotes();
+}
+function removeNote(id){
+  state.notes = state.notes.filter(n=>n.id!==id);
+  saveState();
+  renderNotes();
+}
+function renderNotes(){
+  const today = todayStr();
+  const sorted = [...state.notes].sort((a,b) => (a.date||'9999').localeCompare(b.date||'9999'));
+  document.getElementById('dashboard-notes').innerHTML = sorted.length
+    ? sorted.map(n => {
+        const overdue = n.date && n.date < today;
+        const isToday = n.date === today;
+        const icon = overdue ? '🔴' : (isToday ? '🟡' : '📌');
+        const dateLabel = n.date ? `<b>${escapeHtml(n.date)}</b> — ` : '';
+        return `<li>${icon} ${dateLabel}<bdi>${escapeHtml(n.text)}</bdi>
+          <button class="del-btn" style="margin-inline-start:auto;" onclick="removeNote('${n.id}')">✕</button></li>`;
+      }).join('')
+    : `<li class="ok">${t('noNotes')}</li>`;
 }
 
 /* =========================================================
@@ -1685,7 +1768,7 @@ function renderPurchasesTotals(){
 /* --- مصاريف أخرى --- */
 function addOtherExpense(){
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
-  state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, amount:0});
+  state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, qty:1, unitPrice:0});
   logAction('logAddOther');
   renderOtherExpenses();
 }
@@ -1708,13 +1791,23 @@ function renderOtherExpenses(){
     <tr data-id="${o.id}">
       <td><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.map(c=>`<option value="${c}" ${o.category===c?'selected':''}>${categoryLabel(c)}</option>`).join('')}</select></td>
       <td><select onchange="updateOtherExpense('${o.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(o.branchId)}</select></td>
-      <td><input type="number" min="0" step="any" value="${o.amount}" oninput="updateOtherExpense('${o.id}','amount',this.value); renderOtherTotals();"></td>
+      <td><input type="number" min="0" step="any" value="${o.qty ?? 1}" oninput="updateOtherExpense('${o.id}','qty',this.value); renderOtherTotals();"></td>
+      <td><input type="number" min="0" step="any" value="${o.unitPrice ?? 0}" oninput="updateOtherExpense('${o.id}','unitPrice',this.value); renderOtherTotals();"></td>
+      <td class="row-total">${formatCurrency(otherExpenseTotal(o))}</td>
       <td><button class="del-btn" onclick="removeOtherExpense('${o.id}')">✕</button></td>
     </tr>`).join('');
   renderOtherTotals();
 }
 function renderOtherTotals(){
-  document.getElementById('other-total').textContent = formatNum(totalOther(activeBranchId()));
+  let total = 0;
+  document.querySelectorAll('#other-body tr').forEach(tr => {
+    const o = state.otherExpenses.find(x => x.id === tr.dataset.id);
+    if(!o) return;
+    const rowTotal = otherExpenseTotal(o);
+    tr.querySelector('.row-total').textContent = formatCurrency(rowTotal);
+    total += rowTotal;
+  });
+  document.getElementById('other-total').textContent = formatNum(total);
 }
 
 /* =========================================================
@@ -1723,7 +1816,7 @@ function renderOtherTotals(){
 function addStockItem(){
   const perms = PERMS[session.role];
   if(!perms.manageStockNames) return;
-  state.stock.push({id:uid(), name:'', quantity:0, date:todayStr()});
+  state.stock.push({id:uid(), name:'', quantity:0, date:todayStr(), brand:BRAND});
   logAction('logAddStock');
   renderStock();
 }
@@ -1747,7 +1840,8 @@ function renderStock(){
   document.getElementById('stock-subtitle').textContent = t(perms.manageStockNames ? 'stockSubtitleOwner' : 'stockSubtitleStaff');
   document.getElementById('stock-add-btn').style.display = perms.manageStockNames ? 'inline-block' : 'none';
 
-  document.getElementById('stock-body').innerHTML = state.stock.map(i => `
+  const rows = state.stock.filter(i => (i.brand || 'aventus') === BRAND);
+  document.getElementById('stock-body').innerHTML = rows.map(i => `
     <tr data-id="${i.id}">
       <td><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateStockItem('${i.id}','name',this.value)" ${perms.manageStockNames?'':'readonly'}></td>
       <td><input type="number" min="0" step="any" value="${i.quantity}" oninput="updateStockItem('${i.id}','quantity',this.value)"></td>
@@ -1835,9 +1929,10 @@ function renderProfit(){
   document.getElementById('settings-discounts').value = state.settings.discounts;
 
   const scope = activeBranchId();
-  const sales = salesForProfit(scope, 'all');
+  const period = document.getElementById('profit-period').value;
+  const sales = salesForProfit(scope, period);
   const expenses = totalExpenses(scope);
-  const commissions = commissionsTotal('all', scope);
+  const commissions = commissionsTotal(period, scope);
   const discounts = num(state.settings.discounts);
   const net = sales - expenses - commissions - discounts;
 
