@@ -61,8 +61,8 @@
   .chooser-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(20,30,60,.12);border-color:#94a3b8;}
   .chooser-mark{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;flex:none;}
   .chooser-mark svg{width:70%;height:70%;}
-  .chooser-mark.aventus{border:3px solid #111111;}
-  .chooser-mark.chickenville{border:3px solid #0000FF;}
+  .chooser-mark.aventus{border:3px solid #0f5132;}
+  .chooser-mark.chickenville{border:3px solid #16a34a;}
   .chooser-name{font-size:1.15rem;font-weight:800;color:#132743;}
   .chooser-name span{font-weight:400;color:#64748f;}
   .chooser-hint{margin-top:26px;color:#94a3b8;font-size:.8rem;}
@@ -344,9 +344,9 @@
           <option value="staff" data-i18n="roleStaff">موظف إدخال</option>
         </select>
       </div>
-      <div class="field" id="staff-branch-field" style="display:none;">
-        <label for="staff-branch" data-i18n="labelStaffBranch">الفرع المخصص لك</label>
-        <select id="staff-branch"></select>
+      <div class="field">
+        <label for="login-branch" id="login-branch-label" data-i18n="labelLoginBranch">الفرع</label>
+        <select id="login-branch"></select>
       </div>
       <button type="submit" class="login-btn" data-i18n="btnLogin">تسجيل الدخول</button>
       <div class="login-error" id="login-error"></div>
@@ -421,7 +421,7 @@
           <h1 class="page-title" data-i18n="branchesTitle">إدارة الفروع</h1>
           <p class="subtitle" data-i18n="branchesSubtitle">بيانات كل فرع وحالته ومبيعاته ومصاريفه</p>
           <div class="toolbar"><div></div><div class="toolbar-right">
-            <button onclick="addBranch()" data-i18n="btnAddBranch">+ إضافة فرع</button>
+            <button id="branch-add-btn" onclick="addBranch()" data-i18n="btnAddBranch">+ إضافة فرع</button>
           </div></div>
           <div class="section">
             <div class="table-scroll">
@@ -675,12 +675,13 @@
           <h1 class="page-title" data-i18n="reportsTitle">التقارير</h1>
           <p class="subtitle" data-i18n="reportsSubtitle">تقارير شهرية وسنوية</p>
           <div class="toolbar">
-            <div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
               <select id="report-period" onchange="renderReports()">
                 <option value="month" selected data-i18n="periodMonth">هذا الشهر</option>
                 <option value="year" data-i18n="periodYear">هذه السنة</option>
                 <option value="all" data-i18n="periodAll">كل الفترات</option>
               </select>
+              <select id="report-branch" onchange="renderReports()"></select>
             </div>
             <div class="toolbar-right"><button onclick="window.print()" data-i18n="btnPrintReport">🖨 طباعة التقرير</button></div>
           </div>
@@ -825,7 +826,7 @@ const I18N = {
     labelUsername:'اسم المستخدم', placeholderUsername:'أدخل اسم المستخدم',
     labelPassword:'كلمة المرور', placeholderPassword:'أدخل كلمة المرور',
     labelRole:'الدور الوظيفي', roleOwner:'مالك', roleManager:'مدير', roleAccountant:'محاسب', roleStaff:'موظف إدخال',
-    labelStaffBranch:'الفرع المخصص لك', noBranchesYet:'لا توجد فروع بعد',
+    labelLoginBranch:'الفرع', allBranches:'كل الفروع', noBranchesYet:'لا توجد فروع بعد',
     btnLogin:'تسجيل الدخول',
     errFillFields:'الرجاء إدخال اسم المستخدم وكلمة المرور',
     errSelectBranch:'الرجاء اختيار الفرع (يجب إضافة فرع واحد على الأقل أولاً)',
@@ -928,7 +929,7 @@ const I18N = {
     labelUsername:'Username', placeholderUsername:'Enter username',
     labelPassword:'Password', placeholderPassword:'Enter password',
     labelRole:'Role', roleOwner:'Owner', roleManager:'Manager', roleAccountant:'Accountant', roleStaff:'Data Entry Staff',
-    labelStaffBranch:'Your Assigned Branch', noBranchesYet:'No branches yet',
+    labelLoginBranch:'Branch', allBranches:'All Branches', noBranchesYet:'No branches yet',
     btnLogin:'Log In',
     errFillFields:'Please enter a username and password',
     errSelectBranch:'Please select a branch (at least one branch must be added first)',
@@ -1055,27 +1056,27 @@ let BRAND = localStorage.getItem(BRAND_KEY) || 'aventus';
 const BRAND_INFO = {
   aventus: {
     nameHtml: 'Aventus <span>| أفنتوس</span>',
-    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 14 L86 83 L66 83 L50 53 L34 83 L14 83 Z" fill="#111111"/></svg>',
+    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 14 L86 83 L66 83 L50 53 L34 83 L14 83 Z" fill="#0f5132"/></svg>',
   },
   chickenville: {
     nameHtml: 'Chicken Ville <span>| تشكن فل</span>',
-    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M37 31 Q39 18 47 25 Q49 13 56 22 Q61 14 64 27 Q57 31 49 31 Q43 31 37 31 Z" fill="#0000FF"/><circle cx="48" cy="52" r="25" fill="#FFFF00"/><path d="M71 50 L90 43 L90 58 Z" fill="#0000FF"/><circle cx="57" cy="45" r="3.5" fill="#132743"/></svg>',
+    markSvg: '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M37 31 Q39 18 47 25 Q49 13 56 22 Q61 14 64 27 Q57 31 49 31 Q43 31 37 31 Z" fill="#16a34a"/><circle cx="48" cy="52" r="25" fill="#ffffff" stroke="#16a34a" stroke-width="4"/><path d="M71 50 L90 43 L90 58 Z" fill="#16a34a"/><circle cx="57" cy="45" r="3.5" fill="#0f5132"/></svg>',
   },
 };
 const BRAND_THEMES = {
   aventus: {
-    '--bg':'#f4f4f4', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#eeeeee', '--card3':'#e2e2e2',
-    '--text':'#0d0d0d', '--muted':'#5c5c5c', '--accent':'#111111', '--accent-light':'#3d3d3d',
-    '--border':'#dcdcdc', '--danger':'#b91c1c',
-    '--accent-tint-06':'rgba(17,17,17,.06)', '--accent-tint-08':'rgba(17,17,17,.08)', '--accent-tint-12':'rgba(17,17,17,.12)',
-    '--accent-shadow-30':'rgba(17,17,17,.25)', '--accent-shadow-35':'rgba(17,17,17,.3)',
+    '--bg':'#f2f7f4', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#eaf3ee', '--card3':'#d9ebe1',
+    '--text':'#0d1f16', '--muted':'#5c7267', '--accent':'#0f5132', '--accent-light':'#2e7d32',
+    '--border':'#d5e6dc', '--danger':'#b91c1c',
+    '--accent-tint-06':'rgba(15,81,50,.06)', '--accent-tint-08':'rgba(15,81,50,.08)', '--accent-tint-12':'rgba(15,81,50,.12)',
+    '--accent-shadow-30':'rgba(15,81,50,.25)', '--accent-shadow-35':'rgba(15,81,50,.3)',
   },
   chickenville: {
-    '--bg':'#fffef0', '--bg2':'#fffde0', '--card':'#ffffff', '--card2':'#fffacc', '--card3':'#fff27a',
-    '--text':'#0a1a4d', '--muted':'#4a5a8a', '--accent':'#0000FF', '--accent-light':'#FFFF00',
-    '--border':'#ffe680', '--danger':'#dc2626',
-    '--accent-tint-06':'rgba(0,0,255,.06)', '--accent-tint-08':'rgba(0,0,255,.08)', '--accent-tint-12':'rgba(0,0,255,.12)',
-    '--accent-shadow-30':'rgba(0,0,255,.3)', '--accent-shadow-35':'rgba(0,0,255,.35)',
+    '--bg':'#f3fbf5', '--bg2':'#ffffff', '--card':'#ffffff', '--card2':'#e8f9ee', '--card3':'#c9f2d6',
+    '--text':'#0d1f16', '--muted':'#4f7a63', '--accent':'#16a34a', '--accent-light':'#4ade80',
+    '--border':'#c9f2d6', '--danger':'#dc2626',
+    '--accent-tint-06':'rgba(22,163,74,.06)', '--accent-tint-08':'rgba(22,163,74,.08)', '--accent-tint-12':'rgba(22,163,74,.12)',
+    '--accent-shadow-30':'rgba(22,163,74,.3)', '--accent-shadow-35':'rgba(22,163,74,.35)',
   },
 };
 
@@ -1131,11 +1132,12 @@ function categoryLabel(key){ return t('cat_' + key); }
 function paymentLabel(key){ return t('pm_' + key); }
 
 const PERMS = {
-  owner:      {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports','auditlog','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true, lockBranch:false, manageStockNames:true},
-  manager:    {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:true, lockBranch:false, manageStockNames:true},
-  accountant: {nav:['dashboard','costs','stock','sales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, lockBranch:false, manageStockNames:false},
-  staff:      {nav:['sales','costs','stock'],                                                                         costSubtabs:['purchases'],                            deleteInvoice:false, editBranches:false, lockBranch:true, manageStockNames:false},
+  owner:      {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports','auditlog','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
+  manager:    {nav:['dashboard','branches','costs','stock','sales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:true},
+  accountant: {nav:['dashboard','costs','stock','sales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false},
+  staff:      {nav:['sales','costs','stock'],                                                                         costSubtabs:['purchases'],                            deleteInvoice:false, editBranches:false, manageStockNames:false},
 };
+function activeBranchId(){ return (session && session.branchId) || null; }
 
 let state = null;
 let session = null;
@@ -1163,9 +1165,22 @@ function num(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
 /* =========================================================
    تحميل / حفظ الحالة
 ========================================================= */
+const DEFAULT_BRANCHES = [
+  ['br-aventus-saham',      'Aventus - Saham',            'Saham'],
+  ['br-aventus-barka',      'Aventus - Barka',             'Barka'],
+  ['br-cv-saham',           'Chicken Ville - Saham',       'Saham'],
+  ['br-cv-alkaboura',       'Chicken Ville - Al Kaboura',   'Al Kaboura'],
+  ['br-cv-assuwaiq',        'Chicken Ville - As Suwaiq',    'As Suwaiq'],
+  ['br-cv-barka',           'Chicken Ville - Barka',        'Barka'],
+  ['br-cv-alkhoud',         'Chicken Ville - Al Khoud',     'Al Khoud'],
+  ['br-cv-nizwa',           'Chicken Ville - Nizwa',        'Nizwa'],
+  ['br-cv-almusannah',      'Chicken Ville - Al Musannah',  'Al Musannah'],
+  ['br-cv-alkhuwair',       'Chicken Ville - Al Khuwair',   'Al Khuwair'],
+  ['br-cv-bahla',           'Chicken Ville - Bahla',        'Bahla'],
+];
 function defaultState(){
   return {
-    branches: [],
+    branches: DEFAULT_BRANCHES.map(([id, name, location]) => ({id, name, location, type:'', employees:0, rent:0, status:'active'})),
     salaries: [],
     rentDue: {},
     purchases: [],
@@ -1206,15 +1221,17 @@ function logAction(key){
 /* =========================================================
    تسجيل الدخول
 ========================================================= */
-function populateStaffBranchSelect(){
-  const sel = document.getElementById('staff-branch');
-  sel.innerHTML = state.branches.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join('')
-    || `<option value="">${t('noBranchesYet')}</option>`;
+function populateLoginBranchSelect(){
+  const role = document.getElementById('role').value;
+  const sel = document.getElementById('login-branch');
+  const allOption = role === 'staff' ? '' : `<option value="">${t('allBranches')}</option>`;
+  sel.innerHTML = allOption + state.branches.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join('');
+  if(!state.branches.length){
+    sel.innerHTML = `<option value="">${t('noBranchesYet')}</option>`;
+  }
 }
 
-document.getElementById('role').addEventListener('change', function(){
-  document.getElementById('staff-branch-field').style.display = this.value === 'staff' ? 'block' : 'none';
-});
+document.getElementById('role').addEventListener('change', populateLoginBranchSelect);
 
 document.getElementById('login-form').addEventListener('submit', function(e){
   e.preventDefault();
@@ -1227,13 +1244,10 @@ document.getElementById('login-form').addEventListener('submit', function(e){
     errorBox.textContent = t('errFillFields');
     return;
   }
-  let branchId = null;
-  if(role === 'staff'){
-    branchId = document.getElementById('staff-branch').value;
-    if(!branchId){
-      errorBox.textContent = t('errSelectBranch');
-      return;
-    }
+  const branchId = document.getElementById('login-branch').value || null;
+  if(role === 'staff' && !branchId){
+    errorBox.textContent = t('errSelectBranch');
+    return;
   }
   errorBox.textContent = '';
   session = {username, role, branchId};
@@ -1252,7 +1266,7 @@ function logout(){
   document.getElementById('app-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('brand-choose-screen').style.display = 'flex';
-  populateStaffBranchSelect();
+  populateLoginBranchSelect();
 }
 
 /* =========================================================
@@ -1360,8 +1374,8 @@ function filterSalesByPeriod(period){
     return true;
   });
 }
-function commissionsTotal(period){
-  const rows = filterSalesByPeriod(period);
+function commissionsTotal(period, branchId){
+  const rows = filterSalesByPeriod(period).filter(s => !branchId || s.branchId===branchId);
   const visa = rows.reduce((a,s)=>a+num(s.visa),0);
   const talabat = rows.reduce((a,s)=>a+num(s.talabat),0);
   const zad = rows.reduce((a,s)=>a+num(s.zad),0);
@@ -1391,19 +1405,23 @@ function paymentMethodsWithTotals(rows){
    لوحة التحكم
 ========================================================= */
 function renderDashboard(){
-  const salesMonth = totalSales(null, 'month');
-  const expensesMonth = totalExpenses(null);
-  const commissions = commissionsTotal('month');
-  const netProfit = salesForProfit(null, 'month') - expensesMonth - commissions - num(state.settings.discounts);
+  const scope = activeBranchId();
+  const dashBranches = scope ? state.branches.filter(b=>b.id===scope) : state.branches;
+  const dashSuppliers = scope ? state.suppliers.filter(s=>s.branchId===scope) : state.suppliers;
+
+  const salesMonth = totalSales(scope, 'month');
+  const expensesMonth = totalExpenses(scope);
+  const commissions = commissionsTotal('month', scope);
+  const netProfit = salesForProfit(scope, 'month') - expensesMonth - commissions - num(state.settings.discounts);
 
   let topBranch = {name:'—', total:0};
-  state.branches.forEach(b => {
+  dashBranches.forEach(b => {
     const tt = totalSales(b.id, 'all');
     if(tt > topBranch.total) topBranch = {name:b.name, total:tt};
   });
 
   let topSupplier = {company:'—', total:0};
-  state.suppliers.forEach(s => {
+  dashSuppliers.forEach(s => {
     const v = num(s.invoiceValue);
     if(v > topSupplier.total) topSupplier = {company:s.company, total:v};
   });
@@ -1416,14 +1434,14 @@ function renderDashboard(){
     kpiCard(t('kpiTopSupplier'), escapeHtml(topSupplier.company), formatCurrency(topSupplier.total)),
   ].join('');
 
-  const branchSales = state.branches.map(b => ({name:b.name, total: totalSales(b.id,'all')}));
+  const branchSales = dashBranches.map(b => ({name:b.name, total: totalSales(b.id,'all')}));
   const maxSales = Math.max(1, ...branchSales.map(b=>b.total));
   document.getElementById('dashboard-branch-bars').innerHTML = branchSales.length
     ? branchSales.sort((a,b)=>b.total-a.total).map(b => barRow(b.name, b.total, maxSales, 'var(--cat-1)')).join('')
     : `<p style="color:var(--muted);font-size:.85rem;">${t('noBranchesAdded')}</p>`;
 
   const alerts = [];
-  state.branches.forEach(b => {
+  dashBranches.forEach(b => {
     const exp = totalExpenses(b.id);
     const sal = totalSales(b.id, 'all');
     if(exp > 0 && exp > sal){
@@ -1431,7 +1449,7 @@ function renderDashboard(){
     }
   });
   const today = todayStr();
-  state.suppliers.forEach(s => {
+  dashSuppliers.forEach(s => {
     const remaining = num(s.invoiceValue) - num(s.paid);
     if(remaining > 0 && s.dueDate && s.dueDate < today){
       alerts.push(`🟠 <b><bdi>${escapeHtml(s.company)}</bdi></b> — ${formatCurrency(remaining)}`);
@@ -1446,6 +1464,7 @@ function renderDashboard(){
    الفروع
 ========================================================= */
 function addBranch(){
+  if(!PERMS[session.role].editBranches) return;
   state.branches.push({id:uid(), name:'', location:'', type:'', employees:0, rent:0, status:'active'});
   logAction('logAddBranch');
   renderBranches();
@@ -1464,8 +1483,11 @@ function removeBranch(id){
 }
 function renderBranches(){
   const perms = PERMS[session.role];
+  const scope = activeBranchId();
+  document.getElementById('branch-add-btn').style.display = perms.editBranches ? 'inline-block' : 'none';
   const body = document.getElementById('branches-body');
-  body.innerHTML = state.branches.map(b => {
+  const branches = scope ? state.branches.filter(b=>b.id===scope) : state.branches;
+  body.innerHTML = branches.map(b => {
     const sales = totalSales(b.id, 'all');
     const expenses = totalExpenses(b.id);
     return `<tr data-id="${b.id}">
@@ -1517,19 +1539,21 @@ function renderCosts(){
   renderRents();
   renderPurchases();
   renderOtherExpenses();
+  const scope = activeBranchId();
   document.getElementById('costs-summary').innerHTML = [
-    kpiCard(t('totalSalaries').replace(':',''), formatCurrency(totalSalaries())),
-    kpiCard(t('totalRents').replace(':',''), formatCurrency(totalRents())),
-    kpiCard(t('totalPurchases').replace(':',''), formatCurrency(totalPurchases())),
-    kpiCard(t('totalOther').replace(':',''), formatCurrency(totalOther())),
-    kpiCard(t('totalSupplierInvoices'), formatCurrency(totalSuppliers())),
-    kpiCard(t('grandTotal'), formatCurrency(totalExpenses()), null, true),
+    kpiCard(t('totalSalaries').replace(':',''), formatCurrency(totalSalaries(scope))),
+    kpiCard(t('totalRents').replace(':',''), formatCurrency(totalRents(scope))),
+    kpiCard(t('totalPurchases').replace(':',''), formatCurrency(totalPurchases(scope))),
+    kpiCard(t('totalOther').replace(':',''), formatCurrency(totalOther(scope))),
+    kpiCard(t('totalSupplierInvoices'), formatCurrency(totalSuppliers(scope))),
+    kpiCard(t('grandTotal'), formatCurrency(totalExpenses(scope)), null, true),
   ].join('');
 }
 
 /* --- الرواتب --- */
 function addSalary(){
-  state.salaries.push({id:uid(), employee:'', branchId:(state.branches[0]||{}).id||'', base:0, allowance:0, advance:0});
+  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
+  state.salaries.push({id:uid(), employee:'', branchId, base:0, allowance:0, advance:0});
   logAction('logAddSalary');
   renderSalaries();
 }
@@ -1546,10 +1570,12 @@ function removeSalary(id){
   renderCosts();
 }
 function renderSalaries(){
-  document.getElementById('salaries-body').innerHTML = state.salaries.map(s => `
+  const scope = activeBranchId();
+  const rows = scope ? state.salaries.filter(s=>s.branchId===scope) : state.salaries;
+  document.getElementById('salaries-body').innerHTML = rows.map(s => `
     <tr data-id="${s.id}">
       <td><input type="text" value="${escapeHtml(s.employee)}" placeholder="${t('thEmployee')}" oninput="updateSalary('${s.id}','employee',this.value)"></td>
-      <td><select onchange="updateSalary('${s.id}','branchId',this.value)">${branchOptions(s.branchId)}</select></td>
+      <td><select onchange="updateSalary('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
       <td><input type="number" min="0" step="any" value="${s.base}" oninput="updateSalary('${s.id}','base',this.value); renderSalariesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.allowance}" oninput="updateSalary('${s.id}','allowance',this.value); renderSalariesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.advance}" oninput="updateSalary('${s.id}','advance',this.value); renderSalariesTotals();"></td>
@@ -1577,7 +1603,9 @@ function updateRentDue(branchId, field, value){
   saveState();
 }
 function renderRents(){
-  document.getElementById('rents-body').innerHTML = state.branches.map(b => {
+  const scope = activeBranchId();
+  const branches = scope ? state.branches.filter(b=>b.id===scope) : state.branches;
+  document.getElementById('rents-body').innerHTML = branches.map(b => {
     const rd = state.rentDue[b.id] || {dueDate:'', paid:'unpaid'};
     return `<tr>
       <td>${escapeHtml(b.name)||'—'}</td>
@@ -1589,12 +1617,13 @@ function renderRents(){
       </select></td>
     </tr>`;
   }).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noBranchesAddFirst')}</td></tr>`;
-  document.getElementById('rents-total').textContent = formatNum(totalRents());
+  document.getElementById('rents-total').textContent = formatNum(totalRents(scope));
 }
 
 /* --- المشتريات --- */
 function addPurchase(){
-  state.purchases.push({id:uid(), item:'', branchId:(state.branches[0]||{}).id||'', company:'', price:0, qty:1});
+  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
+  state.purchases.push({id:uid(), item:'', branchId, company:'', price:0, qty:1});
   logAction('logAddPurchase');
   renderPurchases();
 }
@@ -1611,10 +1640,12 @@ function removePurchase(id){
   renderCosts();
 }
 function renderPurchases(){
-  document.getElementById('purchases-body').innerHTML = state.purchases.map(p => `
+  const scope = activeBranchId();
+  const rows = scope ? state.purchases.filter(p=>p.branchId===scope) : state.purchases;
+  document.getElementById('purchases-body').innerHTML = rows.map(p => `
     <tr data-id="${p.id}">
       <td><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updatePurchase('${p.id}','item',this.value)"></td>
-      <td><select onchange="updatePurchase('${p.id}','branchId',this.value)">${branchOptions(p.branchId)}</select></td>
+      <td><select onchange="updatePurchase('${p.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(p.branchId)}</select></td>
       <td><input type="text" value="${escapeHtml(p.company)}" placeholder="${t('placeholderCompanyName')}" oninput="updatePurchase('${p.id}','company',this.value)"></td>
       <td><input type="number" min="0" step="any" value="${p.price}" oninput="updatePurchase('${p.id}','price',this.value); renderPurchasesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${p.qty}" oninput="updatePurchase('${p.id}','qty',this.value); renderPurchasesTotals();"></td>
@@ -1637,7 +1668,8 @@ function renderPurchasesTotals(){
 
 /* --- مصاريف أخرى --- */
 function addOtherExpense(){
-  state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId:(state.branches[0]||{}).id||'', amount:0});
+  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
+  state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, amount:0});
   logAction('logAddOther');
   renderOtherExpenses();
 }
@@ -1654,17 +1686,19 @@ function removeOtherExpense(id){
   renderCosts();
 }
 function renderOtherExpenses(){
-  document.getElementById('other-body').innerHTML = state.otherExpenses.map(o => `
-    <tr>
+  const scope = activeBranchId();
+  const rows = scope ? state.otherExpenses.filter(o=>o.branchId===scope) : state.otherExpenses;
+  document.getElementById('other-body').innerHTML = rows.map(o => `
+    <tr data-id="${o.id}">
       <td><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.map(c=>`<option value="${c}" ${o.category===c?'selected':''}>${categoryLabel(c)}</option>`).join('')}</select></td>
-      <td><select onchange="updateOtherExpense('${o.id}','branchId',this.value)">${branchOptions(o.branchId)}</select></td>
+      <td><select onchange="updateOtherExpense('${o.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(o.branchId)}</select></td>
       <td><input type="number" min="0" step="any" value="${o.amount}" oninput="updateOtherExpense('${o.id}','amount',this.value); renderOtherTotals();"></td>
       <td><button class="del-btn" onclick="removeOtherExpense('${o.id}')">✕</button></td>
     </tr>`).join('');
   renderOtherTotals();
 }
 function renderOtherTotals(){
-  document.getElementById('other-total').textContent = formatNum(totalOther());
+  document.getElementById('other-total').textContent = formatNum(totalOther(activeBranchId()));
 }
 
 /* =========================================================
@@ -1710,8 +1744,7 @@ function renderStock(){
    المبيعات
 ========================================================= */
 function addSale(){
-  const perms = PERMS[session.role];
-  const branchId = perms.lockBranch ? session.branchId : (state.branches[0]||{}).id || '';
+  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
   state.sales.push({id:uid(), date:todayStr().slice(0,7), branchId, cash:0, visa:0, talabat:0, zad:0, other:0});
   logAction('logAddSale');
   renderSales();
@@ -1728,13 +1761,13 @@ function removeSale(id){
   renderSales();
 }
 function renderSales(){
-  const perms = PERMS[session.role];
-  const visibleSales = perms.lockBranch ? state.sales.filter(s=>s.branchId===session.branchId) : state.sales;
+  const scope = activeBranchId();
+  const visibleSales = scope ? state.sales.filter(s=>s.branchId===scope) : state.sales;
 
   document.getElementById('sales-body').innerHTML = visibleSales.map(s => `
     <tr data-id="${s.id}">
       <td><input type="month" value="${s.date}" onchange="updateSale('${s.id}','date',this.value)"></td>
-      <td><select onchange="updateSale('${s.id}','branchId',this.value)" ${perms.lockBranch?'disabled':''}>${branchOptions(s.branchId)}</select></td>
+      <td><select onchange="updateSale('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
       <td><input type="number" min="0" step="any" value="${s.cash}" oninput="updateSale('${s.id}','cash',this.value); renderSalesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.visa}" oninput="updateSale('${s.id}','visa',this.value); renderSalesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.talabat}" oninput="updateSale('${s.id}','talabat',this.value); renderSalesTotals();"></td>
@@ -1746,8 +1779,8 @@ function renderSales(){
   renderSalesTotals();
 }
 function renderSalesTotals(){
-  const perms = PERMS[session.role];
-  const rows = perms.lockBranch ? state.sales.filter(s=>s.branchId===session.branchId) : state.sales;
+  const scope = activeBranchId();
+  const rows = scope ? state.sales.filter(s=>s.branchId===scope) : state.sales;
 
   document.querySelectorAll('#sales-body tr').forEach(tr => {
     const s = state.sales.find(x => x.id === tr.dataset.id);
@@ -1785,9 +1818,10 @@ function renderProfit(){
   document.getElementById('settings-zad').value = state.settings.zadPct;
   document.getElementById('settings-discounts').value = state.settings.discounts;
 
-  const sales = salesForProfit(null, 'all');
-  const expenses = totalExpenses(null);
-  const commissions = commissionsTotal('all');
+  const scope = activeBranchId();
+  const sales = salesForProfit(scope, 'all');
+  const expenses = totalExpenses(scope);
+  const commissions = commissionsTotal('all', scope);
   const discounts = num(state.settings.discounts);
   const net = sales - expenses - commissions - discounts;
 
@@ -1804,7 +1838,8 @@ function renderProfit(){
    الموردون والفواتير
 ========================================================= */
 function addSupplier(){
-  state.suppliers.push({id:uid(), company:'', contact:'', materialType:'', branchId:(state.branches[0]||{}).id||'', invoiceValue:0, paid:0, dueDate:'', dailyPurchases:false});
+  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
+  state.suppliers.push({id:uid(), company:'', contact:'', materialType:'', branchId, invoiceValue:0, paid:0, dueDate:'', dailyPurchases:false});
   logAction('logAddSupplier');
   renderSuppliers();
 }
@@ -1834,9 +1869,11 @@ function supplierStatus(s){
 }
 function renderSuppliers(){
   const perms = PERMS[session.role];
+  const scope = activeBranchId();
   const overdueOnly = document.getElementById('overdue-only-filter').checked;
   const today = todayStr();
   const rows = state.suppliers.filter(s => {
+    if(scope && s.branchId !== scope) return false;
     if(!overdueOnly) return true;
     const remaining = num(s.invoiceValue) - num(s.paid);
     return remaining > 0 && s.dueDate && s.dueDate < today;
@@ -1848,7 +1885,7 @@ function renderSuppliers(){
       <td><input type="text" value="${escapeHtml(s.company)}" placeholder="${t('placeholderCompany')}" oninput="updateSupplier('${s.id}','company',this.value)"></td>
       <td><input type="tel" value="${escapeHtml(s.contact)}" placeholder="${t('placeholderContact')}" oninput="updateSupplier('${s.id}','contact',this.value)"></td>
       <td><input type="text" value="${escapeHtml(s.materialType)}" placeholder="${t('placeholderMaterialType')}" oninput="updateSupplier('${s.id}','materialType',this.value)"></td>
-      <td><select onchange="updateSupplier('${s.id}','branchId',this.value)">${branchOptions(s.branchId)}</select></td>
+      <td><select onchange="updateSupplier('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
       <td><input type="number" min="0" step="any" value="${s.invoiceValue}" oninput="updateSupplier('${s.id}','invoiceValue',this.value); refreshSupplierRow('${s.id}');"></td>
       <td><input type="number" min="0" step="any" value="${s.paid}" oninput="updateSupplier('${s.id}','paid',this.value); refreshSupplierRow('${s.id}');"></td>
       <td class="row-total supplier-remaining-cell" style="color:${remaining>0?'var(--danger)':'var(--accent)'}">${formatCurrency(remaining)}</td>
@@ -1875,21 +1912,38 @@ function refreshSupplierRow(id){
 /* =========================================================
    التقارير
 ========================================================= */
+function populateReportBranchSelect(){
+  const sel = document.getElementById('report-branch');
+  const scope = activeBranchId();
+  const previousValue = sel.value;
+  if(scope){
+    sel.innerHTML = `<option value="${scope}">${escapeHtml(branchNameById(scope))}</option>`;
+    sel.disabled = true;
+  }else{
+    sel.disabled = false;
+    sel.innerHTML = `<option value="">${t('allBranches')}</option>` + state.branches.map(b => `<option value="${b.id}">${escapeHtml(b.name)}</option>`).join('');
+    if([...sel.options].some(o => o.value === previousValue)) sel.value = previousValue;
+  }
+}
 function renderReports(){
+  populateReportBranchSelect();
   const period = document.getElementById('report-period').value;
+  const reportScope = activeBranchId() || document.getElementById('report-branch').value || null;
+  const reportBranches = reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches;
+  const reportSuppliers = reportScope ? state.suppliers.filter(s=>s.branchId===reportScope) : state.suppliers;
 
-  const branchSales = state.branches.map(b => ({name:b.name, total: totalSales(b.id, period)}));
+  const branchSales = reportBranches.map(b => ({name:b.name, total: totalSales(b.id, period)}));
   const maxBS = Math.max(1, ...branchSales.map(b=>b.total));
   document.getElementById('report-branch-sales').innerHTML = branchSales.length
     ? branchSales.sort((a,b)=>b.total-a.total).map(b=>barRow(b.name,b.total,maxBS,'var(--cat-1)')).join('')
     : `<p style="color:var(--muted);font-size:.85rem;">${t('noData')}</p>`;
 
   const expenseCats = [
-    {label:t('subtabSalaries'), total: totalSalaries(), color:CAT_COLORS[0]},
-    {label:t('subtabRents'), total: totalRents(), color:CAT_COLORS[1]},
-    {label:t('subtabPurchases'), total: totalPurchases(), color:CAT_COLORS[2]},
-    {label:t('subtabOther'), total: totalOther(), color:CAT_COLORS[3]},
-    {label:t('totalSupplierInvoices'), total: totalSuppliers(), color:CAT_COLORS[4]},
+    {label:t('subtabSalaries'), total: totalSalaries(reportScope), color:CAT_COLORS[0]},
+    {label:t('subtabRents'), total: totalRents(reportScope), color:CAT_COLORS[1]},
+    {label:t('subtabPurchases'), total: totalPurchases(reportScope), color:CAT_COLORS[2]},
+    {label:t('subtabOther'), total: totalOther(reportScope), color:CAT_COLORS[3]},
+    {label:t('totalSupplierInvoices'), total: totalSuppliers(reportScope), color:CAT_COLORS[4]},
   ];
   const maxExp = Math.max(1, ...expenseCats.map(e=>e.total));
   const expTotal = expenseCats.reduce((a,e)=>a+e.total,0);
@@ -1897,9 +1951,9 @@ function renderReports(){
     barRow(e.label, e.total, maxExp, e.color, expTotal>0?Math.round(e.total/expTotal*100)+'%':'0%')
   ).join('');
 
-  const sales = salesForProfit(null, period);
-  const expenses = totalExpenses(null);
-  const commissions = commissionsTotal(period);
+  const sales = salesForProfit(reportScope, period);
+  const expenses = totalExpenses(reportScope);
+  const commissions = commissionsTotal(period, reportScope);
   const discounts = num(state.settings.discounts);
   const net = sales - expenses - commissions - discounts;
   document.getElementById('report-profit').innerHTML = [
@@ -1909,7 +1963,7 @@ function renderReports(){
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true),
   ].join('');
 
-  document.getElementById('report-branch-compare').innerHTML = state.branches.map(b => {
+  document.getElementById('report-branch-compare').innerHTML = reportBranches.map(b => {
     const bs = totalSales(b.id, period);
     const be = totalExpenses(b.id);
     const bn = salesForProfit(b.id, period) - be;
@@ -1927,7 +1981,7 @@ function renderReports(){
   }).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noBranches')}</td></tr>`;
 
   const today = todayStr();
-  document.getElementById('report-suppliers').innerHTML = state.suppliers.map(s => {
+  document.getElementById('report-suppliers').innerHTML = reportSuppliers.map(s => {
     const remaining = num(s.invoiceValue) - num(s.paid);
     const overdue = remaining > 0 && s.dueDate && s.dueDate < today;
     return `<tr>
@@ -1940,7 +1994,7 @@ function renderReports(){
     </tr>`;
   }).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noSuppliers')}</td></tr>`;
 
-  const rows = filterSalesByPeriod(period);
+  const rows = filterSalesByPeriod(period).filter(s => !reportScope || s.branchId===reportScope);
   const methods = paymentMethodsWithTotals(rows);
   const maxM = Math.max(1, ...methods.map(m=>m.total));
   const totalM = methods.reduce((a,m)=>a+m.total,0);
@@ -2061,7 +2115,7 @@ state = loadState();
 applyStaticI18n();
 applyBrandTheme();
 applyBrandDisplay();
-populateStaffBranchSelect();
+populateLoginBranchSelect();
 
 const savedSession = localStorage.getItem(STORAGE_SESSION_KEY);
 if(savedSession){
