@@ -94,7 +94,6 @@
     padding:6px 14px;border-radius:999px;cursor:pointer;font-size:.78rem;font-family:inherit;font-weight:600;
   }
   .lang-toggle-btn:hover{border-color:var(--accent);}
-  .login-card .toggle-row{position:absolute;top:18px;inset-inline-start:18px;display:flex;gap:8px;}
   .brand{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:24px;}
   .brand-mark{
     width:56px;height:56px;border-radius:50%;
@@ -315,10 +314,6 @@
 <!-- ===== شاشة تسجيل الدخول ===== -->
 <div id="login-screen">
   <div class="login-card">
-    <div class="toggle-row">
-      <button type="button" class="lang-toggle-btn brand-toggle" onclick="toggleBrand()"></button>
-      <button type="button" class="lang-toggle-btn lang-toggle" onclick="toggleLang()">English</button>
-    </div>
     <div class="brand">
       <div class="brand-mark brand-mark-icon"></div>
       <div class="brand-name brand-name-text"></div>
@@ -751,6 +746,24 @@
             <h2><span class="icon">💳</span> <span data-i18n="reportPaymentMethodsTitle">تقرير الكاش والفيزا والتطبيقات</span></h2>
             <div id="report-payment-methods"></div>
           </div>
+
+          <div class="section">
+            <h2><span class="icon">🛒</span> <span data-i18n="reportPurchasesDetailTitle">تفاصيل جميع المشتريات لكل فرع</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thItemName">اسم الصنف</th>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thCompanyName">اسم الشركة</th>
+                <th data-i18n="thUnitPrice">سعر الوحدة</th>
+                <th data-i18n="thQty">الكمية</th>
+                <th data-i18n="thTotal">الإجمالي</th>
+              </tr></thead>
+              <tbody id="report-purchases-detail"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalPurchases">إجمالي المشتريات:</span> <b id="report-purchases-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
         </section>
 
         <!-- ============ سجل التدقيق ============ -->
@@ -937,6 +950,7 @@ const I18N = {
     reportSuppliersTitle:'تقرير الموردين', thDueDateShort:'الاستحقاق', thStatusShort:'الحالة',
     statusOverdue:'متأخر', statusOutstanding:'قائم', statusSettled:'مسدد',
     reportPaymentMethodsTitle:'تقرير الكاش والفيزا والتطبيقات',
+    reportPurchasesDetailTitle:'تفاصيل جميع المشتريات لكل فرع',
     noData:'لا توجد بيانات', noBranches:'لا توجد فروع', noSuppliers:'لا يوجد موردون',
     auditTitle:'سجل التدقيق', auditSubtitle:'سجل لكل عملية إضافة أو تعديل أو حذف (متاح للمالك فقط)',
     btnClearLog:'🗑 مسح السجل', thTime:'الوقت', thUser:'المستخدم', thRoleCol:'الدور', thOperation:'العملية',
@@ -1050,6 +1064,7 @@ const I18N = {
     reportSuppliersTitle:'Suppliers Report', thDueDateShort:'Due Date', thStatusShort:'Status',
     statusOverdue:'Overdue', statusOutstanding:'Outstanding', statusSettled:'Settled',
     reportPaymentMethodsTitle:'Cash, Card & Apps Report',
+    reportPurchasesDetailTitle:'All Purchases Detail by Branch',
     noData:'No data available', noBranches:'No branches', noSuppliers:'No suppliers',
     auditTitle:'Audit Log', auditSubtitle:'Log of every add, edit, or delete operation (owner only)',
     btnClearLog:'🗑 Clear Log', thTime:'Time', thUser:'User', thRoleCol:'Role', thOperation:'Operation',
@@ -2112,6 +2127,19 @@ function renderReports(){
   document.getElementById('report-payment-methods').innerHTML = methods.map(m =>
     barRow(m.label, m.total, maxM, m.color, totalM>0?Math.round(m.total/totalM*100)+'%':'0%')
   ).join('') + `<div class="legend">${methods.map(m=>`<span><i style="background:${m.color}"></i>${m.label}</span>`).join('')}</div>`;
+
+  const reportPurchases = (reportScope ? state.purchases.filter(p=>p.branchId===reportScope) : state.purchases)
+    .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
+  document.getElementById('report-purchases-detail').innerHTML = reportPurchases.map(p => `
+    <tr>
+      <td><bdi>${escapeHtml(p.item)}</bdi></td>
+      <td><bdi>${escapeHtml(branchNameById(p.branchId))}</bdi></td>
+      <td><bdi>${escapeHtml(p.company)}</bdi></td>
+      <td>${formatCurrency(num(p.price))}</td>
+      <td>${formatNum(num(p.qty))}</td>
+      <td class="row-total">${formatCurrency(purchaseTotal(p))}</td>
+    </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  document.getElementById('report-purchases-total').textContent = formatNum(reportPurchases.reduce((a,p)=>a+purchaseTotal(p),0));
 }
 
 /* =========================================================
