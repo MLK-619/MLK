@@ -716,6 +716,7 @@
             </div>
             <div class="toolbar-right">
               <button onclick="shareReport()" data-i18n="btnShareReport">📤 مشاركة التقرير</button>
+              <button onclick="shareReportAsPdf()" data-i18n="btnShareReportPdf">📄 مشاركة كـ PDF</button>
               <button onclick="window.print()" data-i18n="btnPrintReport">🖨 طباعة التقرير</button>
             </div>
           </div>
@@ -810,8 +811,8 @@
           <p class="subtitle" data-i18n="moreSubtitle">أدوات إضافية متاحة للمالك</p>
 
           <div class="section">
-            <h2><span class="icon">🖼️</span> <span data-i18n="moreLogoTitle">شعار التقرير</span></h2>
-            <p class="subtitle" style="margin-bottom:6px;" data-i18n="moreLogoDesc">غيّري الشعار الذي يظهر في أعلى صفحة التقارير وعند الطباعة.</p>
+            <h2><span class="icon">🖼️</span> <span data-i18n="moreLogoTitle">شعار العلامة التجارية</span></h2>
+            <p class="subtitle" style="margin-bottom:6px;" data-i18n="moreLogoDesc">غيّري الشعار الذي يظهر في شاشة الدخول، الشريط الجانبي، وأعلى صفحة التقارير.</p>
             <p class="subtitle" style="margin-bottom:14px;"><span data-i18n="moreLogoBrandNote">الشعار الحالي لِـ:</span> <b id="logo-brand-label"></b></p>
             <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
               <div class="report-logo-mark" id="logo-preview"></div>
@@ -952,8 +953,9 @@ const I18N = {
     confirmDeleteInvoice:'هل تريدين حذف هذه الفاتورة؟', titleOwnerOnly:'متاح للمالك فقط',
     reportsTitle:'التقارير', reportsSubtitle:'تقارير شهرية وسنوية',
     periodToday:'اليوم', periodMonth:'هذا الشهر', periodYear:'هذه السنة', periodAll:'كل الفترات',
-    btnPrintReport:'🖨 طباعة التقرير', btnShareReport:'📤 مشاركة التقرير',
+    btnPrintReport:'🖨 طباعة التقرير', btnShareReport:'📤 مشاركة التقرير', btnShareReportPdf:'📄 مشاركة كـ PDF',
     shareCopiedMsg:'تم نسخ ملخص التقرير — يمكنك لصقه في أي مكان', shareUnavailableMsg:'المشاركة غير مدعومة في هذا المتصفح',
+    pdfShareHint:'ستفتح نافذة الطباعة الآن — اختاري "Save as PDF" (حفظ كـ PDF) من قائمة الطابعة، أو استخدمي زر المشاركة داخل معاينة الطباعة على الجوال للحصول على نسخة PDF جاهزة للمشاركة.',
     reportBranchSalesTitle:'تقرير مبيعات كل فرع',
     reportExpensesTitle:'تقرير المصروفات (حسب البند)', reportProfitTitle:'تقرير الأرباح',
     reportCompareTitle:'مقارنة بين الفروع', thComparison:'المقارنة', thNetEstimate:'الصافي التقديري',
@@ -978,7 +980,7 @@ const I18N = {
     logBackupDownload:'تنزيل نسخة احتياطية', logBackupRestore:'استعادة نسخة احتياطية', logExportCsv:'تصدير بيانات CSV',
     navMore:'المزيد من الميزات', moreTitle:'المزيد من الميزات', moreSubtitle:'أدوات إضافية متاحة للمالك',
     moreSearchTitle:'بحث شامل', moreSearchPh:'ابحثي بالاسم في الفروع، الموردين، المخزون، المشتريات...',
-    moreLogoTitle:'شعار التقرير', moreLogoDesc:'غيّري الشعار الذي يظهر في أعلى صفحة التقارير وعند الطباعة.',
+    moreLogoTitle:'شعار العلامة التجارية', moreLogoDesc:'غيّري الشعار الذي يظهر في شاشة الدخول، الشريط الجانبي، وأعلى صفحة التقارير.',
     moreLogoBrandNote:'الشعار الحالي لِـ:',
     btnUploadLogo:'⬆️ رفع شعار جديد', btnResetLogo:'↩️ استعادة الشعار الافتراضي',
     moreBackupTitle:'النسخ الاحتياطي واستعادة البيانات',
@@ -1073,8 +1075,9 @@ const I18N = {
     confirmDeleteInvoice:'Delete this invoice?', titleOwnerOnly:'Owner only',
     reportsTitle:'Reports', reportsSubtitle:'Monthly and yearly reports',
     periodToday:'Today', periodMonth:'This Month', periodYear:'This Year', periodAll:'All Time',
-    btnPrintReport:'🖨 Print Report', btnShareReport:'📤 Share Report',
+    btnPrintReport:'🖨 Print Report', btnShareReport:'📤 Share Report', btnShareReportPdf:'📄 Share as PDF',
     shareCopiedMsg:'Report summary copied — you can paste it anywhere', shareUnavailableMsg:'Sharing is not supported in this browser',
+    pdfShareHint:'The print dialog will open now — choose "Save as PDF" from the printer list, or use the Share button inside the print preview on mobile to get a shareable PDF.',
     reportBranchSalesTitle:'Sales Report by Branch',
     reportExpensesTitle:'Expenses Report (by Category)', reportProfitTitle:'Profit Report',
     reportCompareTitle:'Branch Comparison', thComparison:'Comparison', thNetEstimate:'Estimated Net',
@@ -1099,7 +1102,7 @@ const I18N = {
     logBackupDownload:'Downloaded backup', logBackupRestore:'Restored backup', logExportCsv:'Exported CSV data',
     navMore:'More Features', moreTitle:'More Features', moreSubtitle:'Additional tools available to the owner',
     moreSearchTitle:'Global Search', moreSearchPh:'Search by name across branches, suppliers, inventory, purchases...',
-    moreLogoTitle:'Report Logo', moreLogoDesc:'Change the logo shown at the top of the Reports page and on print.',
+    moreLogoTitle:'Brand Logo', moreLogoDesc:'Change the logo shown on the login screen, the sidebar, and at the top of the Reports page.',
     moreLogoBrandNote:'Currently editing logo for:',
     btnUploadLogo:'⬆️ Upload New Logo', btnResetLogo:'↩️ Restore Default Logo',
     moreBackupTitle:'Backup & Restore',
@@ -1172,18 +1175,22 @@ const BRAND_THEMES = {
   },
 };
 
+function brandMarkHtml(brand){
+  const custom = state && state.settings.customLogo && state.settings.customLogo[brand];
+  return custom ? `<img src="${custom}" alt="logo" style="width:100%;height:100%;object-fit:cover;">` : BRAND_INFO[brand].markSvg;
+}
 function applyBrandTheme(){
   const vars = BRAND_THEMES[BRAND];
   Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
 }
 function applyBrandDisplay(){
   const info = BRAND_INFO[BRAND];
-  document.querySelectorAll('.brand-mark-icon').forEach(el => { el.innerHTML = info.markSvg; });
+  document.querySelectorAll('.brand-mark-icon').forEach(el => { el.innerHTML = brandMarkHtml(BRAND); });
   document.querySelectorAll('.brand-name-text').forEach(el => { el.innerHTML = info.nameHtml; });
   const markAventus = document.getElementById('chooser-mark-aventus');
-  if(markAventus) markAventus.innerHTML = BRAND_INFO.aventus.markSvg;
+  if(markAventus) markAventus.innerHTML = brandMarkHtml('aventus');
   const markChicken = document.getElementById('chooser-mark-chickenville');
-  if(markChicken) markChicken.innerHTML = BRAND_INFO.chickenville.markSvg;
+  if(markChicken) markChicken.innerHTML = brandMarkHtml('chickenville');
 }
 function selectBrandAndContinue(brand){
   BRAND = brand;
@@ -2108,6 +2115,10 @@ async function shareReport(){
     alert(t('shareUnavailableMsg'));
   }
 }
+function shareReportAsPdf(){
+  alert(t('pdfShareHint'));
+  window.print();
+}
 function populateReportBranchSelect(){
   const sel = document.getElementById('report-branch');
   const scope = activeBranchId();
@@ -2295,6 +2306,7 @@ function uploadReportLogo(file){
     state.settings.customLogo[BRAND] = reader.result;
     saveState();
     renderReportLogo();
+    applyBrandDisplay();
     logAction('logChangeLogo');
   };
   reader.readAsDataURL(file);
@@ -2304,6 +2316,7 @@ function resetReportLogo(){
   state.settings.customLogo[BRAND] = null;
   saveState();
   renderReportLogo();
+  applyBrandDisplay();
   logAction('logChangeLogo');
 }
 
