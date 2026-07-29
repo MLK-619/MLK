@@ -368,7 +368,6 @@
         <li class="nav-item" data-view="more" data-perm="more"><span class="nav-icon">✨</span> <span data-i18n="navMore">المزيد من الميزات</span></li>
       </ul>
       <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <button type="button" class="lang-toggle-btn brand-toggle" style="flex:1;" onclick="toggleBrand()"></button>
         <button type="button" class="lang-toggle-btn lang-toggle" style="flex:1;" onclick="toggleLang()">English</button>
       </div>
       <div class="sidebar-note">
@@ -593,14 +592,15 @@
             <div class="table-scroll">
             <table>
               <thead><tr>
-                <th style="width:12%" data-i18n="thMonth">الشهر</th>
-                <th style="width:14%" data-i18n="thBranch">الفرع</th>
-                <th style="width:11%" data-i18n="thCash">كاش</th>
-                <th style="width:12%" data-i18n="thVisa">فيزا/بطاقة</th>
-                <th style="width:11%" data-i18n="thTalabat">طلبات</th>
-                <th style="width:11%" data-i18n="thZad">زادكم</th>
-                <th style="width:10%" data-i18n="thOther">أخرى</th>
-                <th style="width:14%" data-i18n="thTotal">الإجمالي</th>
+                <th style="width:9%" data-i18n="thEntryType">نوع الإدخال</th>
+                <th style="width:11%" data-i18n="thSaleDate">التاريخ</th>
+                <th style="width:13%" data-i18n="thBranch">الفرع</th>
+                <th style="width:10%" data-i18n="thCash">كاش</th>
+                <th style="width:11%" data-i18n="thVisa">فيزا/بطاقة</th>
+                <th style="width:10%" data-i18n="thTalabat">طلبات</th>
+                <th style="width:10%" data-i18n="thZad">زادكم</th>
+                <th style="width:9%" data-i18n="thOther">أخرى</th>
+                <th style="width:12%" data-i18n="thTotal">الإجمالي</th>
                 <th style="width:5%"></th>
               </tr></thead>
               <tbody id="sales-body"></tbody>
@@ -934,7 +934,8 @@ const I18N = {
     thMaterialName:'اسم المادة', thQuantity:'الكمية المتوفرة', thDate:'التاريخ',
     btnAddMaterial:'+ إضافة مادة خام', placeholderMaterialName:'اسم المادة الخام',
     salesTitle:'المبيعات', salesSubtitle:'إدخال المبيعات الشهرية حسب طريقة الدفع لكل فرع',
-    thMonth:'الشهر', thCash:'كاش', thVisa:'فيزا/بطاقة', thTalabat:'طلبات', thZad:'زادكم', thOther:'أخرى',
+    thMonth:'الشهر', thSaleDate:'التاريخ', thEntryType:'نوع الإدخال', optionMonthly:'شهري', optionDaily:'يومي',
+    thCash:'كاش', thVisa:'فيزا/بطاقة', thTalabat:'طلبات', thZad:'زادكم', thOther:'أخرى',
     btnAddSale:'+ إضافة مبيعات الشهر', totalSales:'إجمالي المبيعات:', sectionPaymentMethods:'المبيعات حسب طريقة الدفع',
     pm_cash:'كاش', pm_visa:'فيزا/بطاقة', pm_talabat:'طلبات', pm_zad:'زادكم', pm_other:'أخرى',
     profitTitle:'حساب الأرباح', profitSubtitle:'صافي الربح = (فيزا + طلبات + زادكم + أخرى) - إجمالي المصروفات - العمولات - الخصومات — ملاحظة: الكاش لا يُحتسب ضمن إجمالي الأرباح',
@@ -1054,7 +1055,8 @@ const I18N = {
     thMaterialName:'Material Name', thQuantity:'Quantity on Hand', thDate:'Date',
     btnAddMaterial:'+ Add Raw Material', placeholderMaterialName:'Raw material name',
     salesTitle:'Sales', salesSubtitle:'Enter monthly sales by payment method for each branch',
-    thMonth:'Month', thCash:'Cash', thVisa:'Visa/Card', thTalabat:'Talabat', thZad:'Zadkom', thOther:'Other',
+    thMonth:'Month', thSaleDate:'Date', thEntryType:'Entry Type', optionMonthly:'Monthly', optionDaily:'Daily',
+    thCash:'Cash', thVisa:'Visa/Card', thTalabat:'Talabat', thZad:'Zadkom', thOther:'Other',
     btnAddSale:'+ Add Monthly Sales', totalSales:'Total Sales:', sectionPaymentMethods:'Sales by Payment Method',
     pm_cash:'Cash', pm_visa:'Visa/Card', pm_talabat:'Talabat', pm_zad:'Zadkom', pm_other:'Other',
     profitTitle:'Profit Calculation', profitSubtitle:'Net Profit = (Visa + Talabat + Zadkom + Other) − Total Expenses − Commissions − Discounts — note: cash is not counted toward total profit',
@@ -1178,20 +1180,10 @@ function applyBrandDisplay(){
   const info = BRAND_INFO[BRAND];
   document.querySelectorAll('.brand-mark-icon').forEach(el => { el.innerHTML = info.markSvg; });
   document.querySelectorAll('.brand-name-text').forEach(el => { el.innerHTML = info.nameHtml; });
-  document.querySelectorAll('.brand-toggle').forEach(btn => {
-    btn.textContent = BRAND === 'aventus' ? BRAND_INFO.chickenville.nameHtml.split(' <span')[0] : BRAND_INFO.aventus.nameHtml.split(' <span')[0];
-  });
   const markAventus = document.getElementById('chooser-mark-aventus');
   if(markAventus) markAventus.innerHTML = BRAND_INFO.aventus.markSvg;
   const markChicken = document.getElementById('chooser-mark-chickenville');
   if(markChicken) markChicken.innerHTML = BRAND_INFO.chickenville.markSvg;
-}
-function toggleBrand(){
-  BRAND = BRAND === 'aventus' ? 'chickenville' : 'aventus';
-  localStorage.setItem(BRAND_KEY, BRAND);
-  applyBrandTheme();
-  applyBrandDisplay();
-  if(session) switchView(currentView);
 }
 function selectBrandAndContinue(brand){
   BRAND = brand;
@@ -1914,7 +1906,7 @@ function renderStock(){
 ========================================================= */
 function addSale(){
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
-  state.sales.push({id:uid(), date:todayStr().slice(0,7), branchId, cash:0, visa:0, talabat:0, zad:0, other:0});
+  state.sales.push({id:uid(), date:todayStr().slice(0,7), entryType:'monthly', branchId, cash:0, visa:0, talabat:0, zad:0, other:0});
   logAction('logAddSale');
   renderSales();
 }
@@ -1923,6 +1915,20 @@ function updateSale(id, field, value){
   if(!s) return;
   s[field] = value;
   saveState();
+}
+function setSaleEntryType(id, type){
+  const s = state.sales.find(x=>x.id===id);
+  if(!s) return;
+  const current = s.entryType || 'monthly';
+  if(type === current){ return; }
+  if(type === 'daily'){
+    s.date = (s.date && s.date.length === 7) ? s.date + '-01' : (s.date || todayStr());
+  }else{
+    s.date = (s.date || todayStr()).slice(0,7);
+  }
+  s.entryType = type;
+  saveState();
+  renderSales();
 }
 function removeSale(id){
   state.sales = state.sales.filter(s=>s.id!==id);
@@ -1933,9 +1939,15 @@ function renderSales(){
   const scope = activeBranchId();
   const visibleSales = scope ? state.sales.filter(s=>s.branchId===scope) : state.sales;
 
-  document.getElementById('sales-body').innerHTML = visibleSales.map(s => `
+  document.getElementById('sales-body').innerHTML = visibleSales.map(s => {
+    const entryType = s.entryType || 'monthly';
+    return `
     <tr data-id="${s.id}">
-      <td><input type="month" value="${s.date}" onchange="updateSale('${s.id}','date',this.value)"></td>
+      <td><select onchange="setSaleEntryType('${s.id}', this.value)">
+        <option value="monthly" ${entryType==='monthly'?'selected':''}>${t('optionMonthly')}</option>
+        <option value="daily" ${entryType==='daily'?'selected':''}>${t('optionDaily')}</option>
+      </select></td>
+      <td><input type="${entryType==='daily'?'date':'month'}" value="${s.date}" onchange="updateSale('${s.id}','date',this.value)"></td>
       <td><select onchange="updateSale('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
       <td><input type="number" min="0" step="any" value="${s.cash}" oninput="updateSale('${s.id}','cash',this.value); renderSalesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.visa}" oninput="updateSale('${s.id}','visa',this.value); renderSalesTotals();"></td>
@@ -1944,7 +1956,8 @@ function renderSales(){
       <td><input type="number" min="0" step="any" value="${s.other}" oninput="updateSale('${s.id}','other',this.value); renderSalesTotals();"></td>
       <td class="row-total">${formatCurrency(saleTotal(s))}</td>
       <td><button class="del-btn" onclick="removeSale('${s.id}')">✕</button></td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
   renderSalesTotals();
 }
 function renderSalesTotals(){
