@@ -146,6 +146,12 @@
   .sidebar-brand{display:flex;align-items:center;gap:10px;padding:6px 8px 22px;}
   .sidebar-brand .brand-mark{width:38px;height:38px;border-radius:50%;flex:none;}
   .sidebar-brand .brand-name{font-size:.88rem;line-height:1.35;}
+  .mobile-nav-toggle{
+    display:none;background:var(--card2);border:1px solid var(--border);color:var(--accent);
+    width:38px;height:38px;border-radius:8px;font-size:1.15rem;cursor:pointer;
+    align-items:center;justify-content:center;margin-inline-start:auto;flex:none;
+  }
+  .sidebar-nav-panel{display:flex;flex-direction:column;flex:1;min-height:0;}
   .nav-list{list-style:none;margin:0;padding:0;flex:1;}
   .nav-item{
     display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;
@@ -275,9 +281,12 @@
 
   @media (max-width: 880px){
     .app-shell{flex-direction:column;}
-    .sidebar{width:100%;height:auto;position:relative;flex-direction:row;flex-wrap:wrap;padding:12px;}
-    .sidebar-brand{padding:4px 8px;}
-    .nav-list{display:flex;flex-wrap:wrap;flex:none;width:100%;}
+    .sidebar{width:100%;height:auto;position:relative;flex-direction:column;padding:12px;}
+    .sidebar-brand{padding:4px 8px;justify-content:space-between;}
+    .mobile-nav-toggle{display:flex;}
+    .sidebar-nav-panel{display:none;width:100%;}
+    .sidebar-nav-panel.open{display:block;}
+    .nav-list{display:flex;flex-wrap:wrap;flex:none;width:100%;margin-top:10px;}
     .nav-item{margin-inline-end:4px;}
     .sidebar-note{display:none;}
   }
@@ -375,22 +384,25 @@
       <div class="sidebar-brand">
         <div class="brand-mark brand-mark-icon"></div>
         <div class="brand-name brand-name-text"></div>
+        <button type="button" class="mobile-nav-toggle" id="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Menu">☰</button>
       </div>
-      <ul class="nav-list" id="nav-list">
-        <li class="nav-item" data-view="dashboard" data-perm="dashboard"><span class="nav-icon">🏠</span> <span data-i18n="navDashboard">لوحة التحكم</span></li>
-        <li class="nav-item" data-view="branches" data-perm="branches"><span class="nav-icon">🏬</span> <span data-i18n="navBranches">الفروع</span></li>
-        <li class="nav-item" data-view="costs" data-perm="costs"><span class="nav-icon">💰</span> <span data-i18n="navCosts">التكاليف التشغيلية</span></li>
-        <li class="nav-item" data-view="stock" data-perm="stock"><span class="nav-icon">📦</span> <span data-i18n="navStock">المخزون</span></li>
-        <li class="nav-item" data-view="sales" data-perm="sales"><span class="nav-icon">🧾</span> <span data-i18n="navSales">المبيعات</span></li>
-        <li class="nav-item" data-view="profit" data-perm="profit"><span class="nav-icon">📈</span> <span data-i18n="navProfit">حساب الأرباح</span></li>
-        <li class="nav-item" data-view="suppliers" data-perm="suppliers"><span class="nav-icon">🚚</span> <span data-i18n="navSuppliers">الفواتير المتأخرة</span></li>
-        <li class="nav-item" data-view="reports" data-perm="reports"><span class="nav-icon">📊</span> <span data-i18n="navReports">التقارير</span></li>
-        <li class="nav-item" data-view="auditlog" data-perm="auditlog"><span class="nav-icon">🛡️</span> <span data-i18n="navAuditlog">سجل التدقيق</span></li>
-        <li class="nav-item" data-view="users" data-perm="users"><span class="nav-icon">👤</span> <span data-i18n="navUsers">إدارة المستخدمين</span></li>
-        <li class="nav-item" data-view="more" data-perm="more"><span class="nav-icon">✨</span> <span data-i18n="navMore">المزيد من الميزات</span></li>
-      </ul>
-      <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <button type="button" class="lang-toggle-btn lang-toggle" style="flex:1;" onclick="toggleLang()">English</button>
+      <div class="sidebar-nav-panel" id="sidebar-nav-panel">
+        <ul class="nav-list" id="nav-list">
+          <li class="nav-item" data-view="dashboard" data-perm="dashboard"><span class="nav-icon">🏠</span> <span data-i18n="navDashboard">لوحة التحكم</span></li>
+          <li class="nav-item" data-view="branches" data-perm="branches"><span class="nav-icon">🏬</span> <span data-i18n="navBranches">الفروع</span></li>
+          <li class="nav-item" data-view="costs" data-perm="costs"><span class="nav-icon">💰</span> <span data-i18n="navCosts">التكاليف التشغيلية</span></li>
+          <li class="nav-item" data-view="stock" data-perm="stock"><span class="nav-icon">📦</span> <span data-i18n="navStock">المخزون</span></li>
+          <li class="nav-item" data-view="sales" data-perm="sales"><span class="nav-icon">🧾</span> <span data-i18n="navSales">المبيعات</span></li>
+          <li class="nav-item" data-view="profit" data-perm="profit"><span class="nav-icon">📈</span> <span data-i18n="navProfit">حساب الأرباح</span></li>
+          <li class="nav-item" data-view="suppliers" data-perm="suppliers"><span class="nav-icon">🚚</span> <span data-i18n="navSuppliers">الفواتير المتأخرة</span></li>
+          <li class="nav-item" data-view="reports" data-perm="reports"><span class="nav-icon">📊</span> <span data-i18n="navReports">التقارير</span></li>
+          <li class="nav-item" data-view="auditlog" data-perm="auditlog"><span class="nav-icon">🛡️</span> <span data-i18n="navAuditlog">سجل التدقيق</span></li>
+          <li class="nav-item" data-view="users" data-perm="users"><span class="nav-icon">👤</span> <span data-i18n="navUsers">إدارة المستخدمين</span></li>
+          <li class="nav-item" data-view="more" data-perm="more"><span class="nav-icon">✨</span> <span data-i18n="navMore">المزيد من الميزات</span></li>
+        </ul>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button type="button" class="lang-toggle-btn lang-toggle" style="flex:1;" onclick="toggleLang()">English</button>
+        </div>
       </div>
       <div class="sidebar-note">
         <b data-i18n="sidebarSecurityNote">ملاحظة أمان:</b> <span data-i18n="sidebarSecurityText">هذا نموذج أولي بواجهة فقط. الحماية الفعلية (تشفير قاعدة البيانات، نسخ احتياطي، شهادة SSL، استضافة آمنة) تُنفَّذ عند بناء الخادم الخلفي (Backend).</span>
@@ -1450,8 +1462,14 @@ const VIEW_TITLE_KEYS = {
 };
 
 document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => switchView(item.dataset.view));
+  item.addEventListener('click', () => {
+    switchView(item.dataset.view);
+    document.getElementById('sidebar-nav-panel').classList.remove('open');
+  });
 });
+function toggleMobileNav(){
+  document.getElementById('sidebar-nav-panel').classList.toggle('open');
+}
 
 function switchView(view){
   currentView = view;
