@@ -643,6 +643,7 @@
           <p class="subtitle" data-i18n="profitSubtitle">صافي الربح = إجمالي المبيعات - إجمالي المصروفات - عمولات التطبيقات - الخصومات</p>
           <div class="toolbar"><div>
             <select id="profit-period" onchange="renderProfit()">
+              <option value="day" data-i18n="periodToday">اليوم</option>
               <option value="month" selected data-i18n="periodMonth">هذا الشهر</option>
               <option value="year" data-i18n="periodYear">هذه السنة</option>
               <option value="all" data-i18n="periodAll">كل الفترات</option>
@@ -730,6 +731,7 @@
           <div class="toolbar">
             <div style="display:flex;gap:10px;flex-wrap:wrap;">
               <select id="report-period" onchange="renderReports()">
+                <option value="day" data-i18n="periodToday">اليوم</option>
                 <option value="month" selected data-i18n="periodMonth">هذا الشهر</option>
                 <option value="year" data-i18n="periodYear">هذه السنة</option>
                 <option value="all" data-i18n="periodAll">كل الفترات</option>
@@ -843,6 +845,22 @@
                 <input type="file" accept="image/*" onchange="uploadReportLogo(this.files[0])" style="display:none;">
               </label>
               <button class="clear-btn" onclick="resetReportLogo()" data-i18n="btnResetLogo">↩️ استعادة الشعار الافتراضي</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2><span class="icon">🎨</span> <span data-i18n="moreThemeTitle">ألوان الثيم</span></h2>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreThemeDesc">غيّري اللون الأساسي ولون التدرج لهذا البراند.</p>
+            <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;">
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:.8rem;color:var(--muted);">
+                <span data-i18n="labelAccentColor">اللون الأساسي</span>
+                <input type="color" id="theme-accent-input" style="width:64px;height:40px;padding:2px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card2);">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:6px;font-size:.8rem;color:var(--muted);">
+                <span data-i18n="labelAccentLightColor">لون التدرج الفاتح</span>
+                <input type="color" id="theme-accent-light-input" style="width:64px;height:40px;padding:2px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card2);">
+              </label>
+              <button class="clear-btn" onclick="resetThemeColors()" data-i18n="btnResetTheme">↩️ استعادة الألوان الافتراضية</button>
             </div>
           </div>
 
@@ -995,7 +1013,7 @@ const I18N = {
     logAddPurchase:'إضافة مشترى', logDeletePurchase:'حذف مشترى',
     logAddOther:'إضافة مصروف آخر', logDeleteOther:'حذف مصروف آخر',
     logAddStock:'إضافة مادة خام للمخزون', logDeleteStock:'حذف مادة من المخزون',
-    logAddNote:'إضافة ملاحظة/تذكير', logChangeLogo:'تغيير شعار التقرير',
+    logAddNote:'إضافة ملاحظة/تذكير', logChangeLogo:'تغيير شعار التقرير', logChangeTheme:'تغيير ألوان الثيم',
     logAddSale:'إضافة يومية مبيعات', logDeleteSale:'حذف يومية مبيعات',
     logAddSupplier:'إضافة مورد', logDeleteSupplier:'حذف فاتورة مورد',
     logLogin:'تسجيل دخول', logLogout:'تسجيل خروج',
@@ -1005,6 +1023,8 @@ const I18N = {
     moreLogoTitle:'شعار العلامة التجارية', moreLogoDesc:'غيّري الشعار الذي يظهر في شاشة الدخول، الشريط الجانبي، وأعلى صفحة التقارير.',
     moreLogoBrandNote:'الشعار الحالي لِـ:',
     btnUploadLogo:'⬆️ رفع شعار جديد', btnResetLogo:'↩️ استعادة الشعار الافتراضي',
+    moreThemeTitle:'ألوان الثيم', moreThemeDesc:'غيّري اللون الأساسي ولون التدرج لهذا البراند.',
+    labelAccentColor:'اللون الأساسي', labelAccentLightColor:'لون التدرج الفاتح', btnResetTheme:'↩️ استعادة الألوان الافتراضية',
     moreBackupTitle:'النسخ الاحتياطي واستعادة البيانات',
     moreBackupDesc:'نزّلي نسخة من كل بيانات النظام كملف JSON، أو استعيديها لاحقاً على أي جهاز.',
     btnDownloadBackup:'⬇️ تنزيل نسخة احتياطية', btnRestoreBackup:'⬆️ استعادة من نسخة احتياطية',
@@ -1117,7 +1137,7 @@ const I18N = {
     logAddPurchase:'Added purchase', logDeletePurchase:'Deleted purchase',
     logAddOther:'Added other expense', logDeleteOther:'Deleted other expense',
     logAddStock:'Added raw material to inventory', logDeleteStock:'Removed material from inventory',
-    logAddNote:'Added note/reminder', logChangeLogo:'Changed report logo',
+    logAddNote:'Added note/reminder', logChangeLogo:'Changed report logo', logChangeTheme:'Changed theme colors',
     logAddSale:'Added daily sales entry', logDeleteSale:'Deleted daily sales entry',
     logAddSupplier:'Added supplier', logDeleteSupplier:'Deleted supplier invoice',
     logLogin:'Logged in', logLogout:'Logged out',
@@ -1127,6 +1147,8 @@ const I18N = {
     moreLogoTitle:'Brand Logo', moreLogoDesc:'Change the logo shown on the login screen, the sidebar, and at the top of the Reports page.',
     moreLogoBrandNote:'Currently editing logo for:',
     btnUploadLogo:'⬆️ Upload New Logo', btnResetLogo:'↩️ Restore Default Logo',
+    moreThemeTitle:'Theme Colors', moreThemeDesc:'Change the accent and gradient colors for this brand.',
+    labelAccentColor:'Accent Color', labelAccentLightColor:'Gradient Light Color', btnResetTheme:'↩️ Restore Default Colors',
     moreBackupTitle:'Backup & Restore',
     moreBackupDesc:'Download all system data as a JSON file, or restore it later on any device.',
     btnDownloadBackup:'⬇️ Download Backup', btnRestoreBackup:'⬆️ Restore from Backup',
@@ -1201,9 +1223,27 @@ function brandMarkHtml(brand){
   const custom = state && state.settings.customLogo && state.settings.customLogo[brand];
   return custom ? `<img src="${custom}" alt="logo" style="width:100%;height:100%;object-fit:cover;">` : BRAND_INFO[brand].markSvg;
 }
+function hexToRgba(hex, alpha){
+  const h = hex.replace('#','');
+  const full = h.length === 3 ? h.split('').map(c=>c+c).join('') : h;
+  const n = parseInt(full, 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${alpha})`;
+}
 function applyBrandTheme(){
   const vars = BRAND_THEMES[BRAND];
   Object.entries(vars).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+  const custom = state && state.settings.customTheme && state.settings.customTheme[BRAND];
+  if(custom && custom.accent){
+    document.documentElement.style.setProperty('--accent', custom.accent);
+    document.documentElement.style.setProperty('--accent-tint-06', hexToRgba(custom.accent, .06));
+    document.documentElement.style.setProperty('--accent-tint-08', hexToRgba(custom.accent, .08));
+    document.documentElement.style.setProperty('--accent-tint-12', hexToRgba(custom.accent, .12));
+    document.documentElement.style.setProperty('--accent-shadow-30', hexToRgba(custom.accent, .25));
+    document.documentElement.style.setProperty('--accent-shadow-35', hexToRgba(custom.accent, .3));
+  }
+  if(custom && custom.accentLight){
+    document.documentElement.style.setProperty('--accent-light', custom.accentLight);
+  }
 }
 function applyBrandDisplay(){
   const info = BRAND_INFO[BRAND];
@@ -1304,7 +1344,7 @@ function defaultState(){
     suppliers: [],
     stock: [],
     sales: [],
-    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0, customLogo: { aventus: null, chickenville: null } },
+    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0, customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} } },
     auditLog: [],
     notes: [],
   };
@@ -1320,6 +1360,9 @@ function loadState(){
       if(typeof merged.settings.customLogo === 'string' || !merged.settings.customLogo){
         merged.settings.customLogo = { aventus: (typeof merged.settings.customLogo === 'string' ? merged.settings.customLogo : null), chickenville: null };
       }
+      merged.settings.customTheme = merged.settings.customTheme || {};
+      merged.settings.customTheme.aventus = merged.settings.customTheme.aventus || {};
+      merged.settings.customTheme.chickenville = merged.settings.customTheme.chickenville || {};
       return merged;
     }catch(e){ /* fallthrough */ }
   }
@@ -1481,6 +1524,7 @@ function filterSalesByPeriod(period){
   const month = today.slice(0,7);
   const year = today.slice(0,4);
   return state.sales.filter(s => {
+    if(period==='day') return (s.date||'').length === 10 && s.date === today;
     if(period==='month') return (s.date||'').slice(0,7) === month;
     if(period==='year') return (s.date||'').slice(0,4) === year;
     return true;
@@ -1951,7 +1995,7 @@ function setSaleEntryType(id, type){
   const current = s.entryType || 'monthly';
   if(type === current){ return; }
   if(type === 'daily'){
-    s.date = (s.date && s.date.length === 7) ? s.date + '-01' : (s.date || todayStr());
+    s.date = todayStr();
   }else{
     s.date = (s.date || todayStr()).slice(0,7);
   }
@@ -2287,6 +2331,7 @@ function renderMore(){
   document.getElementById('global-search-input').value = '';
   document.getElementById('global-search-results').innerHTML = '';
   renderReportLogo();
+  renderThemeColorInputs();
 }
 
 /* =========================================================
@@ -2340,6 +2385,35 @@ function resetReportLogo(){
   renderReportLogo();
   applyBrandDisplay();
   logAction('logChangeLogo');
+}
+
+/* =========================================================
+   ألوان الثيم
+========================================================= */
+function renderThemeColorInputs(){
+  const custom = state.settings.customTheme[BRAND] || {};
+  document.getElementById('theme-accent-input').value = custom.accent || BRAND_THEMES[BRAND]['--accent'];
+  document.getElementById('theme-accent-light-input').value = custom.accentLight || BRAND_THEMES[BRAND]['--accent-light'];
+}
+document.getElementById('theme-accent-input').addEventListener('input', function(){
+  if(!session || session.role !== 'owner') return;
+  state.settings.customTheme[BRAND].accent = this.value;
+  saveState();
+  applyBrandTheme();
+});
+document.getElementById('theme-accent-light-input').addEventListener('input', function(){
+  if(!session || session.role !== 'owner') return;
+  state.settings.customTheme[BRAND].accentLight = this.value;
+  saveState();
+  applyBrandTheme();
+});
+function resetThemeColors(){
+  if(session.role !== 'owner') return;
+  state.settings.customTheme[BRAND] = {};
+  saveState();
+  applyBrandTheme();
+  renderThemeColorInputs();
+  logAction('logChangeTheme');
 }
 
 function runGlobalSearch(){
