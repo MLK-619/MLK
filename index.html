@@ -282,6 +282,28 @@
     .sidebar-note{display:none;}
   }
 
+  @media (max-width: 600px){
+    .wrap{padding:16px 12px 40px;}
+    .topbar{padding:12px 16px;}
+    h1.page-title{font-size:1.25rem;}
+    .kpi-grid{grid-template-columns:1fr 1fr;gap:10px;}
+    .kpi-value{font-size:1.1rem;}
+    .section{padding:16px 14px;}
+    /* منع تكبير iOS التلقائي عند التركيز على الحقول (يحصل تلقائياً إذا كان حجم الخط أقل من 16px) */
+    input, select{font-size:16px;}
+    th{font-size:.68rem;padding:6px 5px;}
+    td{padding:6px 5px;font-size:.82rem;}
+    .table-scroll{-webkit-overflow-scrolling:touch;}
+    .table-scroll::after{
+      display:block;text-align:center;font-size:.7rem;color:var(--muted);padding-top:8px;
+    }
+    html[lang="ar"] .table-scroll::after{content:"⇠ اسحبي يميناً/يساراً لعرض بقية الأعمدة";}
+    html[lang="en"] .table-scroll::after{content:"⇠ Swipe left/right to see more columns";}
+    .toolbar{flex-direction:column;align-items:stretch;}
+    .toolbar-right{justify-content:stretch;}
+    .toolbar-right button, .toolbar-right select{flex:1;}
+  }
+
   @media print{
     .sidebar,.topbar,.toolbar,.add-btn,.del-btn,footer.app-footer{display:none;}
     body{background:#fff;color:#000;}
