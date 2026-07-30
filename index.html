@@ -161,11 +161,6 @@
   .nav-item:hover{background:var(--card2);color:var(--text);}
   .nav-item.active{background:var(--card2);color:var(--accent);border-inline-start-color:var(--accent);font-weight:600;}
   .nav-item .nav-icon{width:20px;text-align:center;}
-  .sidebar-note{
-    font-size:.7rem;color:var(--muted);background:var(--card2);border:1px solid var(--border);
-    border-radius:10px;padding:10px 12px;line-height:1.7;margin-top:10px;
-  }
-  .sidebar-note b{color:var(--accent);}
 
   .main-area{flex:1;min-width:0;display:flex;flex-direction:column;}
   header.topbar{
@@ -292,7 +287,6 @@
     .sidebar-nav-panel.open{display:block;}
     .nav-list{display:flex;flex-wrap:wrap;flex:none;width:100%;margin-top:10px;}
     .nav-item{margin-inline-end:4px;}
-    .sidebar-note{display:none;}
   }
 
   @media (max-width: 600px){
@@ -407,9 +401,6 @@
         <div style="display:flex;gap:8px;margin-bottom:10px;">
           <button type="button" class="lang-toggle-btn lang-toggle" style="flex:1;" onclick="toggleLang()">English</button>
         </div>
-      </div>
-      <div class="sidebar-note">
-        <b data-i18n="sidebarSecurityNote">ملاحظة أمان:</b> <span data-i18n="sidebarSecurityText">النظام مربوط بقاعدة بيانات سحابية حقيقية (Firebase) — البيانات تُزامن وتُشفّر تلقائياً عبر اتصال آمن (SSL). كلمات المرور لا تزال تُحفظ كنص عادي، ولا يوجد نسخ احتياطي تلقائي مجدول — استخدمي ميزة "تنزيل نسخة احتياطية" يدوياً بين فترة وأخرى.</span>
       </div>
     </aside>
 
@@ -957,10 +948,12 @@ const I18N = {
     navUsers:'إدارة المستخدمين', usersTitle:'إدارة المستخدمين',
     usersSubtitle:'المالك فقط يقدر يضيف حسابات ويحدد الدور والفرع الثابت لكل مستخدم — لا يختار المستخدم فرعه بنفسه',
     btnAddUser:'+ إضافة مستخدم', errLastOwner:'لا يمكن حذف آخر حساب بصلاحية مالك',
-    confirmDeleteUser:'هل تريدين حذف هذا المستخدم؟',
+    confirmDeleteUser:'هل تريدين حذف هذا المستخدم؟', confirmAddUser:'هل تريدين إضافة مستخدم جديد؟',
+    confirmAddBranch:'هل تريدين إضافة فرع جديد؟', confirmAddSalary:'هل تريدين إضافة سجل راتب جديد؟',
+    confirmAddPurchase:'هل تريدين إضافة مشترى جديد؟', confirmAddOther:'هل تريدين إضافة مصروف جديد؟',
+    confirmAddStock:'هل تريدين إضافة مادة خام جديدة؟', confirmAddSale:'هل تريدين إضافة مبيعات جديدة؟',
+    confirmAddSupplier:'هل تريدين إضافة مورد جديد؟', confirmAddNote:'هل تريدين إضافة هذه الملاحظة؟',
     logAddUser:'إضافة مستخدم جديد', logDeleteUser:'حذف مستخدم',
-    sidebarSecurityNote:'ملاحظة أمان:',
-    sidebarSecurityText:'النظام مربوط بقاعدة بيانات سحابية حقيقية (Firebase) — البيانات تُزامن وتُشفّر تلقائياً عبر اتصال آمن (SSL). كلمات المرور لا تزال تُحفظ كنص عادي، ولا يوجد نسخ احتياطي تلقائي مجدول — استخدمي ميزة "تنزيل نسخة احتياطية" يدوياً بين فترة وأخرى.',
     welcomeText:'مرحباً،', logout:'تسجيل الخروج',
     cloudStatus_offline:'⚠️ محلي فقط', cloudStatus_connecting:'⏳ يتصل...', cloudStatus_online:'☁️ متصل',
     dashboardTitle:'لوحة التحكم الرئيسية', dashboardSubtitle:'نظام إدارة فروع شركة المزن التجارية — ملخص سريع',
@@ -1082,10 +1075,12 @@ const I18N = {
     navUsers:'User Management', usersTitle:'User Management',
     usersSubtitle:'Only the owner can add accounts and set each user’s fixed role and branch — users cannot pick their own branch',
     btnAddUser:'+ Add User', errLastOwner:'Cannot delete the last owner account',
-    confirmDeleteUser:'Delete this user?',
+    confirmDeleteUser:'Delete this user?', confirmAddUser:'Add a new user?',
+    confirmAddBranch:'Add a new branch?', confirmAddSalary:'Add a new salary record?',
+    confirmAddPurchase:'Add a new purchase?', confirmAddOther:'Add a new expense?',
+    confirmAddStock:'Add a new raw material?', confirmAddSale:'Add a new sales entry?',
+    confirmAddSupplier:'Add a new supplier?', confirmAddNote:'Add this note?',
     logAddUser:'Added new user', logDeleteUser:'Deleted user',
-    sidebarSecurityNote:'Security note:',
-    sidebarSecurityText:'The system is connected to a real cloud database (Firebase) — data syncs and is encrypted automatically over a secure (SSL) connection. Passwords are still stored as plain text, and there is no scheduled automatic backup — use the "Download Backup" feature manually from time to time.',
     welcomeText:'Welcome,', logout:'Log Out',
     cloudStatus_offline:'⚠️ Local only', cloudStatus_connecting:'⏳ Connecting...', cloudStatus_online:'☁️ Synced',
     dashboardTitle:'Main Dashboard', dashboardSubtitle:'Al Muzn Trading Co. Branch Management System — Quick Summary',
@@ -1764,6 +1759,7 @@ function addNote(){
   const dateInput = document.getElementById('note-date-input');
   const text = textInput.value.trim();
   if(!text) return;
+  if(!confirm(t('confirmAddNote'))) return;
   state.notes.push({id:uid(), text, date: dateInput.value || ''});
   textInput.value = '';
   dateInput.value = '';
@@ -1795,6 +1791,7 @@ function renderNotes(){
 ========================================================= */
 function addBranch(){
   if(!PERMS[session.role].editBranches) return;
+  if(!confirm(t('confirmAddBranch'))) return;
   state.branches.push({id:uid(), name:'', location:'', type:'', employees:0, rent:0, status:'active'});
   logAction('logAddBranch');
   renderBranches();
@@ -1881,6 +1878,7 @@ function renderCosts(){
 
 /* --- الرواتب --- */
 function addSalary(){
+  if(!confirm(t('confirmAddSalary'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
   state.salaries.push({id:uid(), employee:'', branchId, base:0, allowance:0, advance:0});
   logAction('logAddSalary');
@@ -1951,6 +1949,7 @@ function renderRents(){
 
 /* --- المشتريات --- */
 function addPurchase(){
+  if(!confirm(t('confirmAddPurchase'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
   state.purchases.push({id:uid(), item:'', branchId, company:'', price:0, qty:1});
   logAction('logAddPurchase');
@@ -1997,6 +1996,7 @@ function renderPurchasesTotals(){
 
 /* --- مصاريف أخرى --- */
 function addOtherExpense(){
+  if(!confirm(t('confirmAddOther'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
   state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, qty:1, unitPrice:0});
   logAction('logAddOther');
@@ -2046,6 +2046,7 @@ function renderOtherTotals(){
 function addStockItem(){
   const perms = PERMS[session.role];
   if(!perms.manageStockNames) return;
+  if(!confirm(t('confirmAddStock'))) return;
   state.stock.push({id:uid(), name:'', quantity:0, date:todayStr(), brand:BRAND});
   logAction('logAddStock');
   renderStock();
@@ -2084,6 +2085,7 @@ function renderStock(){
    المبيعات
 ========================================================= */
 function addSale(){
+  if(!confirm(t('confirmAddSale'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
   state.sales.push({id:uid(), date:todayStr().slice(0,7), entryType:'monthly', branchId, cash:0, visa:0, talabat:0, zad:0, other:0});
   logAction('logAddSale');
@@ -2200,6 +2202,7 @@ function renderProfit(){
    الفواتير المتأخرة (الموردون)
 ========================================================= */
 function addSupplier(){
+  if(!confirm(t('confirmAddSupplier'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
   state.suppliers.push({id:uid(), company:'', contact:'', materialType:'', branchId, invoiceValue:0, paid:0, dueDate:'', dailyPurchases:false});
   logAction('logAddSupplier');
@@ -2393,6 +2396,7 @@ function branchOptionsWithAll(selectedId){
   return `<option value="" ${sel===''?'selected':''}>${t('allBranches')}</option>` + branchOptions(selectedId);
 }
 function addUser(){
+  if(!confirm(t('confirmAddUser'))) return;
   const branchId = (state.branches[0]||{}).id || null;
   state.users.push({id:uid(), username:'', password:'', role:'staff', branchId});
   logAction('logAddUser');
