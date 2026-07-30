@@ -374,7 +374,7 @@
 
     <div class="login-hint">
       <div data-i18n="loginHint1">نموذج أولي (Prototype): الدور والفرع يحدّدهما المالك عند إنشاء الحساب.</div>
-      <div data-i18n="loginHint2">جميع البيانات تُحفظ محلياً على جهازك فقط.</div>
+      <div data-i18n="loginHint2">جميع البيانات تُزامن تلقائياً وتُحفظ في قاعدة بيانات سحابية آمنة.</div>
       <div data-i18n="loginHintDefault">حساب تجريبي: admin / admin123</div>
     </div>
     <button type="button" class="back-to-chooser" onclick="goBackToChooser()" data-i18n="backToChooser">‹ تغيير الاختيار</button>
@@ -409,7 +409,7 @@
         </div>
       </div>
       <div class="sidebar-note">
-        <b data-i18n="sidebarSecurityNote">ملاحظة أمان:</b> <span data-i18n="sidebarSecurityText">هذا نموذج أولي بواجهة فقط. الحماية الفعلية (تشفير قاعدة البيانات، نسخ احتياطي، شهادة SSL، استضافة آمنة) تُنفَّذ عند بناء الخادم الخلفي (Backend).</span>
+        <b data-i18n="sidebarSecurityNote">ملاحظة أمان:</b> <span data-i18n="sidebarSecurityText">النظام مربوط بقاعدة بيانات سحابية حقيقية (Firebase) — البيانات تُزامن وتُشفّر تلقائياً عبر اتصال آمن (SSL). كلمات المرور لا تزال تُحفظ كنص عادي، ولا يوجد نسخ احتياطي تلقائي مجدول — استخدمي ميزة "تنزيل نسخة احتياطية" يدوياً بين فترة وأخرى.</span>
       </div>
     </aside>
 
@@ -950,7 +950,7 @@ const I18N = {
     errSelectBranch:'الرجاء اختيار الفرع (يجب إضافة فرع واحد على الأقل أولاً)',
     errInvalidCredentials:'اسم المستخدم أو كلمة المرور غير صحيحة',
     loginHint1:'نموذج أولي (Prototype): الدور والفرع يحدّدهما المالك عند إنشاء الحساب.',
-    loginHint2:'جميع البيانات تُحفظ محلياً على جهازك فقط.',
+    loginHint2:'جميع البيانات تُزامن تلقائياً وتُحفظ في قاعدة بيانات سحابية آمنة.',
     loginHintDefault:'حساب تجريبي: admin / admin123',
     navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navStock:'المخزون', navSales:'المبيعات',
     navProfit:'حساب الأرباح', navSuppliers:'الفواتير المتأخرة', navReports:'التقارير', navAuditlog:'سجل التدقيق',
@@ -960,7 +960,7 @@ const I18N = {
     confirmDeleteUser:'هل تريدين حذف هذا المستخدم؟',
     logAddUser:'إضافة مستخدم جديد', logDeleteUser:'حذف مستخدم',
     sidebarSecurityNote:'ملاحظة أمان:',
-    sidebarSecurityText:'هذا نموذج أولي بواجهة فقط. الحماية الفعلية (تشفير قاعدة البيانات، نسخ احتياطي، شهادة SSL، استضافة آمنة) تُنفَّذ عند بناء الخادم الخلفي (Backend).',
+    sidebarSecurityText:'النظام مربوط بقاعدة بيانات سحابية حقيقية (Firebase) — البيانات تُزامن وتُشفّر تلقائياً عبر اتصال آمن (SSL). كلمات المرور لا تزال تُحفظ كنص عادي، ولا يوجد نسخ احتياطي تلقائي مجدول — استخدمي ميزة "تنزيل نسخة احتياطية" يدوياً بين فترة وأخرى.',
     welcomeText:'مرحباً،', logout:'تسجيل الخروج',
     cloudStatus_offline:'⚠️ محلي فقط', cloudStatus_connecting:'⏳ يتصل...', cloudStatus_online:'☁️ متصل',
     dashboardTitle:'لوحة التحكم الرئيسية', dashboardSubtitle:'نظام إدارة فروع شركة المزن التجارية — ملخص سريع',
@@ -1075,7 +1075,7 @@ const I18N = {
     errSelectBranch:'Please select a branch (at least one branch must be added first)',
     errInvalidCredentials:'Incorrect username or password',
     loginHint1:'Prototype: role and branch are set by the owner when the account is created.',
-    loginHint2:'All data is stored locally on your device only.',
+    loginHint2:'All data syncs automatically and is stored in a secure cloud database.',
     loginHintDefault:'Demo account: admin / admin123',
     navDashboard:'Dashboard', navBranches:'Branches', navCosts:'Operating Costs', navStock:'Inventory', navSales:'Sales',
     navProfit:'Profit Calculation', navSuppliers:'Overdue Invoices', navReports:'Reports', navAuditlog:'Audit Log',
@@ -1085,7 +1085,7 @@ const I18N = {
     confirmDeleteUser:'Delete this user?',
     logAddUser:'Added new user', logDeleteUser:'Deleted user',
     sidebarSecurityNote:'Security note:',
-    sidebarSecurityText:'This is a front-end-only prototype. Real protection (database encryption, backups, SSL certificate, secure hosting) is implemented once the backend server is built.',
+    sidebarSecurityText:'The system is connected to a real cloud database (Firebase) — data syncs and is encrypted automatically over a secure (SSL) connection. Passwords are still stored as plain text, and there is no scheduled automatic backup — use the "Download Backup" feature manually from time to time.',
     welcomeText:'Welcome,', logout:'Log Out',
     cloudStatus_offline:'⚠️ Local only', cloudStatus_connecting:'⏳ Connecting...', cloudStatus_online:'☁️ Synced',
     dashboardTitle:'Main Dashboard', dashboardSubtitle:'Al Muzn Trading Co. Branch Management System — Quick Summary',
