@@ -176,6 +176,10 @@
   .topbar-title{font-size:1.05rem;font-weight:700;}
   .topbar-user{display:flex;align-items:center;gap:14px;color:var(--muted);font-size:.85rem;flex-wrap:wrap;}
   .topbar-user b{color:var(--text);}
+  .cloud-status{font-size:.72rem;padding:3px 10px;border-radius:999px;font-weight:600;white-space:nowrap;}
+  .cloud-status-offline{background:rgba(220,38,38,.12);color:#c22222;}
+  .cloud-status-connecting{background:rgba(250,178,25,.18);color:#8a5a00;}
+  .cloud-status-online{background:rgba(12,163,12,.12);color:#0a8a0a;}
   .role-tag{
     background:var(--card2);border:1px solid var(--border);color:var(--accent);
     padding:3px 10px;border-radius:999px;font-size:.72rem;
@@ -413,6 +417,7 @@
       <header class="topbar">
         <div class="topbar-title" id="view-title">لوحة التحكم</div>
         <div class="topbar-user">
+          <span class="cloud-status cloud-status-offline" id="cloud-status">—</span>
           <span><span data-i18n="welcomeText">مرحباً،</span> <b id="welcome-user">-</b></span>
           <span class="role-tag" id="welcome-role">-</span>
           <button class="logout-btn" onclick="logout()" data-i18n="logout">تسجيل الخروج</button>
@@ -920,6 +925,10 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
 /* =========================================================
    الترجمة (عربي / إنجليزي)
@@ -953,6 +962,7 @@ const I18N = {
     sidebarSecurityNote:'ملاحظة أمان:',
     sidebarSecurityText:'هذا نموذج أولي بواجهة فقط. الحماية الفعلية (تشفير قاعدة البيانات، نسخ احتياطي، شهادة SSL، استضافة آمنة) تُنفَّذ عند بناء الخادم الخلفي (Backend).',
     welcomeText:'مرحباً،', logout:'تسجيل الخروج',
+    cloudStatus_offline:'⚠️ محلي فقط', cloudStatus_connecting:'⏳ يتصل...', cloudStatus_online:'☁️ متصل',
     dashboardTitle:'لوحة التحكم الرئيسية', dashboardSubtitle:'نظام إدارة فروع شركة المزن التجارية — ملخص سريع',
     kpiSalesToday:'إجمالي المبيعات (اليوم)', kpiSalesMonth:'إجمالي المبيعات (الشهر)',
     kpiExpensesMonth:'إجمالي المصروفات (شهري)', kpiNetProfit:'صافي الربح التقديري',
@@ -1077,6 +1087,7 @@ const I18N = {
     sidebarSecurityNote:'Security note:',
     sidebarSecurityText:'This is a front-end-only prototype. Real protection (database encryption, backups, SSL certificate, secure hosting) is implemented once the backend server is built.',
     welcomeText:'Welcome,', logout:'Log Out',
+    cloudStatus_offline:'⚠️ Local only', cloudStatus_connecting:'⏳ Connecting...', cloudStatus_online:'☁️ Synced',
     dashboardTitle:'Main Dashboard', dashboardSubtitle:'Al Muzn Trading Co. Branch Management System — Quick Summary',
     kpiSalesToday:'Total Sales (Today)', kpiSalesMonth:'Total Sales (This Month)',
     kpiExpensesMonth:'Total Expenses (Monthly)', kpiNetProfit:'Estimated Net Profit',
@@ -1192,6 +1203,7 @@ function toggleLang(){
   LANG = LANG === 'ar' ? 'en' : 'ar';
   localStorage.setItem(LANG_KEY, LANG);
   applyStaticI18n();
+  setCloudStatus(lastCloudStatus);
   if(session){
     document.getElementById('welcome-role').textContent = roleLabel(session.role);
     switchView(currentView);
@@ -1362,26 +1374,32 @@ function defaultState(){
   };
 }
 
+function normalizeSettings(settings){
+  if(typeof settings.customLogo === 'string' || !settings.customLogo){
+    settings.customLogo = { aventus: (typeof settings.customLogo === 'string' ? settings.customLogo : null), chickenville: null };
+  }
+  settings.customTheme = settings.customTheme || {};
+  settings.customTheme.aventus = settings.customTheme.aventus || {};
+  settings.customTheme.chickenville = settings.customTheme.chickenville || {};
+  return settings;
+}
+function mergeWithDefaults(parsed){
+  const base = defaultState();
+  const merged = Object.assign(base, parsed, { settings: Object.assign(base.settings, parsed.settings || {}) });
+  merged.settings = normalizeSettings(merged.settings);
+  return merged;
+}
 function loadState(){
   const raw = localStorage.getItem(STORAGE_STATE_KEY);
-  const base = defaultState();
   if(raw){
-    try{
-      const parsed = JSON.parse(raw);
-      const merged = Object.assign(base, parsed, { settings: Object.assign(base.settings, parsed.settings || {}) });
-      if(typeof merged.settings.customLogo === 'string' || !merged.settings.customLogo){
-        merged.settings.customLogo = { aventus: (typeof merged.settings.customLogo === 'string' ? merged.settings.customLogo : null), chickenville: null };
-      }
-      merged.settings.customTheme = merged.settings.customTheme || {};
-      merged.settings.customTheme.aventus = merged.settings.customTheme.aventus || {};
-      merged.settings.customTheme.chickenville = merged.settings.customTheme.chickenville || {};
-      return merged;
-    }catch(e){ /* fallthrough */ }
+    try{ return mergeWithDefaults(JSON.parse(raw)); }catch(e){ /* fallthrough */ }
   }
-  return base;
+  return defaultState();
 }
+let firestoreSyncTimer = null;
 function saveState(){
   localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(state));
+  scheduleCloudSync();
 }
 function logAction(key){
   state.auditLog.unshift({
@@ -1392,6 +1410,76 @@ function logAction(key){
   });
   state.auditLog = state.auditLog.slice(0, 100);
   saveState();
+}
+
+/* =========================================================
+   المزامنة السحابية (Firebase)
+========================================================= */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDy4Sm8luKO0X5Ph15EyYcFiz9V0m9LoI4",
+  authDomain: "almuzin-company.firebaseapp.com",
+  projectId: "almuzin-company",
+  storageBucket: "almuzin-company.firebasestorage.app",
+  messagingSenderId: "803543561914",
+  appId: "1:803543561914:web:0ba0606f58ca1de840f483",
+  measurementId: "G-PYMCZFC6HN",
+};
+const CLOUD_DOC_PATH = ['erp', 'state'];
+let cloudDb = null;
+let cloudStorage = null;
+let cloudReady = false;
+let cloudApplyingRemote = false;
+
+let lastCloudStatus = 'offline';
+function setCloudStatus(status){
+  lastCloudStatus = status;
+  const el = document.getElementById('cloud-status');
+  if(!el) return;
+  el.className = 'cloud-status cloud-status-' + status;
+  el.textContent = t('cloudStatus_' + status);
+}
+function initCloudSync(){
+  if(typeof firebase === 'undefined'){
+    setCloudStatus('offline');
+    return;
+  }
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    cloudDb = firebase.firestore();
+    cloudStorage = firebase.storage();
+    setCloudStatus('connecting');
+    firebase.auth().signInAnonymously().then(() => {
+      cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).onSnapshot(snap => {
+        cloudReady = true;
+        setCloudStatus('online');
+        if(snap.exists){
+          cloudApplyingRemote = true;
+          state = mergeWithDefaults(snap.data());
+          localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(state));
+          cloudApplyingRemote = false;
+          if(session) switchView(currentView);
+        }else{
+          cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).set(state);
+        }
+      }, err => {
+        console.error('Firestore sync error', err);
+        setCloudStatus('offline');
+      });
+    }).catch(err => {
+      console.error('Firebase anonymous sign-in failed', err);
+      setCloudStatus('offline');
+    });
+  }catch(e){
+    console.error('Firebase init failed, staying in local-only mode', e);
+    setCloudStatus('offline');
+  }
+}
+function scheduleCloudSync(){
+  if(!cloudReady || cloudApplyingRemote || !cloudDb) return;
+  clearTimeout(firestoreSyncTimer);
+  firestoreSyncTimer = setTimeout(() => {
+    cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).set(state).catch(err => console.error('Firestore write failed', err));
+  }, 800);
 }
 
 /* =========================================================
@@ -2386,14 +2474,24 @@ function renderReportLogo(){
 }
 function uploadReportLogo(file){
   if(!file || session.role !== 'owner') return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    state.settings.customLogo[BRAND] = reader.result;
+  const finish = (url) => {
+    state.settings.customLogo[BRAND] = url;
     saveState();
     renderReportLogo();
     applyBrandDisplay();
     logAction('logChangeLogo');
   };
+  if(cloudReady && cloudStorage){
+    const ref = cloudStorage.ref().child('logos/' + BRAND + '-' + Date.now());
+    ref.put(file).then(() => ref.getDownloadURL()).then(finish)
+      .catch(err => { console.error('Logo upload to Storage failed, falling back to local', err); readLogoAsDataUrl(file, finish); });
+  }else{
+    readLogoAsDataUrl(file, finish);
+  }
+}
+function readLogoAsDataUrl(file, cb){
+  const reader = new FileReader();
+  reader.onload = () => cb(reader.result);
   reader.readAsDataURL(file);
 }
 function resetReportLogo(){
@@ -2523,6 +2621,7 @@ state = loadState();
 applyStaticI18n();
 applyBrandTheme();
 applyBrandDisplay();
+initCloudSync();
 
 const savedSession = localStorage.getItem(STORAGE_SESSION_KEY);
 if(savedSession){
