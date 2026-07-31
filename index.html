@@ -1424,6 +1424,7 @@ let cloudDb = null;
 let cloudStorage = null;
 let cloudReady = false;
 let cloudApplyingRemote = false;
+const cloudClientId = 'c' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
 
 let lastCloudStatus = 'offline';
 function setCloudStatus(status){
@@ -1448,13 +1449,16 @@ function initCloudSync(){
         cloudReady = true;
         setCloudStatus('online');
         if(snap.exists){
+          const data = snap.data();
+          if(data._writerId === cloudClientId) return; /* صدى كتابتنا نحن، لا داعي لإعادة التطبيق */
+          const isTyping = document.activeElement && ['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName);
           cloudApplyingRemote = true;
-          state = mergeWithDefaults(snap.data());
+          state = mergeWithDefaults(data);
           localStorage.setItem(STORAGE_STATE_KEY, JSON.stringify(state));
           cloudApplyingRemote = false;
-          if(session) switchView(currentView);
+          if(session && !isTyping) switchView(currentView);
         }else{
-          cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).set(state);
+          cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).set(Object.assign({}, state, {_writerId: cloudClientId}));
         }
       }, err => {
         console.error('Firestore sync error', err);
@@ -1473,7 +1477,7 @@ function scheduleCloudSync(){
   if(!cloudReady || cloudApplyingRemote || !cloudDb) return;
   clearTimeout(firestoreSyncTimer);
   firestoreSyncTimer = setTimeout(() => {
-    cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).set(state).catch(err => console.error('Firestore write failed', err));
+    cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).set(Object.assign({}, state, {_writerId: cloudClientId})).catch(err => console.error('Firestore write failed', err));
   }, 800);
 }
 
