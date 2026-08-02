@@ -175,6 +175,30 @@
   .cloud-status-offline{background:rgba(220,38,38,.12);color:#c22222;}
   .cloud-status-connecting{background:rgba(250,178,25,.18);color:#8a5a00;}
   .cloud-status-online{background:rgba(12,163,12,.12);color:#0a8a0a;}
+  .cloud-offline-banner{
+    display:none;background:rgba(220,38,38,.1);color:var(--danger);border:1px solid rgba(220,38,38,.3);
+    border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;text-align:center;
+  }
+  body.cloud-offline .add-btn,
+  body.cloud-offline [id$="-body"] input,
+  body.cloud-offline [id$="-body"] select,
+  body.cloud-offline [id$="-body"] button,
+  body.cloud-offline #note-text-input,
+  body.cloud-offline #note-date-input,
+  body.cloud-offline #add-note-btn,
+  body.cloud-offline #theme-accent-input,
+  body.cloud-offline #theme-accent-light-input,
+  body.cloud-offline #settings-visa,
+  body.cloud-offline #settings-talabat,
+  body.cloud-offline #settings-zad,
+  body.cloud-offline #settings-discounts,
+  body.cloud-offline #branch-add-btn,
+  body.cloud-offline #add-supplier-btn,
+  body.cloud-offline #add-user-btn,
+  body.cloud-offline #stock-add-btn,
+  body.cloud-offline #create-backup-btn{
+    pointer-events:none;opacity:.5;
+  }
   .role-tag{
     background:var(--card2);border:1px solid var(--border);color:var(--accent);
     padding:3px 10px;border-radius:999px;font-size:.72rem;
@@ -419,6 +443,8 @@
 
       <div class="wrap">
 
+        <div class="cloud-offline-banner" id="cloud-offline-banner" data-i18n="cloudOfflineBanner">⚠️ غير متصلة بقاعدة البيانات — تعطّل إدخال وتعديل البيانات مؤقتاً لحمايتها من الفقدان. انتظري حتى تظهر "متصل".</div>
+
         <!-- ============ لوحة التحكم ============ -->
         <section class="view" id="view-dashboard">
           <h1 class="page-title" data-i18n="dashboardTitle">لوحة التحكم الرئيسية</h1>
@@ -458,7 +484,7 @@
                 <input type="text" id="note-text-input" data-i18n-ph="notePlaceholder" placeholder="اكتبي ملاحظة أو تذكيراً..." style="flex:2;min-width:180px;">
                 <input type="date" id="note-date-input" style="flex:1;min-width:130px;">
               </div>
-              <div class="toolbar-right"><button onclick="addNote()" data-i18n="btnAddNote">+ إضافة</button></div>
+              <div class="toolbar-right"><button id="add-note-btn" onclick="addNote()" data-i18n="btnAddNote">+ إضافة</button></div>
             </div>
             <ul class="alerts-list" id="dashboard-notes"></ul>
           </div>
@@ -510,12 +536,13 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:20%" data-i18n="thEmployee">الموظف</th>
-                  <th style="width:16%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:15%" data-i18n="thBaseSalary">الراتب الأساسي</th>
-                  <th style="width:14%" data-i18n="thAllowances">البدلات</th>
-                  <th style="width:14%" data-i18n="thAdvances">السلف</th>
-                  <th style="width:16%" data-i18n="thTotal">الإجمالي</th>
+                  <th style="width:16%" data-i18n="thEmployee">الموظف</th>
+                  <th style="width:13%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:13%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:13%" data-i18n="thBaseSalary">الراتب الأساسي</th>
+                  <th style="width:13%" data-i18n="thAllowances">البدلات</th>
+                  <th style="width:12%" data-i18n="thAdvances">السلف</th>
+                  <th style="width:15%" data-i18n="thTotal">الإجمالي</th>
                   <th style="width:5%"></th>
                 </tr></thead>
                 <tbody id="salaries-body"></tbody>
@@ -552,11 +579,12 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:22%" data-i18n="thItemName">اسم الصنف</th>
-                  <th style="width:16%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:18%" data-i18n="thCompanyName">اسم الشركة</th>
-                  <th style="width:14%" data-i18n="thUnitPrice">سعر الوحدة</th>
-                  <th style="width:10%" data-i18n="thQty">الكمية</th>
+                  <th style="width:18%" data-i18n="thItemName">اسم الصنف</th>
+                  <th style="width:14%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:12%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:15%" data-i18n="thCompanyName">اسم الشركة</th>
+                  <th style="width:12%" data-i18n="thUnitPrice">سعر الوحدة</th>
+                  <th style="width:9%" data-i18n="thQty">الكمية</th>
                   <th style="width:15%" data-i18n="thTotal">الإجمالي</th>
                   <th style="width:5%"></th>
                 </tr></thead>
@@ -575,11 +603,12 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:20%" data-i18n="thCategory">البند</th>
-                  <th style="width:18%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:16%" data-i18n="thQty">الكمية</th>
-                  <th style="width:18%" data-i18n="thUnitPrice">سعر الوحدة</th>
-                  <th style="width:18%" data-i18n="thTotal">الإجمالي</th>
+                  <th style="width:17%" data-i18n="thCategory">البند</th>
+                  <th style="width:15%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:13%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:14%" data-i18n="thQty">الكمية</th>
+                  <th style="width:16%" data-i18n="thUnitPrice">سعر الوحدة</th>
+                  <th style="width:15%" data-i18n="thTotal">الإجمالي</th>
                   <th style="width:5%"></th>
                 </tr></thead>
                 <tbody id="other-body"></tbody>
@@ -604,10 +633,11 @@
             <div class="table-scroll">
             <table>
               <thead><tr>
-                <th style="width:24%" data-i18n="thItemName">اسم الصنف</th>
-                <th style="width:18%" data-i18n="thBranch">الفرع</th>
-                <th style="width:16%" data-i18n="thUnitPrice">سعر الوحدة</th>
-                <th style="width:12%" data-i18n="thQty">الكمية</th>
+                <th style="width:19%" data-i18n="thItemName">اسم الصنف</th>
+                <th style="width:16%" data-i18n="thBranch">الفرع</th>
+                <th style="width:13%" data-i18n="thDate">التاريخ</th>
+                <th style="width:14%" data-i18n="thUnitPrice">سعر الوحدة</th>
+                <th style="width:11%" data-i18n="thQty">الكمية</th>
                 <th style="width:17%" data-i18n="thTotal">الإجمالي</th>
                 <th style="width:5%"></th>
               </tr></thead>
@@ -727,7 +757,7 @@
               <span data-i18n="showOverdueOnly">إظهار الفواتير المتأخرة فقط</span>
             </label>
             <div class="toolbar-right">
-              <button onclick="addSupplier()" data-i18n="btnAddSupplier">+ إضافة مورد</button>
+              <button id="add-supplier-btn" onclick="addSupplier()" data-i18n="btnAddSupplier">+ إضافة مورد</button>
             </div>
           </div>
           <div class="section">
@@ -860,7 +890,7 @@
           <h1 class="page-title" data-i18n="usersTitle">إدارة المستخدمين</h1>
           <p class="subtitle" data-i18n="usersSubtitle">المالك فقط يقدر يضيف حسابات ويحدد الدور والفرع الثابت لكل مستخدم — لا يختار المستخدم فرعه بنفسه</p>
           <div class="toolbar"><div></div><div class="toolbar-right">
-            <button onclick="addUser()" data-i18n="btnAddUser">+ إضافة مستخدم</button>
+            <button id="add-user-btn" onclick="addUser()" data-i18n="btnAddUser">+ إضافة مستخدم</button>
           </div></div>
           <div class="section">
             <div class="table-scroll">
@@ -935,6 +965,16 @@
           </div>
 
           <div class="section">
+            <h2><span class="icon">☁️</span> <span data-i18n="moreCloudBackupTitle">النسخ الاحتياطية السحابية</span></h2>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreCloudBackupDesc">نسخة تلقائية تُحفظ يومياً في قاعدة البيانات، وتقدرين تسوين نسخة إضافية يدوياً وقت ما تبين، وترجعين لأي نسخة سابقة.</p>
+            <div class="toolbar-right" style="justify-content:flex-start;margin-bottom:14px;">
+              <button id="create-backup-btn" onclick="createManualBackup()" data-i18n="btnCreateBackupNow">🔖 إنشاء نسخة الآن</button>
+              <button onclick="renderCloudBackupsList()" data-i18n="btnRefreshBackups">🔄 تحديث القائمة</button>
+            </div>
+            <div id="cloud-backups-list"></div>
+          </div>
+
+          <div class="section">
             <h2><span class="icon">📤</span> <span data-i18n="moreExportTitle">تصدير البيانات (CSV)</span></h2>
             <div class="toolbar-right" style="justify-content:flex-start;">
               <button onclick="exportCsv('sales')" data-i18n="btnExportSales">تصدير المبيعات</button>
@@ -998,7 +1038,7 @@ const I18N = {
     confirmDeleteUser:'هل تريدين حذف هذا المستخدم؟', confirmAddUser:'هل تريدين إضافة مستخدم جديد؟',
     thAccountStatus:'حالة الحساب', accountLocked:'مقفل', accountActive:'نشط',
     btnSaveUser:'💾 حفظ', btnUnlockUser:'🔓 فتح', userSavedMsg:'تم حفظ بيانات المستخدم',
-    logUnlockUser:'فتح حساب مستخدم',
+    logUnlockUser:'فتح حساب مستخدم', logRestoreCloudBackup:'استعادة نسخة احتياطية سحابية',
     confirmAddBranch:'هل تريدين إضافة فرع جديد؟', confirmAddSalary:'هل تريدين إضافة سجل راتب جديد؟',
     confirmAddPurchase:'هل تريدين إضافة مشترى جديد؟', confirmAddOther:'هل تريدين إضافة مصروف جديد؟',
     confirmAddStock:'هل تريدين إضافة مادة خام جديدة؟', confirmAddSale:'هل تريدين إضافة مبيعات جديدة؟',
@@ -1006,6 +1046,7 @@ const I18N = {
     logAddUser:'إضافة مستخدم جديد', logDeleteUser:'حذف مستخدم',
     welcomeText:'مرحباً،', logout:'تسجيل الخروج',
     cloudStatus_offline:'⚠️ محلي فقط', cloudStatus_connecting:'⏳ يتصل...', cloudStatus_online:'☁️ متصل',
+    cloudOfflineBanner:'⚠️ غير متصلة بقاعدة البيانات — تعطّل إدخال وتعديل البيانات مؤقتاً لحمايتها من الفقدان. انتظري حتى تظهر "متصل".',
     dashboardTitle:'لوحة التحكم الرئيسية', dashboardSubtitle:'نظام إدارة فروع شركة المزن التجارية — ملخص سريع',
     kpiSalesToday:'إجمالي المبيعات (اليوم)', kpiSalesMonth:'إجمالي المبيعات (الشهر)',
     kpiExpensesMonth:'إجمالي المصروفات (شهري)', kpiNetProfit:'صافي الربح التقديري',
@@ -1036,7 +1077,7 @@ const I18N = {
     placeholderItemName:'اسم الصنف', placeholderCompanyName:'اسم الشركة الموردة',
     thCategory:'البند', thAmount:'المبلغ', btnAddOtherExpense:'+ إضافة مصروف', totalOther:'إجمالي المصاريف الأخرى:',
     cat_electricity:'كهرباء', cat_water:'ماء', cat_wifi:'واي فاي', cat_maintenance:'صيانة',
-    cat_marketing:'تسويق', cat_delivery:'توصيل', cat_packaging:'أدوات تغليف', cat_other:'أخرى',
+    cat_marketing:'تسويق', cat_delivery:'توصيل', cat_packaging:'أدوات تغليف', cat_franchise:'نسبة الفرنشايز', cat_other:'أخرى',
     costsSummaryTitle:'إجمالي التكاليف التشغيلية', grandTotal:'الإجمالي الكلي',
     stockTitle:'المخزون',
     stockSubtitleOwner:'اسم المادة يحدده المالك فقط؛ يمكن لأي مستخدم تحديث الكمية والتاريخ',
@@ -1098,6 +1139,13 @@ const I18N = {
     moreBackupTitle:'النسخ الاحتياطي واستعادة البيانات',
     moreBackupDesc:'نزّلي نسخة من كل بيانات النظام كملف JSON، أو استعيديها لاحقاً على أي جهاز.',
     btnDownloadBackup:'⬇️ تنزيل نسخة احتياطية', btnRestoreBackup:'⬆️ استعادة من نسخة احتياطية',
+    moreCloudBackupTitle:'النسخ الاحتياطية السحابية',
+    moreCloudBackupDesc:'نسخة تلقائية تُحفظ يومياً في قاعدة البيانات، وتقدرين تسوين نسخة إضافية يدوياً وقت ما تبين، وترجعين لأي نسخة سابقة.',
+    btnCreateBackupNow:'🔖 إنشاء نسخة الآن', btnRefreshBackups:'🔄 تحديث القائمة', btnRestoreThis:'استعادة',
+    errOfflineBlocked:'محتاجة اتصال بقاعدة البيانات لهذا الإجراء. انتظري حتى تظهر "متصل".',
+    backupCreatedMsg:'تم إنشاء النسخة الاحتياطية بنجاح', backupFailedMsg:'تعذّر إتمام العملية، حاولي مرة أخرى',
+    loadingMsg:'جارٍ التحميل...', noBackupsYet:'لا توجد نسخ احتياطية بعد',
+    confirmRestoreCloudBackup:'سيتم استبدال كل البيانات الحالية بهذه النسخة الاحتياطية. متابعة؟',
     confirmRestoreBackup:'سيتم استبدال كل البيانات الحالية بالنسخة المستعادة. متابعة؟',
     restoreSuccess:'تمت استعادة البيانات بنجاح', restoreError:'ملف غير صالح، تعذّرت الاستعادة',
     moreExportTitle:'تصدير البيانات (CSV)', btnExportSales:'تصدير المبيعات', btnExportStock:'تصدير المخزون',
@@ -1136,7 +1184,7 @@ const I18N = {
     confirmDeleteUser:'Delete this user?', confirmAddUser:'Add a new user?',
     thAccountStatus:'Account Status', accountLocked:'Locked', accountActive:'Active',
     btnSaveUser:'💾 Save', btnUnlockUser:'🔓 Unlock', userSavedMsg:'User info saved',
-    logUnlockUser:'Unlocked user account',
+    logUnlockUser:'Unlocked user account', logRestoreCloudBackup:'Restored a cloud backup',
     confirmAddBranch:'Add a new branch?', confirmAddSalary:'Add a new salary record?',
     confirmAddPurchase:'Add a new purchase?', confirmAddOther:'Add a new expense?',
     confirmAddStock:'Add a new raw material?', confirmAddSale:'Add a new sales entry?',
@@ -1144,6 +1192,7 @@ const I18N = {
     logAddUser:'Added new user', logDeleteUser:'Deleted user',
     welcomeText:'Welcome,', logout:'Log Out',
     cloudStatus_offline:'⚠️ Local only', cloudStatus_connecting:'⏳ Connecting...', cloudStatus_online:'☁️ Synced',
+    cloudOfflineBanner:'⚠️ Not connected to the database — adding and editing data is temporarily disabled to protect it from loss. Wait until it shows "Synced".',
     dashboardTitle:'Main Dashboard', dashboardSubtitle:'Al Muzn Trading Co. Branch Management System — Quick Summary',
     kpiSalesToday:'Total Sales (Today)', kpiSalesMonth:'Total Sales (This Month)',
     kpiExpensesMonth:'Total Expenses (Monthly)', kpiNetProfit:'Estimated Net Profit',
@@ -1174,7 +1223,7 @@ const I18N = {
     placeholderItemName:'Item name', placeholderCompanyName:'Supplier company name',
     thCategory:'Category', thAmount:'Amount', btnAddOtherExpense:'+ Add Expense', totalOther:'Total Other Expenses:',
     cat_electricity:'Electricity', cat_water:'Water', cat_wifi:'WiFi', cat_maintenance:'Maintenance',
-    cat_marketing:'Marketing', cat_delivery:'Delivery', cat_packaging:'Packaging Supplies', cat_other:'Other',
+    cat_marketing:'Marketing', cat_delivery:'Delivery', cat_packaging:'Packaging Supplies', cat_franchise:'Franchise Fee', cat_other:'Other',
     costsSummaryTitle:'Total Operating Costs', grandTotal:'Grand Total',
     stockTitle:'Inventory',
     stockSubtitleOwner:'Only the owner can set material names; anyone can update quantity and date',
@@ -1236,6 +1285,13 @@ const I18N = {
     moreBackupTitle:'Backup & Restore',
     moreBackupDesc:'Download all system data as a JSON file, or restore it later on any device.',
     btnDownloadBackup:'⬇️ Download Backup', btnRestoreBackup:'⬆️ Restore from Backup',
+    moreCloudBackupTitle:'Cloud Backups',
+    moreCloudBackupDesc:'An automatic backup is saved daily in the database, you can also create one manually anytime, and restore any earlier one.',
+    btnCreateBackupNow:'🔖 Create Backup Now', btnRefreshBackups:'🔄 Refresh List', btnRestoreThis:'Restore',
+    errOfflineBlocked:'This action needs a database connection. Wait until it shows "Synced".',
+    backupCreatedMsg:'Backup created successfully', backupFailedMsg:'Could not complete the action, try again',
+    loadingMsg:'Loading...', noBackupsYet:'No backups yet',
+    confirmRestoreCloudBackup:'This will replace all current data with this backup. Continue?',
     confirmRestoreBackup:'This will replace all current data with the restored backup. Continue?',
     restoreSuccess:'Data restored successfully', restoreError:'Invalid file, restore failed',
     moreExportTitle:'Export Data (CSV)', btnExportSales:'Export Sales', btnExportStock:'Export Inventory',
@@ -1359,7 +1415,7 @@ const STORAGE_STATE_KEY = 'aventus_erp_state_v1';
 const STORAGE_SESSION_KEY = 'aventus_erp_session_v1';
 
 const CAT_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--cat-7)','var(--cat-8)'];
-const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','other'];
+const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','franchise','other'];
 const BRANCH_STATUS_KEYS = ['active','stopped','preparing'];
 const PAYMENT_METHODS = ['cash','visa','talabat','zad','other'];
 
@@ -1497,9 +1553,13 @@ let lastCloudStatus = 'offline';
 function setCloudStatus(status){
   lastCloudStatus = status;
   const el = document.getElementById('cloud-status');
-  if(!el) return;
-  el.className = 'cloud-status cloud-status-' + status;
-  el.textContent = t('cloudStatus_' + status);
+  if(el){
+    el.className = 'cloud-status cloud-status-' + status;
+    el.textContent = t('cloudStatus_' + status);
+  }
+  document.body.classList.toggle('cloud-offline', status !== 'online');
+  const banner = document.getElementById('cloud-offline-banner');
+  if(banner) banner.style.display = status !== 'online' ? 'block' : 'none';
 }
 function initCloudSync(){
   if(typeof firebase === 'undefined'){
@@ -1515,6 +1575,7 @@ function initCloudSync(){
       cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).onSnapshot(snap => {
         cloudReady = true;
         setCloudStatus('online');
+        maybeAutoBackup();
         if(snap.exists){
           const data = snap.data();
           if(data._writerId === cloudClientId) return; /* صدى كتابتنا نحن، لا داعي لإعادة التطبيق */
@@ -1546,6 +1607,66 @@ function scheduleCloudSync(){
   firestoreSyncTimer = setTimeout(() => {
     cloudDb.collection(CLOUD_DOC_PATH[0]).doc(CLOUD_DOC_PATH[1]).set(Object.assign({}, state, {_writerId: cloudClientId})).catch(err => console.error('Firestore write failed', err));
   }, 800);
+}
+
+/* --- النسخ الاحتياطية السحابية --- */
+function maybeAutoBackup(){
+  if(!cloudReady || !cloudDb) return;
+  const today = todayStr();
+  const last = localStorage.getItem('aventus_erp_last_backup_date');
+  if(last === today) return;
+  localStorage.setItem('aventus_erp_last_backup_date', today);
+  createCloudBackup(false);
+}
+function createCloudBackup(manual){
+  if(!cloudReady || !cloudDb) return Promise.reject('offline');
+  const id = 'b' + Date.now();
+  return cloudDb.collection('erp_backups').doc(id).set({
+    createdAt: Date.now(),
+    createdAtLabel: new Date().toLocaleString(LANG === 'ar' ? 'ar-OM' : 'en-GB'),
+    createdBy: session ? session.username : 'system',
+    manual: !!manual,
+    data: state,
+  });
+}
+function createManualBackup(){
+  if(!cloudReady){ alert(t('errOfflineBlocked')); return; }
+  createCloudBackup(true).then(() => {
+    alert(t('backupCreatedMsg'));
+    renderCloudBackupsList();
+  }).catch(err => { console.error(err); alert(t('backupFailedMsg')); });
+}
+function renderCloudBackupsList(){
+  const box = document.getElementById('cloud-backups-list');
+  if(!box) return;
+  if(!cloudReady){ box.innerHTML = `<p style="color:var(--muted);font-size:.85rem;">${t('cloudStatus_offline')}</p>`; return; }
+  box.innerHTML = `<p style="color:var(--muted);font-size:.85rem;">${t('loadingMsg')}</p>`;
+  cloudDb.collection('erp_backups').orderBy('createdAt','desc').limit(10).get().then(snap => {
+    if(snap.empty){ box.innerHTML = `<p style="color:var(--muted);font-size:.85rem;">${t('noBackupsYet')}</p>`; return; }
+    box.innerHTML = `<ul class="alerts-list">` + snap.docs.map(doc => {
+      const b = doc.data();
+      return `<li style="justify-content:space-between;">
+        <span>${b.manual ? '🔖' : '🕒'} ${escapeHtml(b.createdAtLabel||'')} — ${escapeHtml(b.createdBy||'')}</span>
+        <button onclick="restoreCloudBackup('${doc.id}')">${t('btnRestoreThis')}</button>
+      </li>`;
+    }).join('') + `</ul>`;
+  }).catch(err => {
+    console.error(err);
+    box.innerHTML = `<p style="color:var(--danger);font-size:.85rem;">${t('backupFailedMsg')}</p>`;
+  });
+}
+function restoreCloudBackup(id){
+  if(!cloudReady){ alert(t('errOfflineBlocked')); return; }
+  if(!confirm(t('confirmRestoreCloudBackup'))) return;
+  cloudDb.collection('erp_backups').doc(id).get().then(doc => {
+    if(!doc.exists) return;
+    const b = doc.data();
+    state = mergeWithDefaults(b.data);
+    saveState();
+    logAction('logRestoreCloudBackup');
+    if(session) switchView(currentView);
+    alert(t('restoreSuccess'));
+  }).catch(err => { console.error(err); alert(t('backupFailedMsg')); });
 }
 
 /* =========================================================
@@ -1975,7 +2096,7 @@ function renderCosts(){
 function addSalary(){
   if(!confirm(t('confirmAddSalary'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
-  state.salaries.push({id:uid(), employee:'', branchId, base:0, allowance:0, advance:0});
+  state.salaries.push({id:uid(), employee:'', branchId, date:todayStr(), base:0, allowance:0, advance:0});
   logAction('logAddSalary');
   renderSalaries();
 }
@@ -1998,6 +2119,7 @@ function renderSalaries(){
     <tr data-id="${s.id}">
       <td><input type="text" value="${escapeHtml(s.employee)}" placeholder="${t('thEmployee')}" oninput="updateSalary('${s.id}','employee',this.value)"></td>
       <td><select onchange="updateSalary('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
+      <td><input type="date" value="${s.date||''}" onchange="updateSalary('${s.id}','date',this.value)"></td>
       <td><input type="number" min="0" step="any" value="${s.base}" oninput="updateSalary('${s.id}','base',this.value); renderSalariesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.allowance}" oninput="updateSalary('${s.id}','allowance',this.value); renderSalariesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.advance}" oninput="updateSalary('${s.id}','advance',this.value); renderSalariesTotals();"></td>
@@ -2046,7 +2168,7 @@ function renderRents(){
 function addPurchase(){
   if(!confirm(t('confirmAddPurchase'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
-  state.purchases.push({id:uid(), item:'', branchId, company:'', price:0, qty:1});
+  state.purchases.push({id:uid(), item:'', branchId, date:todayStr(), company:'', price:0, qty:1});
   logAction('logAddPurchase');
   renderPurchases();
 }
@@ -2069,6 +2191,7 @@ function renderPurchases(){
     <tr data-id="${p.id}">
       <td><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updatePurchase('${p.id}','item',this.value)"></td>
       <td><select onchange="updatePurchase('${p.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(p.branchId)}</select></td>
+      <td><input type="date" value="${p.date||''}" onchange="updatePurchase('${p.id}','date',this.value)"></td>
       <td><input type="text" value="${escapeHtml(p.company)}" placeholder="${t('placeholderCompanyName')}" oninput="updatePurchase('${p.id}','company',this.value)"></td>
       <td><input type="number" min="0" step="any" value="${p.price}" oninput="updatePurchase('${p.id}','price',this.value); renderPurchasesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${p.qty}" oninput="updatePurchase('${p.id}','qty',this.value); renderPurchasesTotals();"></td>
@@ -2093,7 +2216,7 @@ function renderPurchasesTotals(){
 function addCashPurchase(){
   if(!confirm(t('confirmAddCashPurchase'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
-  state.cashPurchases.push({id:uid(), item:'', branchId, price:0, qty:1});
+  state.cashPurchases.push({id:uid(), item:'', branchId, date:todayStr(), price:0, qty:1});
   logAction('logAddCashPurchase');
   renderCashPurchases();
 }
@@ -2116,6 +2239,7 @@ function renderCashPurchases(){
     <tr data-id="${p.id}">
       <td><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updateCashPurchase('${p.id}','item',this.value)"></td>
       <td><select onchange="updateCashPurchase('${p.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(p.branchId)}</select></td>
+      <td><input type="date" value="${p.date||''}" onchange="updateCashPurchase('${p.id}','date',this.value)"></td>
       <td><input type="number" min="0" step="any" value="${p.price}" oninput="updateCashPurchase('${p.id}','price',this.value); renderCashPurchasesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${p.qty}" oninput="updateCashPurchase('${p.id}','qty',this.value); renderCashPurchasesTotals();"></td>
       <td class="row-total">${formatCurrency(purchaseTotal(p))}</td>
@@ -2139,7 +2263,7 @@ function renderCashPurchasesTotals(){
 function addOtherExpense(){
   if(!confirm(t('confirmAddOther'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
-  state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, qty:1, unitPrice:0});
+  state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, date:todayStr(), qty:1, unitPrice:0});
   logAction('logAddOther');
   renderOtherExpenses();
 }
@@ -2162,6 +2286,7 @@ function renderOtherExpenses(){
     <tr data-id="${o.id}">
       <td><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.map(c=>`<option value="${c}" ${o.category===c?'selected':''}>${categoryLabel(c)}</option>`).join('')}</select></td>
       <td><select onchange="updateOtherExpense('${o.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(o.branchId)}</select></td>
+      <td><input type="date" value="${o.date||''}" onchange="updateOtherExpense('${o.id}','date',this.value)"></td>
       <td><input type="number" min="0" step="any" value="${o.qty ?? 1}" oninput="updateOtherExpense('${o.id}','qty',this.value); renderOtherTotals();"></td>
       <td><input type="number" min="0" step="any" value="${o.unitPrice ?? 0}" oninput="updateOtherExpense('${o.id}','unitPrice',this.value); renderOtherTotals();"></td>
       <td class="row-total">${formatCurrency(otherExpenseTotal(o))}</td>
@@ -2616,6 +2741,7 @@ function renderMore(){
   document.getElementById('global-search-results').innerHTML = '';
   renderReportLogo();
   renderThemeColorInputs();
+  renderCloudBackupsList();
 }
 
 /* =========================================================
