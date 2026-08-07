@@ -414,6 +414,7 @@
           <li class="nav-item" data-view="branches" data-perm="branches"><span class="nav-icon">🏬</span> <span data-i18n="navBranches">الفروع</span></li>
           <li class="nav-item" data-view="costs" data-perm="costs"><span class="nav-icon">💰</span> <span data-i18n="navCosts">التكاليف التشغيلية</span></li>
           <li class="nav-item" data-view="cashPurchases" data-perm="cashPurchases"><span class="nav-icon">💵</span> <span data-i18n="navCashPurchases">المشتريات بالكاش</span></li>
+          <li class="nav-item" data-view="capital" data-perm="capital"><span class="nav-icon">🏦</span> <span data-i18n="navCapital">رأس المال</span></li>
           <li class="nav-item" data-view="stock" data-perm="stock"><span class="nav-icon">📦</span> <span data-i18n="navStock">المخزون</span></li>
           <li class="nav-item" data-view="sales" data-perm="sales"><span class="nav-icon">🧾</span> <span data-i18n="navSales">المبيعات</span></li>
           <li class="nav-item" data-view="profit" data-perm="profit"><span class="nav-icon">📈</span> <span data-i18n="navProfit">حساب الأرباح</span></li>
@@ -649,6 +650,27 @@
           </div>
         </section>
 
+        <!-- ============ رأس المال ============ -->
+        <section class="view" id="view-capital">
+          <h1 class="page-title" data-i18n="capitalTitle">رأس المال</h1>
+          <p class="subtitle" data-i18n="capitalSubtitle">المبالغ اللي جُمعت لتمويل المحل (للمالك فقط)</p>
+          <div class="section">
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th style="width:30%" data-i18n="thAmount">المبلغ</th>
+                <th style="width:20%" data-i18n="thDate">التاريخ</th>
+                <th style="width:40%" data-i18n="thNote">ملاحظة</th>
+                <th style="width:10%"></th>
+              </tr></thead>
+              <tbody id="capital-body"></tbody>
+            </table>
+            </div>
+            <button class="add-btn" id="add-capital-btn" onclick="addCapital()" data-i18n="btnAddCapital">+ إضافة مبلغ</button>
+            <div class="section-total"><span data-i18n="totalCapital">إجمالي رأس المال:</span> <b id="capital-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+        </section>
+
         <!-- ============ المخزون ============ -->
         <section class="view" id="view-stock">
           <h1 class="page-title" data-i18n="stockTitle">المخزون</h1>
@@ -805,6 +827,14 @@
               <button onclick="shareReport()" data-i18n="btnShareReport">📤 مشاركة التقرير</button>
               <button onclick="shareReportAsPdf()" data-i18n="btnShareReportPdf">📄 مشاركة كـ PDF</button>
               <button onclick="window.print()" data-i18n="btnPrintReport">🖨 طباعة التقرير</button>
+            </div>
+          </div>
+          <div class="toolbar">
+            <div></div>
+            <div class="toolbar-right">
+              <button onclick="exportCsv('sales')" data-i18n="btnExportSalesExcel">📊 تصدير المبيعات (Excel)</button>
+              <button onclick="exportCsv('operatingCosts')" data-i18n="btnExportCostsExcel">📊 تصدير التكاليف التشغيلية (Excel)</button>
+              <button onclick="exportAllData()" data-i18n="btnExportAllExcel">📊 تصدير كل البيانات (Excel)</button>
             </div>
           </div>
 
@@ -1030,7 +1060,7 @@ const I18N = {
     loginHint1:'نموذج أولي (Prototype): الدور والفرع يحدّدهما المالك عند إنشاء الحساب.',
     loginHint2:'جميع البيانات تُزامن تلقائياً وتُحفظ في قاعدة بيانات سحابية آمنة.',
     loginHintDefault:'حساب تجريبي: admin / admin123',
-    navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navCashPurchases:'المشتريات بالكاش', navStock:'المخزون', navSales:'المبيعات',
+    navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navCashPurchases:'المشتريات بالكاش', navCapital:'رأس المال', navStock:'المخزون', navSales:'المبيعات',
     navProfit:'حساب الأرباح', navSuppliers:'الفواتير المتأخرة', navReports:'التقارير', navPaymentReport:'تقرير المدفوعات', navAuditlog:'سجل التدقيق',
     navUsers:'إدارة المستخدمين', usersTitle:'إدارة المستخدمين',
     usersSubtitle:'المالك فقط يقدر يضيف حسابات ويحدد الدور والفرع الثابت لكل مستخدم — لا يختار المستخدم فرعه بنفسه',
@@ -1064,6 +1094,10 @@ const I18N = {
     confirmDeleteBranch:'هل تريدين حذف هذا الفرع؟',
     costsTitle:'التكاليف التشغيلية', costsSubtitle:'الرواتب، الإيجارات، المشتريات، والمصاريف الأخرى لكل فرع',
     cashPurchasesTitle:'المشتريات بالكاش', cashPurchasesSubtitle:'تسجيل المشتريات النقدية لكل فرع — لا تُحتسب ضمن التكاليف التشغيلية',
+    capitalTitle:'رأس المال', capitalSubtitle:'المبالغ اللي جُمعت لتمويل المحل (للمالك فقط)',
+    thAmount:'المبلغ', thNote:'ملاحظة', btnAddCapital:'+ إضافة مبلغ', totalCapital:'إجمالي رأس المال:',
+    confirmAddCapital:'هل تريدين إضافة مبلغ جديد لرأس المال؟',
+    logAddCapital:'إضافة مبلغ لرأس المال', logDeleteCapital:'حذف مبلغ من رأس المال',
     subtabSalaries:'الرواتب', subtabRents:'الإيجارات', subtabPurchases:'المشتريات', subtabOther:'مصاريف أخرى',
     thEmployee:'الموظف', thBranch:'الفرع', thBaseSalary:'الراتب الأساسي', thAllowances:'البدلات',
     thAdvances:'السلف', thTotal:'الإجمالي', btnAddSalary:'+ إضافة راتب', totalSalaries:'إجمالي الرواتب:',
@@ -1077,7 +1111,7 @@ const I18N = {
     placeholderItemName:'اسم الصنف', placeholderCompanyName:'اسم الشركة الموردة',
     thCategory:'البند', thAmount:'المبلغ', btnAddOtherExpense:'+ إضافة مصروف', totalOther:'إجمالي المصاريف الأخرى:',
     cat_electricity:'كهرباء', cat_water:'ماء', cat_wifi:'واي فاي', cat_maintenance:'صيانة',
-    cat_marketing:'تسويق', cat_delivery:'توصيل', cat_packaging:'أدوات تغليف', cat_franchise:'نسبة الفرنشايز', cat_other:'أخرى',
+    cat_marketing:'تسويق', cat_delivery:'توصيل', cat_packaging:'أدوات تغليف', cat_franchise:'نسبة الفرنشايز', cat_housingRent:'إيجار السكن', cat_other:'أخرى',
     costsSummaryTitle:'إجمالي التكاليف التشغيلية', grandTotal:'الإجمالي الكلي',
     stockTitle:'المخزون',
     stockSubtitleOwner:'اسم المادة يحدده المالك فقط؛ يمكن لأي مستخدم تحديث الكمية والتاريخ',
@@ -1092,6 +1126,7 @@ const I18N = {
     profitTitle:'حساب الأرباح', profitSubtitle:'صافي الربح = (فيزا + طلبات + زادكم + أخرى) - إجمالي المصروفات - العمولات - الخصومات — ملاحظة: الكاش لا يُحتسب ضمن إجمالي الأرباح',
     settingsTitle:'إعدادات الحساب', visaPctLabel:'نسبة عمولة فيزا (%)', talabatPctLabel:'نسبة عمولة طلبات (%)', zadPctLabel:'نسبة عمولة زادكم (%)',
     discountsLabel:'الخصومات (ر.ع.)', profitReportTitle:'تقرير الأرباح',
+    monthlySalesRow:'المبيعات الشهرية (من النظام)', salesAfterCommissionRow:'المبيعات بعد خصم النسبة',
     totalSalesRow:'إجمالي المبيعات (بدون الكاش)', totalExpensesRow:'إجمالي المصروفات', commissionsRow:'عمولات فيزا / طلبات / زادكم',
     discountsRow:'الخصومات', netProfitRow:'صافي الربح',
     suppliersTitle:'الفواتير المتأخرة', suppliersSubtitle:'إدارة الشركات الموردة ومتابعة الفواتير المستحقة والمتأخرة — لا تُحتسب هذه الفواتير ضمن التكاليف التشغيلية',
@@ -1104,6 +1139,7 @@ const I18N = {
     reportsTitle:'التقارير', reportsSubtitle:'تقارير شهرية وسنوية',
     periodToday:'اليوم', periodMonth:'هذا الشهر', periodYear:'هذه السنة', periodAll:'كل الفترات',
     btnPrintReport:'🖨 طباعة التقرير', btnShareReport:'📤 مشاركة التقرير', btnShareReportPdf:'📄 مشاركة كـ PDF',
+    btnExportSalesExcel:'📊 تصدير المبيعات (Excel)', btnExportCostsExcel:'📊 تصدير التكاليف التشغيلية (Excel)', btnExportAllExcel:'📊 تصدير كل البيانات (Excel)',
     shareCopiedMsg:'تم نسخ ملخص التقرير — يمكنك لصقه في أي مكان', shareUnavailableMsg:'المشاركة غير مدعومة في هذا المتصفح',
     pdfShareHint:'ستفتح نافذة الطباعة الآن — اختاري "Save as PDF" (حفظ كـ PDF) من قائمة الطابعة، أو استخدمي زر المشاركة داخل معاينة الطباعة على الجوال للحصول على نسخة PDF جاهزة للمشاركة.',
     reportBranchSalesTitle:'تقرير مبيعات كل فرع',
@@ -1176,7 +1212,7 @@ const I18N = {
     loginHint1:'Prototype: role and branch are set by the owner when the account is created.',
     loginHint2:'All data syncs automatically and is stored in a secure cloud database.',
     loginHintDefault:'Demo account: admin / admin123',
-    navDashboard:'Dashboard', navBranches:'Branches', navCosts:'Operating Costs', navCashPurchases:'Cash Purchases', navStock:'Inventory', navSales:'Sales',
+    navDashboard:'Dashboard', navBranches:'Branches', navCosts:'Operating Costs', navCashPurchases:'Cash Purchases', navCapital:'Capital', navStock:'Inventory', navSales:'Sales',
     navProfit:'Profit Calculation', navSuppliers:'Overdue Invoices', navReports:'Reports', navPaymentReport:'Payment Report', navAuditlog:'Audit Log',
     navUsers:'User Management', usersTitle:'User Management',
     usersSubtitle:'Only the owner can add accounts and set each user’s fixed role and branch — users cannot pick their own branch',
@@ -1210,6 +1246,10 @@ const I18N = {
     confirmDeleteBranch:'Delete this branch?',
     costsTitle:'Operating Costs', costsSubtitle:'Salaries, rents, purchases and other expenses per branch',
     cashPurchasesTitle:'Cash Purchases', cashPurchasesSubtitle:'Record cash purchases per branch — not counted toward operating costs',
+    capitalTitle:'Capital', capitalSubtitle:'Amounts raised to fund the business (owner only)',
+    thAmount:'Amount', thNote:'Note', btnAddCapital:'+ Add Amount', totalCapital:'Total Capital:',
+    confirmAddCapital:'Add a new capital amount?',
+    logAddCapital:'Added capital amount', logDeleteCapital:'Deleted capital amount',
     subtabSalaries:'Salaries', subtabRents:'Rents', subtabPurchases:'Purchases', subtabOther:'Other Expenses',
     thEmployee:'Employee', thBranch:'Branch', thBaseSalary:'Base Salary', thAllowances:'Allowances',
     thAdvances:'Advances', thTotal:'Total', btnAddSalary:'+ Add Salary', totalSalaries:'Total Salaries:',
@@ -1223,7 +1263,7 @@ const I18N = {
     placeholderItemName:'Item name', placeholderCompanyName:'Supplier company name',
     thCategory:'Category', thAmount:'Amount', btnAddOtherExpense:'+ Add Expense', totalOther:'Total Other Expenses:',
     cat_electricity:'Electricity', cat_water:'Water', cat_wifi:'WiFi', cat_maintenance:'Maintenance',
-    cat_marketing:'Marketing', cat_delivery:'Delivery', cat_packaging:'Packaging Supplies', cat_franchise:'Franchise Fee', cat_other:'Other',
+    cat_marketing:'Marketing', cat_delivery:'Delivery', cat_packaging:'Packaging Supplies', cat_franchise:'Franchise Fee', cat_housingRent:'Housing Rent', cat_other:'Other',
     costsSummaryTitle:'Total Operating Costs', grandTotal:'Grand Total',
     stockTitle:'Inventory',
     stockSubtitleOwner:'Only the owner can set material names; anyone can update quantity and date',
@@ -1238,6 +1278,7 @@ const I18N = {
     profitTitle:'Profit Calculation', profitSubtitle:'Net Profit = (Visa + Talabat + Zadkom + Other) − Total Expenses − Commissions − Discounts — note: cash is not counted toward total profit',
     settingsTitle:'Calculation Settings', visaPctLabel:'Visa Commission Rate (%)', talabatPctLabel:'Talabat Commission Rate (%)', zadPctLabel:'Zadkom Commission Rate (%)',
     discountsLabel:'Discounts (OMR)', profitReportTitle:'Profit Report',
+    monthlySalesRow:'Monthly Sales (from system)', salesAfterCommissionRow:'Sales After Commission Deduction',
     totalSalesRow:'Total Sales (excl. cash)', totalExpensesRow:'Total Expenses', commissionsRow:'Visa / Talabat / Zadkom Commissions',
     discountsRow:'Discounts', netProfitRow:'Net Profit',
     suppliersTitle:'Overdue Invoices', suppliersSubtitle:'Manage supplier companies and track outstanding/overdue invoices — these invoices are not counted toward operating costs',
@@ -1250,6 +1291,7 @@ const I18N = {
     reportsTitle:'Reports', reportsSubtitle:'Monthly and yearly reports',
     periodToday:'Today', periodMonth:'This Month', periodYear:'This Year', periodAll:'All Time',
     btnPrintReport:'🖨 Print Report', btnShareReport:'📤 Share Report', btnShareReportPdf:'📄 Share as PDF',
+    btnExportSalesExcel:'📊 Export Sales (Excel)', btnExportCostsExcel:'📊 Export Operating Costs (Excel)', btnExportAllExcel:'📊 Export All Data (Excel)',
     shareCopiedMsg:'Report summary copied — you can paste it anywhere', shareUnavailableMsg:'Sharing is not supported in this browser',
     pdfShareHint:'The print dialog will open now — choose "Save as PDF" from the printer list, or use the Share button inside the print preview on mobile to get a shareable PDF.',
     reportBranchSalesTitle:'Sales Report by Branch',
@@ -1415,7 +1457,7 @@ const STORAGE_STATE_KEY = 'aventus_erp_state_v1';
 const STORAGE_SESSION_KEY = 'aventus_erp_session_v1';
 
 const CAT_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--cat-7)','var(--cat-8)'];
-const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','franchise','other'];
+const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','franchise','housingRent','other'];
 const BRANCH_STATUS_KEYS = ['active','stopped','preparing'];
 const PAYMENT_METHODS = ['cash','visa','talabat','zad','other'];
 
@@ -1425,7 +1467,7 @@ function categoryLabel(key){ return t('cat_' + key); }
 function paymentLabel(key){ return t('pm_' + key); }
 
 const PERMS = {
-  owner:      {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
+  owner:      {nav:['dashboard','branches','costs','cashPurchases','capital','stock','sales','profit','suppliers','reports','paymentReport','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
   manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport'],                   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:true},
   accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport'],                              costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false},
   staff:      {nav:['sales','cashPurchases','stock'],                                                                                  costSubtabs:[],                                       deleteInvoice:false, editBranches:false, manageStockNames:false},
@@ -1482,6 +1524,7 @@ function defaultState(){
     rentDue: {},
     purchases: [],
     cashPurchases: [],
+    capital: [],
     otherExpenses: [],
     suppliers: [],
     stock: [],
@@ -1753,7 +1796,7 @@ function startApp(){
    التنقل بين الشاشات
 ========================================================= */
 const VIEW_TITLE_KEYS = {
-  dashboard:'navDashboard', branches:'navBranches', costs:'navCosts', cashPurchases:'navCashPurchases', stock:'navStock',
+  dashboard:'navDashboard', branches:'navBranches', costs:'navCosts', cashPurchases:'navCashPurchases', capital:'navCapital', stock:'navStock',
   sales:'navSales', profit:'navProfit', suppliers:'navSuppliers',
   reports:'navReports', paymentReport:'navPaymentReport', auditlog:'navAuditlog', users:'navUsers', more:'navMore',
 };
@@ -1779,6 +1822,7 @@ function switchView(view){
   if(view === 'branches') renderBranches();
   if(view === 'costs') renderCosts();
   if(view === 'cashPurchases') renderCashPurchases();
+  if(view === 'capital') renderCapital();
   if(view === 'stock') renderStock();
   if(view === 'sales') renderSales();
   if(view === 'profit') renderProfit();
@@ -2259,6 +2303,39 @@ function renderCashPurchasesTotals(){
   document.getElementById('cash-purchases-total').textContent = formatNum(total);
 }
 
+/* --- رأس المال --- */
+function addCapital(){
+  if(!confirm(t('confirmAddCapital'))) return;
+  state.capital.push({id:uid(), amount:0, date:todayStr(), note:''});
+  logAction('logAddCapital');
+  renderCapital();
+}
+function updateCapital(id, field, value){
+  const c = state.capital.find(x=>x.id===id);
+  if(!c) return;
+  c[field] = value;
+  saveState();
+}
+function removeCapital(id){
+  state.capital = state.capital.filter(c=>c.id!==id);
+  logAction('logDeleteCapital');
+  renderCapital();
+}
+function renderCapital(){
+  document.getElementById('capital-body').innerHTML = state.capital.map(c => `
+    <tr data-id="${c.id}">
+      <td><input type="number" min="0" step="any" value="${c.amount}" oninput="updateCapital('${c.id}','amount',this.value); renderCapitalTotal();"></td>
+      <td><input type="date" value="${c.date||''}" onchange="updateCapital('${c.id}','date',this.value)"></td>
+      <td><input type="text" value="${escapeHtml(c.note)}" placeholder="${t('thNote')}" oninput="updateCapital('${c.id}','note',this.value)"></td>
+      <td><button class="del-btn" onclick="removeCapital('${c.id}')">✕</button></td>
+    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  renderCapitalTotal();
+}
+function renderCapitalTotal(){
+  const total = state.capital.reduce((a,c)=>a+num(c.amount),0);
+  document.getElementById('capital-total').textContent = formatNum(total);
+}
+
 /* --- مصاريف أخرى --- */
 function addOtherExpense(){
   if(!confirm(t('confirmAddOther'))) return;
@@ -2449,16 +2526,20 @@ function renderProfit(){
 
   const scope = activeBranchId();
   const period = document.getElementById('profit-period').value;
+  const monthlySales = totalSales(scope, period);
   const sales = salesForProfit(scope, period);
   const expenses = totalExpenses(scope);
   const commissions = commissionsTotal(period, scope);
   const discounts = num(state.settings.discounts);
+  const salesAfterCommission = sales - commissions;
   const net = sales - expenses - commissions - discounts;
 
   document.getElementById('profit-report-body').innerHTML = `
+    <tr><td>${t('monthlySalesRow')}</td><td class="row-total">${formatCurrency(monthlySales)}</td></tr>
     <tr><td>${t('totalSalesRow')}</td><td class="row-total">${formatCurrency(sales)}</td></tr>
-    <tr><td>${t('totalExpensesRow')}</td><td class="row-total">${formatCurrency(expenses)}</td></tr>
     <tr><td>${t('commissionsRow')}</td><td class="row-total">${formatCurrency(commissions)}</td></tr>
+    <tr><td>${t('salesAfterCommissionRow')}</td><td class="row-total">${formatCurrency(salesAfterCommission)}</td></tr>
+    <tr><td>${t('totalExpensesRow')}</td><td class="row-total">${formatCurrency(expenses)}</td></tr>
     <tr><td>${t('discountsRow')}</td><td class="row-total">${formatCurrency(discounts)}</td></tr>
     <tr style="border-top:2px solid var(--accent);"><td><b>${t('netProfitRow')}</b></td><td class="row-total" style="color:${net>=0?'var(--accent)':'var(--danger)'}"><b>${formatCurrency(net)}</b></td></tr>
   `;
@@ -2598,13 +2679,17 @@ function renderReports(){
     barRow(e.label, e.total, maxExp, e.color, expTotal>0?Math.round(e.total/expTotal*100)+'%':'0%')
   ).join('');
 
+  const monthlySales = totalSales(reportScope, period);
   const sales = salesForProfit(reportScope, period);
   const expenses = totalExpenses(reportScope);
   const commissions = commissionsTotal(period, reportScope);
   const discounts = num(state.settings.discounts);
+  const salesAfterCommission = sales - commissions;
   const net = sales - expenses - commissions - discounts;
   document.getElementById('report-profit').innerHTML = [
+    kpiCard(t('monthlySalesRow'), formatCurrency(monthlySales)),
     kpiCard(t('totalSalesRow'), formatCurrency(sales)),
+    kpiCard(t('salesAfterCommissionRow'), formatCurrency(salesAfterCommission)),
     kpiCard(t('totalExpensesRow'), formatCurrency(expenses)),
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true),
   ].join('');
@@ -2899,6 +2984,22 @@ const CSV_CONFIGS = {
     row: s => [s.company, s.contact, s.materialType, branchNameById(s.branchId), num(s.invoiceValue), num(s.paid), num(s.invoiceValue)-num(s.paid), s.dueDate] },
   purchases: { rows: () => state.purchases, headers: ['thItemName','thBranch','thCompanyName','thUnitPrice','thQty','thTotal'],
     row: p => [p.item, branchNameById(p.branchId), p.company, num(p.price), num(p.qty), purchaseTotal(p)] },
+  cashPurchases: { rows: () => state.cashPurchases, headers: ['thItemName','thBranch','thDate','thUnitPrice','thQty','thTotal'],
+    row: p => [p.item, branchNameById(p.branchId), p.date, num(p.price), num(p.qty), purchaseTotal(p)] },
+  capital: { rows: () => state.capital, headers: ['thAmount','thDate','thNote'],
+    row: c => [num(c.amount), c.date, c.note] },
+  branches: { rows: () => state.branches, headers: ['thBranchName','thLocation','thEmployees','thMonthlyRent','thStatus'],
+    row: b => [b.name, b.location, num(b.employees), num(b.rent), statusLabel(b.status)] },
+  operatingCosts: {
+    rows: () => [
+      ...state.salaries.map(s => ({type:t('subtabSalaries'), branchId:s.branchId, date:s.date, desc:s.employee, amount:salaryTotal(s)})),
+      ...state.branches.filter(b=>num(b.rent)>0).map(b => ({type:t('subtabRents'), branchId:b.id, date:'', desc:b.name, amount:num(b.rent)})),
+      ...state.purchases.map(p => ({type:t('subtabPurchases'), branchId:p.branchId, date:p.date, desc:p.item, amount:purchaseTotal(p)})),
+      ...state.otherExpenses.map(o => ({type:t('subtabOther'), branchId:o.branchId, date:o.date, desc:categoryLabel(o.category), amount:otherExpenseTotal(o)})),
+    ],
+    headers: ['thCategory','thBranch','thDate','thItemName','thTotal'],
+    row: r => [r.type, branchNameById(r.branchId), r.date, r.desc, r.amount],
+  },
 };
 function exportCsv(type){
   const cfg = CSV_CONFIGS[type];
@@ -2907,6 +3008,10 @@ function exportCsv(type){
   cfg.rows().forEach(r => lines.push(cfg.row(r).map(csvEscape).join(',')));
   downloadFile(`${type}-${todayStr()}.csv`, '﻿' + lines.join('\r\n'), 'text/csv;charset=utf-8');
   logAction('logExportCsv');
+}
+function exportAllData(){
+  const types = Object.keys(CSV_CONFIGS);
+  types.forEach((type, i) => setTimeout(() => exportCsv(type), i * 300));
 }
 
 function resetSystem(){
