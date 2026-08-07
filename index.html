@@ -132,7 +132,6 @@
     transition:transform .15s ease, box-shadow .15s ease;
   }
   .login-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px var(--accent-shadow-30);}
-  .login-hint{text-align:center;color:var(--muted);font-size:.78rem;margin-top:16px;line-height:1.6;}
   .login-error{color:var(--danger);font-size:.82rem;text-align:center;margin-top:10px;min-height:1em;}
 
   /* ===== هيكل التطبيق ===== */
@@ -389,12 +388,6 @@
       <button type="submit" class="login-btn" data-i18n="btnLogin">تسجيل الدخول</button>
       <div class="login-error" id="login-error"></div>
     </form>
-
-    <div class="login-hint">
-      <div data-i18n="loginHint1">نموذج أولي (Prototype): الدور والفرع يحدّدهما المالك عند إنشاء الحساب.</div>
-      <div data-i18n="loginHint2">جميع البيانات تُزامن تلقائياً وتُحفظ في قاعدة بيانات سحابية آمنة.</div>
-      <div data-i18n="loginHintDefault">حساب تجريبي: admin / admin123</div>
-    </div>
     <button type="button" class="back-to-chooser" onclick="goBackToChooser()" data-i18n="backToChooser">‹ تغيير الاختيار</button>
   </div>
 </div>
@@ -854,6 +847,22 @@
           </div>
 
           <div class="section">
+            <h2><span class="icon">🏢</span> <span data-i18n="reportRentsDetailTitle">تفاصيل الإيجارات لكل فرع</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thMonthlyRent">الإيجار الشهري</th>
+                <th data-i18n="thDueDate">تاريخ الاستحقاق</th>
+                <th data-i18n="thPaymentStatus">حالة الدفع</th>
+              </tr></thead>
+              <tbody id="report-rents-detail"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalRents">إجمالي الإيجارات:</span> <b id="report-rents-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+
+          <div class="section">
             <h2><span class="icon">🛒</span> <span data-i18n="reportPurchasesDetailTitle">تفاصيل جميع المشتريات لكل فرع</span></h2>
             <div class="table-scroll">
             <table>
@@ -869,6 +878,24 @@
             </table>
             </div>
             <div class="section-total"><span data-i18n="totalPurchases">إجمالي المشتريات:</span> <b id="report-purchases-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+
+          <div class="section">
+            <h2><span class="icon">🔌</span> <span data-i18n="reportOtherDetailTitle">تفاصيل المصاريف الأخرى لكل فرع</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thCategory">البند</th>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thDate">التاريخ</th>
+                <th data-i18n="thQty">الكمية</th>
+                <th data-i18n="thUnitPrice">سعر الوحدة</th>
+                <th data-i18n="thTotal">الإجمالي</th>
+              </tr></thead>
+              <tbody id="report-other-detail"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalOther">إجمالي المصاريف الأخرى:</span> <b id="report-other-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
         </section>
 
@@ -1057,9 +1084,6 @@ const I18N = {
     errSelectBranch:'الرجاء اختيار الفرع (يجب إضافة فرع واحد على الأقل أولاً)',
     errInvalidCredentials:'اسم المستخدم أو كلمة المرور غير صحيحة',
     errAccountLocked:'هذا الحساب مقفل بسبب محاولات دخول خاطئة متكررة. تواصلي مع المالك لفتحه.',
-    loginHint1:'نموذج أولي (Prototype): الدور والفرع يحدّدهما المالك عند إنشاء الحساب.',
-    loginHint2:'جميع البيانات تُزامن تلقائياً وتُحفظ في قاعدة بيانات سحابية آمنة.',
-    loginHintDefault:'حساب تجريبي: admin / admin123',
     navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navCashPurchases:'المشتريات بالكاش', navCapital:'رأس المال', navStock:'المخزون', navSales:'المبيعات',
     navProfit:'حساب الأرباح', navSuppliers:'الفواتير المتأخرة', navReports:'التقارير', navPaymentReport:'تقرير المدفوعات', navAuditlog:'سجل التدقيق',
     navUsers:'إدارة المستخدمين', usersTitle:'إدارة المستخدمين',
@@ -1150,6 +1174,7 @@ const I18N = {
     reportPaymentMethodsTitle:'تقرير الكاش والفيزا والتطبيقات',
     paymentReportSubtitle:'توزيع المبيعات حسب طريقة الدفع لكل فرع وفترة',
     reportPurchasesDetailTitle:'تفاصيل جميع المشتريات لكل فرع',
+    reportRentsDetailTitle:'تفاصيل الإيجارات لكل فرع', reportOtherDetailTitle:'تفاصيل المصاريف الأخرى لكل فرع',
     reportAllProfitsTitle:'إجمالي الأرباح لكل الفروع (للمالك فقط)', thNetProfit:'صافي الربح', totalNetProfitAll:'إجمالي صافي الربح لكل الفروع:',
     noData:'لا توجد بيانات', noBranches:'لا توجد فروع', noSuppliers:'لا يوجد موردون',
     auditTitle:'سجل التدقيق', auditSubtitle:'سجل لكل عملية إضافة أو تعديل أو حذف (متاح للمالك فقط)',
@@ -1209,9 +1234,6 @@ const I18N = {
     errSelectBranch:'Please select a branch (at least one branch must be added first)',
     errInvalidCredentials:'Incorrect username or password',
     errAccountLocked:'This account is locked due to repeated failed login attempts. Contact the owner to unlock it.',
-    loginHint1:'Prototype: role and branch are set by the owner when the account is created.',
-    loginHint2:'All data syncs automatically and is stored in a secure cloud database.',
-    loginHintDefault:'Demo account: admin / admin123',
     navDashboard:'Dashboard', navBranches:'Branches', navCosts:'Operating Costs', navCashPurchases:'Cash Purchases', navCapital:'Capital', navStock:'Inventory', navSales:'Sales',
     navProfit:'Profit Calculation', navSuppliers:'Overdue Invoices', navReports:'Reports', navPaymentReport:'Payment Report', navAuditlog:'Audit Log',
     navUsers:'User Management', usersTitle:'User Management',
@@ -1302,6 +1324,7 @@ const I18N = {
     reportPaymentMethodsTitle:'Cash, Card & Apps Report',
     paymentReportSubtitle:'Sales breakdown by payment method, per branch and period',
     reportPurchasesDetailTitle:'All Purchases Detail by Branch',
+    reportRentsDetailTitle:'Rents Detail by Branch', reportOtherDetailTitle:'Other Expenses Detail by Branch',
     reportAllProfitsTitle:'Total Profits — All Branches (Owner Only)', thNetProfit:'Net Profit', totalNetProfitAll:'Total Net Profit — All Branches:',
     noData:'No data available', noBranches:'No branches', noSuppliers:'No suppliers',
     auditTitle:'Audit Log', auditSubtitle:'Log of every add, edit, or delete operation (owner only)',
@@ -2694,6 +2717,20 @@ function renderReports(){
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true),
   ].join('');
 
+  const reportRentBranches = (reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches)
+    .slice().sort((a,b) => a.name.localeCompare(b.name));
+  document.getElementById('report-rents-detail').innerHTML = reportRentBranches.map(b => {
+    const rd = state.rentDue[b.id] || {dueDate:'', paid:'unpaid'};
+    return `
+    <tr>
+      <td><bdi>${escapeHtml(b.name)}</bdi></td>
+      <td class="row-total">${formatCurrency(num(b.rent))}</td>
+      <td>${escapeHtml(rd.dueDate) || '—'}</td>
+      <td>${rd.paid==='paid' ? t('paidPaid') : t('paidUnpaid')}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  document.getElementById('report-rents-total').textContent = formatNum(reportRentBranches.reduce((a,b)=>a+num(b.rent),0));
+
   const reportPurchases = (reportScope ? state.purchases.filter(p=>p.branchId===reportScope) : state.purchases)
     .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
   document.getElementById('report-purchases-detail').innerHTML = reportPurchases.map(p => `
@@ -2706,6 +2743,19 @@ function renderReports(){
       <td class="row-total">${formatCurrency(purchaseTotal(p))}</td>
     </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
   document.getElementById('report-purchases-total').textContent = formatNum(reportPurchases.reduce((a,p)=>a+purchaseTotal(p),0));
+
+  const reportOther = (reportScope ? state.otherExpenses.filter(o=>o.branchId===reportScope) : state.otherExpenses)
+    .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
+  document.getElementById('report-other-detail').innerHTML = reportOther.map(o => `
+    <tr>
+      <td><bdi>${escapeHtml(categoryLabel(o.category))}</bdi></td>
+      <td><bdi>${escapeHtml(branchNameById(o.branchId))}</bdi></td>
+      <td>${escapeHtml(o.date) || '—'}</td>
+      <td>${formatNum(num(o.qty))}</td>
+      <td>${formatCurrency(num(o.unitPrice))}</td>
+      <td class="row-total">${formatCurrency(otherExpenseTotal(o))}</td>
+    </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  document.getElementById('report-other-total').textContent = formatNum(reportOther.reduce((a,o)=>a+otherExpenseTotal(o),0));
 
   lastReportSummary = [
     `${t('reportsTitle')} — ${branchNameById(reportScope) || t('allBranches')}`,
