@@ -6,36 +6,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<title>كوفي بوينت | نظام نقاط بيع محل القهوة</title>
+<title>DAZE 360 | نظام نقاط بيع محل القهوة</title>
+<meta name="theme-color" content="#0c0c0e">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%98%95%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4ebe0;
-  --bg2:#fbf6ef;
-  --card:#fffdf9;
-  --card2:#f8f0e6;
-  --card3:#f1e4d3;
-  --text:#3a2a1d;
-  --muted:#8a7767;
-  --accent:#8a5a34;
-  --accent-dark:#5c3a21;
-  --accent-light:#c48a52;
-  --danger:#c0392b;
-  --danger-tint:rgba(192,57,43,.1);
-  --success:#1a8f4c;
-  --success-tint:rgba(26,143,76,.1);
-  --warning:#e0951b;
-  --warning-tint:rgba(224,149,27,.12);
-  --border:#e8dac8;
-  --accent-tint-06:rgba(138,90,52,.06);
-  --accent-tint-10:rgba(138,90,52,.1);
-  --accent-tint-16:rgba(138,90,52,.16);
-  --accent-shadow-30:rgba(138,90,52,.3);
-  --cat-1:#8a5a34; --cat-2:#2f8fc0; --cat-3:#b5762a; --cat-4:#3a9d5d;
-  --cat-5:#a4477b; --cat-6:#6c5ce7;
+  color-scheme: dark;
+  --bg:#0c0c0e;
+  --bg2:#141416;
+  --card:#1b1b1e;
+  --card2:#242427;
+  --card3:#2c2c30;
+  --text:#f3f0ea;
+  --muted:#9a958c;
+  --accent:#c9a15a;
+  --accent-dark:#8a6a2f;
+  --accent-light:#e3c184;
+  --danger:#e0554a;
+  --danger-tint:rgba(224,85,74,.15);
+  --success:#3fc27c;
+  --success-tint:rgba(63,194,124,.15);
+  --warning:#e0a83c;
+  --warning-tint:rgba(224,168,60,.16);
+  --border:#333338;
+  --accent-tint-06:rgba(201,161,90,.08);
+  --accent-tint-10:rgba(201,161,90,.14);
+  --accent-tint-16:rgba(201,161,90,.2);
+  --accent-shadow-30:rgba(201,161,90,.35);
+  --cat-1:#c9a15a; --cat-2:#4fa9d8; --cat-3:#d68f3e; --cat-4:#4fbf82;
+  --cat-5:#c563a0; --cat-6:#8b7cf0;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
@@ -48,7 +50,7 @@ body{
   overflow-x:hidden;
 }
 button{font-family:inherit;cursor:pointer;}
-input,select,textarea{font-family:inherit;}
+input,select,textarea{font-family:inherit;color:var(--text);}
 ::-webkit-scrollbar{width:8px;height:8px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
 .hidden{display:none !important;}
@@ -57,7 +59,7 @@ input,select,textarea{font-family:inherit;}
   background:var(--card2);color:var(--text);transition:.15s;touch-action:manipulation;
 }
 .btn:active{transform:scale(.96);}
-.btn-accent{background:linear-gradient(135deg,var(--accent),var(--accent-dark));color:#fff;box-shadow:0 6px 18px var(--accent-shadow-30);}
+.btn-accent{background:linear-gradient(135deg,var(--accent-light),var(--accent));color:#1c1509;box-shadow:0 6px 18px var(--accent-shadow-30);}
 .btn-success{background:var(--success);color:#fff;}
 .btn-danger{background:var(--danger);color:#fff;}
 .btn-outline{background:transparent;border:2px solid var(--border);}
@@ -88,7 +90,7 @@ input,select,textarea{font-family:inherit;}
 .staff-name{font-weight:700;font-size:.95rem;}
 .staff-role{font-size:.75rem;color:var(--muted);}
 .pin-overlay{
-  position:fixed;inset:0;background:rgba(58,42,29,.55);backdrop-filter:blur(3px);
+  position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(3px);
   display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;
 }
 .pin-box{background:var(--card);border-radius:24px;padding:32px 28px;max-width:340px;width:100%;text-align:center;box-shadow:0 30px 60px rgba(0,0,0,.25);}
@@ -108,8 +110,9 @@ input,select,textarea{font-family:inherit;}
 #app{min-height:100vh;display:flex;flex-direction:column;}
 #topbar{
   display:flex;align-items:center;justify-content:space-between;gap:14px;
-  padding:12px 20px;background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:#fff;
-  box-shadow:0 4px 16px rgba(0,0,0,.12);flex-wrap:wrap;
+  padding:12px 20px;background:linear-gradient(135deg,#0a0a0c,#1a1712);color:#f3f0ea;
+  border-bottom:1px solid var(--accent-dark);
+  box-shadow:0 4px 16px rgba(0,0,0,.35);flex-wrap:wrap;
 }
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;}
 .brand .logo-emoji{font-size:1.5rem;}
@@ -131,7 +134,7 @@ input,select,textarea{font-family:inherit;}
   background:transparent;border-radius:12px;color:var(--muted);font-size:.68rem;font-weight:700;
 }
 #sidenav button .nav-ic{font-size:1.35rem;}
-#sidenav button.active{background:var(--accent-tint-16);color:var(--accent-dark);}
+#sidenav button.active{background:var(--accent-tint-16);color:var(--accent-light);}
 #view-root{flex:1;min-width:0;overflow-y:auto;padding:18px;}
 
 /* ===== POS layout ===== */
@@ -142,7 +145,7 @@ input,select,textarea{font-family:inherit;}
   flex:none;display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;border:2px solid var(--border);
   background:var(--card);font-weight:700;font-size:.85rem;white-space:nowrap;
 }
-.cat-tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.cat-tab.active{background:var(--accent);border-color:var(--accent);color:#1c1509;}
 .search-bar{margin-bottom:12px;}
 .search-bar input{width:100%;padding:12px 16px;border-radius:12px;border:2px solid var(--border);background:var(--card);font-size:.9rem;}
 .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;align-content:start;}
@@ -154,9 +157,9 @@ input,select,textarea{font-family:inherit;}
 .product-card:active{transform:scale(.95);}
 .product-ic{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;background:var(--card2);}
 .product-name{font-weight:700;font-size:.85rem;line-height:1.3;}
-.product-price{color:var(--accent-dark);font-weight:800;font-size:.85rem;}
+.product-price{color:var(--accent-light);font-weight:800;font-size:.85rem;}
 .product-card.unavailable{opacity:.5;}
-.product-card.unavailable::after{content:"غير متوفر";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.65);border-radius:16px;font-weight:800;color:var(--danger);font-size:.78rem;}
+.product-card.unavailable::after{content:"غير متوفر";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(12,12,14,.75);border-radius:16px;font-weight:800;color:var(--danger);font-size:.78rem;}
 
 .pos-cart{
   width:360px;flex:none;background:var(--card);border-radius:18px;border:1px solid var(--border);
@@ -166,7 +169,7 @@ input,select,textarea{font-family:inherit;}
 .cart-header-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .cart-title{font-weight:800;font-size:1rem;}
 .cart-meta-row{display:flex;gap:8px;flex-wrap:wrap;}
-.table-badge{background:var(--accent-tint-16);color:var(--accent-dark);padding:5px 12px;border-radius:9px;font-size:.78rem;font-weight:700;}
+.table-badge{background:var(--accent-tint-16);color:var(--accent-light);padding:5px 12px;border-radius:9px;font-size:.78rem;font-weight:700;}
 .cart-items{flex:1;overflow-y:auto;padding:8px 12px;min-height:80px;}
 .cart-empty{color:var(--muted);text-align:center;padding:40px 10px;font-size:.9rem;}
 .cart-item{padding:10px 4px;border-bottom:1px dashed var(--border);display:flex;flex-direction:column;gap:6px;}
@@ -177,11 +180,11 @@ input,select,textarea{font-family:inherit;}
 .qty-stepper{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:9px;padding:3px;}
 .qty-stepper button{width:26px;height:26px;border-radius:7px;border:none;background:#fff;font-weight:800;}
 .qty-stepper span{min-width:20px;text-align:center;font-weight:700;font-size:.85rem;}
-.cart-item-price{font-weight:800;font-size:.85rem;color:var(--accent-dark);}
+.cart-item-price{font-weight:800;font-size:.85rem;color:var(--accent-light);}
 .cart-item-remove{background:none;border:none;color:var(--danger);font-size:.78rem;font-weight:700;}
 .cart-summary{padding:12px 16px;border-top:1px solid var(--border);font-size:.85rem;}
 .sum-row{display:flex;justify-content:space-between;padding:4px 0;}
-.sum-row.total{font-size:1.15rem;font-weight:800;color:var(--accent-dark);border-top:1px solid var(--border);margin-top:6px;padding-top:10px;}
+.sum-row.total{font-size:1.15rem;font-weight:800;color:var(--accent-light);border-top:1px solid var(--border);margin-top:6px;padding-top:10px;}
 .cart-actions{display:flex;gap:8px;padding:12px 16px 16px;}
 .cart-actions .btn{flex:1;}
 
@@ -203,7 +206,7 @@ input,select,textarea{font-family:inherit;}
 .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:18px;}
 .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;}
 .kpi-label{color:var(--muted);font-size:.78rem;font-weight:700;margin-bottom:6px;}
-.kpi-value{font-size:1.5rem;font-weight:800;color:var(--accent-dark);}
+.kpi-value{font-size:1.5rem;font-weight:800;color:var(--accent-light);}
 .data-table{width:100%;border-collapse:collapse;font-size:.85rem;}
 .data-table th{text-align:right;color:var(--muted);font-weight:700;padding:10px 8px;border-bottom:2px solid var(--border);font-size:.78rem;}
 .data-table td{padding:10px 8px;border-bottom:1px solid var(--border);}
@@ -213,7 +216,7 @@ input,select,textarea{font-family:inherit;}
 .bar-label{width:130px;flex:none;font-weight:700;}
 .bar-track{flex:1;height:16px;background:var(--card2);border-radius:8px;overflow:hidden;}
 .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent-light),var(--accent));border-radius:8px;}
-.bar-val{width:90px;flex:none;text-align:left;font-weight:700;color:var(--accent-dark);}
+.bar-val{width:90px;flex:none;text-align:left;font-weight:700;color:var(--accent-light);}
 .alert-banner{background:var(--warning-tint);border:1px solid var(--warning);color:#7a5000;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.85rem;font-weight:700;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
@@ -230,7 +233,7 @@ input:checked + .slider{background:var(--success);}
 input:checked + .slider::before{transform:translateX(-20px);}
 
 /* ===== Modal ===== */
-.modal-overlay{position:fixed;inset:0;background:rgba(58,42,29,.55);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:300;padding:16px;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:300;padding:16px;}
 .modal-box{background:var(--card);border-radius:20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 60px rgba(0,0,0,.3);}
 .modal-box.wide{max-width:720px;}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:2;}
@@ -280,9 +283,9 @@ input:checked + .slider::before{transform:translateX(-20px);}
 <!-- ===================== LOGIN ===================== -->
 <div id="login-screen">
   <div class="login-wrap">
-    <div class="login-logo">☕</div>
-    <h1 class="login-title">كوفي بوينت</h1>
-    <p class="login-sub">نظام نقاط بيع محل القهوة — اختر اسمك لتسجيل الدخول</p>
+    <div class="login-logo" id="loginLogo">☕</div>
+    <h1 class="login-title" id="loginTitle">DAZE 360</h1>
+    <p class="login-sub" id="loginSub">نظام نقاط بيع محل القهوة — اختر اسمك لتسجيل الدخول</p>
     <div class="staff-grid" id="staffGrid"></div>
   </div>
 </div>
@@ -300,7 +303,7 @@ input:checked + .slider::before{transform:translateX(-20px);}
 <!-- ===================== APP ===================== -->
 <div id="app" class="hidden">
   <header id="topbar">
-    <div class="brand"><span class="logo-emoji" id="brandLogo">☕</span><span id="brandName">كوفي بوينت</span></div>
+    <div class="brand"><span class="logo-emoji" id="brandLogo">☕</span><span id="brandName">DAZE 360</span><span id="brandBranch" class="staff-chip" style="margin-inline-start:8px;font-size:.72rem;font-weight:700;"></span></div>
     <div class="order-type-switch" id="orderTypeSwitch"></div>
     <div class="top-right">
       <span class="clock" id="clock"></span>
@@ -357,8 +360,11 @@ function startOfDay(ts){ const d=new Date(ts); d.setHours(0,0,0,0); return d.get
 /* ---------------- Default seed data ---------------- */
 const DEFAULT_DATA = {
   settings:{
-    shopName:'كوفي بوينت',
+    shopName:'DAZE 360',
     logo:'☕',
+    branchName:'الفرع الرئيسي',
+    branchLocation:'',
+    storageMode:'local',
     currency:'ر.س',
     taxRate:15,
     address:'شارع الأمير سلطان، الرياض',
@@ -444,7 +450,11 @@ let state = load();
 function load(){
   try{
     const raw = localStorage.getItem(LS_KEY);
-    if(raw) return JSON.parse(raw);
+    if(raw){
+      const data = JSON.parse(raw);
+      data.settings = Object.assign({}, DEFAULT_DATA.settings, data.settings);
+      return data;
+    }
   }catch(e){}
   return clone(DEFAULT_DATA);
 }
@@ -539,6 +549,7 @@ function logout(){
   sessionStorage.removeItem(SESSION_STAFF_KEY);
   document.getElementById('app').classList.add('hidden');
   document.getElementById('login-screen').classList.remove('hidden');
+  renderLoginBrand();
   renderStaffGrid();
 }
 document.getElementById('logoutBtn').addEventListener('click', logout);
@@ -583,6 +594,7 @@ function renderNav(){
 function renderTopbar(){
   document.getElementById('brandLogo').textContent = state.settings.logo;
   document.getElementById('brandName').textContent = state.settings.shopName;
+  document.getElementById('brandBranch').textContent = state.settings.branchName ? ('📍 ' + state.settings.branchName) : '';
   document.getElementById('staffChip').textContent = '👤 ' + (currentStaff?currentStaff.name:'');
   const sw = document.getElementById('orderTypeSwitch');
   const types = [{id:'takeaway',label:'سفري'},{id:'dine-in',label:'صالة'},{id:'delivery',label:'توصيل'}];
@@ -710,7 +722,7 @@ function renderCartPanel(){
       <div class="sum-row"><span>المجموع الفرعي</span><span>${fmt(subtotal)}</span></div>
       <div class="sum-row">
         <span>الخصم ${cart.discount.value>0?`(${cart.discount.type==='percent'?cart.discount.value+'%':fmt(cart.discount.value)})`:''}</span>
-        <span><button class="cart-item-remove" id="discountBtn" style="color:var(--accent-dark)">${discount>0?'-'+fmt(discount):'إضافة خصم'}</button></span>
+        <span><button class="cart-item-remove" id="discountBtn" style="color:var(--accent-light)">${discount>0?'-'+fmt(discount):'إضافة خصم'}</button></span>
       </div>
       <div class="sum-row"><span>ضريبة القيمة المضافة ${state.settings.taxRate}%</span><span>${fmt(tax)}</span></div>
       <div class="sum-row total"><span>الإجمالي</span><span>${fmt(total)}</span></div>
@@ -1136,7 +1148,9 @@ function receiptHtml(order){
   const payLabel = {cash:'نقدي',card:'بطاقة',applepay:'آبل باي',split:'مدفوع مقسوم'}[order.payment.method]||'';
   return `
     <div class="r-center" style="font-weight:800;font-size:1.05rem;">${S.shopName}</div>
+    ${S.branchName?`<div class="r-center" style="font-size:.78rem;font-weight:700;">${S.branchName}</div>`:''}
     <div class="r-center" style="font-size:.75rem;">${S.address}</div>
+    ${S.branchLocation?`<div class="r-center" style="font-size:.72rem;">📍 ${S.branchLocation}</div>`:''}
     <div class="r-center" style="font-size:.75rem;">هاتف: ${S.phone}</div>
     <hr>
     <div class="receipt-line"><span>رقم الطلب</span><span>#${order.id}</span></div>
@@ -1294,7 +1308,7 @@ function renderOverviewReport(){
       <div class="card">
         <div class="section-title" style="font-size:1rem;margin-bottom:12px;">آخر الطلبات</div>
         ${recent.length? recent.map(o=>`
-          <div class="bar-row" style="justify-content:space-between;"><span>#${o.id} · ${formatTime(o.time)}</span><span style="font-weight:800;color:var(--accent-dark)">${fmt(o.total)}</span></div>
+          <div class="bar-row" style="justify-content:space-between;"><span>#${o.id} · ${formatTime(o.time)}</span><span style="font-weight:800;color:var(--accent-light)">${fmt(o.total)}</span></div>
         `).join(''):'<div class="cart-empty">لا توجد طلبات بعد</div>'}
       </div>
     </div>`;
@@ -1603,6 +1617,25 @@ function renderSettings(){
       <button class="btn btn-danger btn-sm" id="resetDataBtn" style="width:100%;margin-top:6px;">↺ إعادة ضبط البيانات التجريبية</button>
     </div>
   </div>
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">بيانات الفرع</div>
+      <div class="form-row"><label>اسم الفرع</label><input id="setBranchName" value="${S.branchName||''}" placeholder="مثال: فرع العليا"></div>
+      <div class="form-row"><label>موقع الفرع (العنوان أو رابط خرائط)</label><input id="setBranchLocation" value="${S.branchLocation||''}" placeholder="مثال: الرياض - حي العليا، أو رابط Google Maps"></div>
+      <div style="color:var(--muted);font-size:.78rem;">يظهر اسم الفرع وموقعه في الشريط العلوي وعلى الفاتورة المطبوعة — مفيد عند إدارة أكثر من فرع.</div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">طريقة حفظ البيانات</div>
+      <div class="chip-row" id="storageModeChips">
+        <button type="button" class="chip ${S.storageMode!=='cloud'?'active':''}" data-storage="local">📱 في الجهاز</button>
+        <button type="button" class="chip ${S.storageMode==='cloud'?'active':''}" data-storage="cloud">☁️ سحابي</button>
+      </div>
+      <div style="color:var(--muted);font-size:.78rem;margin-top:10px;">
+        <b>في الجهاز:</b> جميع البيانات (المبيعات، المخزون، الطلبات) تُحفظ محليًا على هذا التابلت فقط.<br>
+        <b>سحابي:</b> يُهيّئ النظام لمزامنة البيانات بين عدة أجهزة/فروع. تفعيل المزامنة الفعلية يتطلب ربط قاعدة بيانات سحابية (مثل Firebase) بمشروعكم الخاص — أخبرني إذا رغبت أن أجهّز هذا الربط.
+      </div>
+    </div>
+  </div>
   <div class="card" style="margin-top:16px;">
     <button class="btn btn-accent btn-lg" id="saveSettingsBtn" style="width:100%;">حفظ الإعدادات</button>
   </div>`;
@@ -1617,6 +1650,8 @@ function saveSettingsForm(){
   S.currency = document.getElementById('setCurrency').value || S.currency;
   S.taxRate = parseFloat(document.getElementById('setTax').value)||0;
   S.extraShotPrice = parseFloat(document.getElementById('setShotPrice').value)||0;
+  S.branchName = document.getElementById('setBranchName').value;
+  S.branchLocation = document.getElementById('setBranchLocation').value;
   const newCount = parseInt(document.getElementById('setTables').value)||S.tablesCount;
   if(newCount !== S.tablesCount){
     if(newCount > state.tables.length){
@@ -1715,6 +1750,12 @@ function attachViewHandlers(){
   }));
 
   // Settings
+  root.querySelectorAll('[data-storage]').forEach(b=>b.addEventListener('click', ()=>{
+    state.settings.storageMode = b.dataset.storage;
+    save();
+    showToast(b.dataset.storage==='cloud' ? 'تم اختيار الحفظ السحابي' : 'تم اختيار الحفظ في الجهاز');
+    root.querySelectorAll('[data-storage]').forEach(x=>x.classList.toggle('active', x.dataset.storage===b.dataset.storage));
+  }));
   const saveSettingsBtn = root.querySelector('#saveSettingsBtn'); if(saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettingsForm);
   const resetBtn = root.querySelector('#resetDataBtn'); if(resetBtn) resetBtn.addEventListener('click', ()=>{
     if(confirm('سيتم حذف جميع البيانات (المبيعات، المخزون، الإعدادات) والعودة للبيانات التجريبية. متابعة؟')){
@@ -1728,6 +1769,12 @@ function attachViewHandlers(){
 /* ============================================================
    BOOT
    ============================================================ */
+function renderLoginBrand(){
+  document.getElementById('loginLogo').textContent = state.settings.logo;
+  document.getElementById('loginTitle').textContent = state.settings.shopName;
+  document.getElementById('loginSub').textContent = (state.settings.branchName ? state.settings.branchName + ' — ' : '') + 'نظام نقاط بيع محل القهوة — اختر اسمك لتسجيل الدخول';
+}
+renderLoginBrand();
 if(currentStaff){
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
