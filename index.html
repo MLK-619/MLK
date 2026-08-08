@@ -238,8 +238,12 @@
     width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);
     padding:9px 10px;border-radius:8px;font-size:.88rem;font-family:inherit;
   }
+  select{min-width:150px;}
   input:focus, select:focus{outline:none;border-color:var(--accent);}
   input[readonly]{opacity:.75;}
+  .add-branch-picker{display:flex;align-items:center;gap:8px;margin:10px 0;font-size:.85rem;color:var(--muted);flex-wrap:wrap;}
+  .add-branch-picker select{width:auto;min-width:180px;}
+  .add-branch-picker:empty{display:none;}
   .row-total{white-space:nowrap;font-weight:700;color:var(--accent);min-width:100px;text-align:left;font-variant-numeric:tabular-nums;}
   .del-btn{background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:1.05rem;padding:4px 8px;border-radius:6px;}
   .del-btn:hover{background:rgba(220,38,38,.12);}
@@ -542,6 +546,7 @@
                 <tbody id="salaries-body"></tbody>
               </table>
               </div>
+              <div class="add-branch-picker" id="salaries-branch-picker"></div>
               <button class="add-btn" onclick="addSalary()" data-i18n="btnAddSalary">+ إضافة راتب</button>
               <div class="section-total"><span data-i18n="totalSalaries">إجمالي الرواتب:</span> <b id="salaries-total">0.000</b> <span class="cur-suffix"></span></div>
             </div>
@@ -585,6 +590,7 @@
                 <tbody id="purchases-body"></tbody>
               </table>
               </div>
+              <div class="add-branch-picker" id="purchases-branch-picker"></div>
               <button class="add-btn" onclick="addPurchase()" data-i18n="btnAddPurchase">+ إضافة مشترى</button>
               <div class="section-total"><span data-i18n="totalPurchases">إجمالي المشتريات:</span> <b id="purchases-total">0.000</b> <span class="cur-suffix"></span></div>
             </div>
@@ -608,6 +614,7 @@
                 <tbody id="other-body"></tbody>
               </table>
               </div>
+              <div class="add-branch-picker" id="other-branch-picker"></div>
               <button class="add-btn" onclick="addOtherExpense()" data-i18n="btnAddOtherExpense">+ إضافة مصروف</button>
               <div class="section-total"><span data-i18n="totalOther">إجمالي المصاريف الأخرى:</span> <b id="other-total">0.000</b> <span class="cur-suffix"></span></div>
             </div>
@@ -638,6 +645,7 @@
               <tbody id="cash-purchases-body"></tbody>
             </table>
             </div>
+            <div class="add-branch-picker" id="cashPurchases-branch-picker"></div>
             <button class="add-btn" onclick="addCashPurchase()" data-i18n="btnAddCashPurchase">+ إضافة مشترى كاش</button>
             <div class="section-total"><span data-i18n="totalCashPurchases">إجمالي المشتريات بالكاش:</span> <b id="cash-purchases-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
@@ -1129,6 +1137,7 @@ const I18N = {
     totalRents:'إجمالي الإيجارات:', noBranchesAddFirst:'أضيفي فروعاً أولاً من قسم "الفروع"',
     thItemName:'اسم الصنف', thCompanyName:'اسم الشركة', thUnitPrice:'سعر الوحدة', thQty:'الكمية',
     btnAddPurchase:'+ إضافة مشترى', totalPurchases:'إجمالي المشتريات:',
+    addForBranchLabel:'إضافة إلى فرع:',
     btnAddCashPurchase:'+ إضافة مشترى كاش', totalCashPurchases:'إجمالي المشتريات بالكاش:',
     confirmAddCashPurchase:'هل تريدين إضافة مشترى كاش جديد؟',
     logAddCashPurchase:'إضافة مشترى بالكاش', logDeleteCashPurchase:'حذف مشترى بالكاش',
@@ -1279,6 +1288,7 @@ const I18N = {
     totalRents:'Total Rents:', noBranchesAddFirst:'Add branches first from the "Branches" section',
     thItemName:'Item Name', thCompanyName:'Company Name', thUnitPrice:'Unit Price', thQty:'Quantity',
     btnAddPurchase:'+ Add Purchase', totalPurchases:'Total Purchases:',
+    addForBranchLabel:'Add to branch:',
     btnAddCashPurchase:'+ Add Cash Purchase', totalCashPurchases:'Total Cash Purchases:',
     confirmAddCashPurchase:'Add a new cash purchase?',
     logAddCashPurchase:'Added cash purchase', logDeleteCashPurchase:'Deleted cash purchase',
@@ -1503,6 +1513,21 @@ let costSub = 'salaries';
 let currentView = 'dashboard';
 let lastReportSummary = '';
 let uidCounter = 1;
+let addBranchChoice = {};
+function pickedAddBranch(key){
+  if(!addBranchChoice[key] || !state.branches.find(b=>b.id===addBranchChoice[key])){
+    addBranchChoice[key] = (state.branches[0]||{}).id || '';
+  }
+  return addBranchChoice[key];
+}
+function setAddBranchChoice(key, value){ addBranchChoice[key] = value; }
+function renderAddBranchPicker(elId, key){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  if(activeBranchId()){ el.innerHTML = ''; return; }
+  el.innerHTML = `<label>${t('addForBranchLabel')}</label>
+    <select onchange="setAddBranchChoice('${key}', this.value)">${branchOptions(pickedAddBranch(key))}</select>`;
+}
 
 function uid(){ return 'id' + (uidCounter++) + '_' + Math.random().toString(36).slice(2,7); }
 
@@ -2162,7 +2187,7 @@ function renderCosts(){
 /* --- الرواتب --- */
 function addSalary(){
   if(!confirm(t('confirmAddSalary'))) return;
-  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
+  const branchId = activeBranchId() || pickedAddBranch('salaries') || '';
   state.salaries.push({id:uid(), employee:'', branchId, date:todayStr(), base:0, allowance:0, advance:0});
   logAction('logAddSalary');
   renderSalaries();
@@ -2194,6 +2219,7 @@ function renderSalaries(){
       <td><button class="del-btn" onclick="removeSalary('${s.id}')">✕</button></td>
     </tr>`).join('');
   renderSalariesTotals();
+  renderAddBranchPicker('salaries-branch-picker', 'salaries');
 }
 function renderSalariesTotals(){
   let total = 0;
@@ -2234,7 +2260,7 @@ function renderRents(){
 /* --- المشتريات --- */
 function addPurchase(){
   if(!confirm(t('confirmAddPurchase'))) return;
-  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
+  const branchId = activeBranchId() || pickedAddBranch('purchases') || '';
   state.purchases.push({id:uid(), item:'', branchId, date:todayStr(), company:'', price:0, qty:1});
   logAction('logAddPurchase');
   renderPurchases();
@@ -2266,6 +2292,7 @@ function renderPurchases(){
       <td><button class="del-btn" onclick="removePurchase('${p.id}')">✕</button></td>
     </tr>`).join('');
   renderPurchasesTotals();
+  renderAddBranchPicker('purchases-branch-picker', 'purchases');
 }
 function renderPurchasesTotals(){
   let total = 0;
@@ -2282,7 +2309,7 @@ function renderPurchasesTotals(){
 /* --- المشتريات بالكاش --- */
 function addCashPurchase(){
   if(!confirm(t('confirmAddCashPurchase'))) return;
-  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
+  const branchId = activeBranchId() || pickedAddBranch('cashPurchases') || '';
   state.cashPurchases.push({id:uid(), item:'', branchId, date:todayStr(), price:0, qty:1});
   logAction('logAddCashPurchase');
   renderCashPurchases();
@@ -2313,6 +2340,7 @@ function renderCashPurchases(){
       <td><button class="del-btn" onclick="removeCashPurchase('${p.id}')">✕</button></td>
     </tr>`).join('');
   renderCashPurchasesTotals();
+  renderAddBranchPicker('cashPurchases-branch-picker', 'cashPurchases');
 }
 function renderCashPurchasesTotals(){
   let total = 0;
@@ -2362,7 +2390,7 @@ function renderCapitalTotal(){
 /* --- مصاريف أخرى --- */
 function addOtherExpense(){
   if(!confirm(t('confirmAddOther'))) return;
-  const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
+  const branchId = activeBranchId() || pickedAddBranch('other') || '';
   state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, date:todayStr(), qty:1, unitPrice:0});
   logAction('logAddOther');
   renderOtherExpenses();
@@ -2393,6 +2421,7 @@ function renderOtherExpenses(){
       <td><button class="del-btn" onclick="removeOtherExpense('${o.id}')">✕</button></td>
     </tr>`).join('');
   renderOtherTotals();
+  renderAddBranchPicker('other-branch-picker', 'other');
 }
 function renderOtherTotals(){
   let total = 0;
