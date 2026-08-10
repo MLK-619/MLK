@@ -319,6 +319,20 @@
   footer.app-footer{text-align:center;color:var(--muted);font-size:.78rem;padding:20px 0 40px;}
   footer.app-footer b{color:var(--accent);}
 
+  /* تقرير موحّد بخط أصغر لعرض كل البنود بصفحة واحدة بشكل مرتب */
+  #view-reports .section{padding:16px 18px;margin-bottom:14px;}
+  #view-reports .section h2{font-size:.92rem;margin:0 0 12px;padding-bottom:10px;}
+  #view-reports table{font-size:.8rem;}
+  #view-reports th{font-size:.68rem;padding:5px 6px;}
+  #view-reports td{padding:5px 6px;}
+  #view-reports .kpi-grid{gap:10px;margin-bottom:14px;}
+  #view-reports .kpi-card{padding:12px 14px;}
+  #view-reports .kpi-label{font-size:.68rem;margin-bottom:5px;}
+  #view-reports .kpi-value{font-size:1.05rem;}
+  #view-reports .kpi-card.grand .kpi-value{font-size:1.2rem;}
+  #view-reports .bar-row{font-size:.78rem;margin-bottom:7px;}
+  #view-reports .section-total{font-size:.82rem;margin-top:10px;padding-top:10px;}
+
   @media (max-width: 880px){
     .app-shell{flex-direction:column;}
     .sidebar{width:100%;height:auto;position:relative;flex-direction:column;padding:12px;}
@@ -431,7 +445,6 @@
           <li class="nav-item" data-view="profit" data-perm="profit"><span class="nav-icon">📈</span> <span data-i18n="navProfit">حساب الأرباح</span></li>
           <li class="nav-item" data-view="suppliers" data-perm="suppliers"><span class="nav-icon">🚚</span> <span data-i18n="navSuppliers">الفواتير المتأخرة</span></li>
           <li class="nav-item" data-view="reports" data-perm="reports"><span class="nav-icon">📊</span> <span data-i18n="navReports">التقارير</span></li>
-          <li class="nav-item" data-view="paymentReport" data-perm="paymentReport"><span class="nav-icon">💳</span> <span data-i18n="navPaymentReport">تقرير المدفوعات</span></li>
           <li class="nav-item" data-view="auditlog" data-perm="auditlog"><span class="nav-icon">🛡️</span> <span data-i18n="navAuditlog">سجل التدقيق</span></li>
           <li class="nav-item" data-view="users" data-perm="users"><span class="nav-icon">👤</span> <span data-i18n="navUsers">إدارة المستخدمين</span></li>
           <li class="nav-item" data-view="more" data-perm="more"><span class="nav-icon">✨</span> <span data-i18n="navMore">المزيد من الميزات</span></li>
@@ -937,26 +950,29 @@
             </div>
             <div class="section-total"><span data-i18n="totalOther">إجمالي المصاريف الأخرى:</span> <b id="report-other-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
-        </section>
 
-        <!-- ============ تقرير المدفوعات ============ -->
-        <section class="view" id="view-paymentReport">
-          <h1 class="page-title" data-i18n="reportPaymentMethodsTitle">تقرير الكاش والفيزا والتطبيقات</h1>
-          <p class="subtitle" data-i18n="paymentReportSubtitle">توزيع المبيعات حسب طريقة الدفع لكل فرع وفترة</p>
-          <div class="toolbar">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-              <select id="payment-report-period" onchange="renderPaymentReport()">
-                <option value="day" data-i18n="periodToday">اليوم</option>
-                <option value="month" selected data-i18n="periodMonth">هذا الشهر</option>
-                <option value="year" data-i18n="periodYear">هذه السنة</option>
-                <option value="all" data-i18n="periodAll">كل الفترات</option>
-              </select>
-              <select id="payment-report-branch" onchange="renderPaymentReport()"></select>
-            </div>
-          </div>
           <div class="section">
             <h2><span class="icon">💳</span> <span data-i18n="reportPaymentMethodsTitle">تقرير الكاش والفيزا والتطبيقات</span></h2>
             <div id="report-payment-methods"></div>
+          </div>
+
+          <div class="section">
+            <h2><span class="icon">🚚</span> <span data-i18n="suppliersTitle">الفواتير المتأخرة</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thCompanyName">اسم الشركة</th>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thInvoiceValue">قيمة الفاتورة</th>
+                <th data-i18n="thPaid">المدفوع</th>
+                <th data-i18n="thRemaining">المتبقي</th>
+                <th data-i18n="thDueDate">تاريخ الاستحقاق</th>
+                <th data-i18n="thStatusShort">الحالة</th>
+              </tr></thead>
+              <tbody id="report-suppliers-detail"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalRemaining">إجمالي المتبقي:</span> <b id="report-suppliers-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
         </section>
 
@@ -1199,7 +1215,7 @@ const I18N = {
     discountsRow:'الخصومات', netProfitRow:'صافي الربح',
     suppliersTitle:'الفواتير المتأخرة', suppliersSubtitle:'إدارة الشركات الموردة ومتابعة الفواتير المستحقة والمتأخرة — لا تُحتسب هذه الفواتير ضمن التكاليف التشغيلية',
     btnAddSupplier:'+ إضافة مورد', thContact:'رقم التواصل', thMaterialType:'نوع المواد',
-    thInvoiceValue:'قيمة الفاتورة', thPaid:'المدفوع', thRemaining:'المتبقي', thDailyPurchases:'مشتريات يومية',
+    thInvoiceValue:'قيمة الفاتورة', thPaid:'المدفوع', thRemaining:'المتبقي', thDailyPurchases:'مشتريات يومية', totalRemaining:'إجمالي المتبقي:',
     showOverdueOnly:'إظهار الفواتير المتأخرة فقط', totalSupplierInvoices:'إجمالي فواتير الموردين',
     placeholderCompany:'اسم الشركة', placeholderContact:'رقم التواصل', placeholderMaterialType:'نوع المواد',
     alertDeleteInvoicePerm:'حذف الفواتير متاح لصاحب الصلاحية (المالك) فقط.',
@@ -1353,7 +1369,7 @@ const I18N = {
     discountsRow:'Discounts', netProfitRow:'Net Profit',
     suppliersTitle:'Overdue Invoices', suppliersSubtitle:'Manage supplier companies and track outstanding/overdue invoices — these invoices are not counted toward operating costs',
     btnAddSupplier:'+ Add Supplier', thContact:'Contact Number', thMaterialType:'Material Type',
-    thInvoiceValue:'Invoice Value', thPaid:'Paid', thRemaining:'Remaining', thDailyPurchases:'Daily Purchases',
+    thInvoiceValue:'Invoice Value', thPaid:'Paid', thRemaining:'Remaining', thDailyPurchases:'Daily Purchases', totalRemaining:'Total Remaining:',
     showOverdueOnly:'Show overdue invoices only', totalSupplierInvoices:'Total Supplier Invoices',
     placeholderCompany:'Company name', placeholderContact:'Contact number', placeholderMaterialType:'Material type',
     alertDeleteInvoicePerm:'Deleting invoices is available to the owner only.',
@@ -1538,11 +1554,11 @@ function categoryLabel(key){ return t('cat_' + key); }
 function paymentLabel(key){ return t('pm_' + key); }
 
 const PERMS = {
-  owner:      {nav:['dashboard','branches','costs','cashPurchases','capital','stock','sales','profit','suppliers','reports','paymentReport','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
-  manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport'],                   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:true},
-  accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport'],                              costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false},
+  owner:      {nav:['dashboard','branches','costs','cashPurchases','capital','stock','sales','profit','suppliers','reports','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
+  manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:true},
+  accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false},
   staff:      {nav:['sales','cashPurchases','stock'],                                                                                  costSubtabs:[],                                       deleteInvoice:false, editBranches:false, manageStockNames:false},
-  viewer:     {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport'],   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false, readOnly:true},
+  viewer:     {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports'],   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false, readOnly:true},
 };
 function activeBranchId(){ return (session && session.branchId) || null; }
 
@@ -1886,7 +1902,7 @@ function startApp(){
 const VIEW_TITLE_KEYS = {
   dashboard:'navDashboard', branches:'navBranches', costs:'navCosts', cashPurchases:'navCashPurchases', capital:'navCapital', stock:'navStock',
   sales:'navSales', profit:'navProfit', suppliers:'navSuppliers',
-  reports:'navReports', paymentReport:'navPaymentReport', auditlog:'navAuditlog', users:'navUsers', more:'navMore',
+  reports:'navReports', auditlog:'navAuditlog', users:'navUsers', more:'navMore',
 };
 
 document.querySelectorAll('.nav-item').forEach(item => {
@@ -1916,7 +1932,6 @@ function switchView(view){
   if(view === 'profit') renderProfit();
   if(view === 'suppliers') renderSuppliers();
   if(view === 'reports') renderReports();
-  if(view === 'paymentReport') renderPaymentReport();
   if(view === 'auditlog') renderAuditLog();
   if(view === 'users') renderUsers();
   if(view === 'more') renderMore();
@@ -2796,8 +2811,10 @@ function renderReports(){
   document.getElementById('report-profit').innerHTML = [
     kpiCard(t('monthlySalesRow'), formatCurrency(monthlySales)),
     kpiCard(t('totalSalesRow'), formatCurrency(sales)),
+    kpiCard(t('commissionsRow'), formatCurrency(commissions)),
     kpiCard(t('salesAfterCommissionRow'), formatCurrency(salesAfterCommission)),
     kpiCard(t('totalExpensesRow'), formatCurrency(expenses)),
+    kpiCard(t('discountsRow'), formatCurrency(discounts)),
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true),
   ].join('');
 
@@ -2841,6 +2858,32 @@ function renderReports(){
     </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
   document.getElementById('report-other-total').textContent = formatNum(reportOther.reduce((a,o)=>a+otherExpenseTotal(o),0));
 
+  const paymentRows = filterSalesByPeriod(period).filter(s => !reportScope || s.branchId===reportScope);
+  const paymentMethods = paymentMethodsWithTotals(paymentRows);
+  const maxPM = Math.max(1, ...paymentMethods.map(m=>m.total));
+  const totalPM = paymentMethods.reduce((a,m)=>a+m.total,0);
+  document.getElementById('report-payment-methods').innerHTML = paymentMethods.map(m =>
+    barRow(m.label, m.total, maxPM, m.color, totalPM>0?Math.round(m.total/totalPM*100)+'%':'0%')
+  ).join('') + `<div class="legend">${paymentMethods.map(m=>`<span><i style="background:${m.color}"></i>${m.label}</span>`).join('')}</div>`;
+
+  const reportSuppliers = (reportScope ? state.suppliers.filter(s=>s.branchId===reportScope) : state.suppliers)
+    .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
+  document.getElementById('report-suppliers-detail').innerHTML = reportSuppliers.map(s => {
+    const remaining = num(s.invoiceValue) - num(s.paid);
+    const status = supplierStatus(s);
+    return `
+    <tr>
+      <td><bdi>${escapeHtml(s.company)}</bdi></td>
+      <td><bdi>${escapeHtml(branchNameById(s.branchId))}</bdi></td>
+      <td>${formatCurrency(num(s.invoiceValue))}</td>
+      <td>${formatCurrency(num(s.paid))}</td>
+      <td class="row-total">${formatCurrency(remaining)}</td>
+      <td>${escapeHtml(s.dueDate) || '—'}</td>
+      <td>${badge(status.label, status.type)}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="7" style="color:var(--muted);">${t('noSuppliers')}</td></tr>`;
+  document.getElementById('report-suppliers-total').textContent = formatNum(reportSuppliers.reduce((a,s)=>a+(num(s.invoiceValue)-num(s.paid)),0));
+
   lastReportSummary = [
     `${t('reportsTitle')} — ${branchNameById(reportScope) || t('allBranches')}`,
     `${t('totalSalesRow')}: ${formatCurrency(sales)}`,
@@ -2849,19 +2892,6 @@ function renderReports(){
     `${t('totalPurchases')} ${formatCurrency(reportPurchases.reduce((a,p)=>a+purchaseTotal(p),0))}`,
   ].join('\n');
 }
-function renderPaymentReport(){
-  populateReportBranchSelect('payment-report-branch');
-  const period = document.getElementById('payment-report-period').value;
-  const scope = activeBranchId() || document.getElementById('payment-report-branch').value || null;
-  const rows = filterSalesByPeriod(period).filter(s => !scope || s.branchId===scope);
-  const methods = paymentMethodsWithTotals(rows);
-  const maxM = Math.max(1, ...methods.map(m=>m.total));
-  const totalM = methods.reduce((a,m)=>a+m.total,0);
-  document.getElementById('report-payment-methods').innerHTML = methods.map(m =>
-    barRow(m.label, m.total, maxM, m.color, totalM>0?Math.round(m.total/totalM*100)+'%':'0%')
-  ).join('') + `<div class="legend">${methods.map(m=>`<span><i style="background:${m.color}"></i>${m.label}</span>`).join('')}</div>`;
-}
-
 /* =========================================================
    سجل التدقيق
 ========================================================= */
