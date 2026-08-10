@@ -197,6 +197,8 @@
   :is(body.cloud-offline, body.role-readonly) #settings-visa,
   :is(body.cloud-offline, body.role-readonly) #settings-talabat,
   :is(body.cloud-offline, body.role-readonly) #settings-zad,
+  :is(body.cloud-offline, body.role-readonly) #settings-snoonu,
+  :is(body.cloud-offline, body.role-readonly) #settings-tmdone,
   :is(body.cloud-offline, body.role-readonly) #settings-discounts,
   :is(body.cloud-offline, body.role-readonly) #branch-add-btn,
   :is(body.cloud-offline, body.role-readonly) #add-supplier-btn,
@@ -719,22 +721,25 @@
             <div class="table-scroll">
             <table>
               <thead><tr>
-                <th style="width:9%" data-i18n="thEntryType">نوع الإدخال</th>
-                <th style="width:11%" data-i18n="thSaleDate">التاريخ</th>
-                <th style="width:13%" data-i18n="thBranch">الفرع</th>
-                <th style="width:10%" data-i18n="thCash">كاش</th>
-                <th style="width:11%" data-i18n="thVisa">فيزا/بطاقة</th>
-                <th style="width:10%" data-i18n="thTalabat">طلبات</th>
-                <th style="width:10%" data-i18n="thZad">زادكم</th>
-                <th style="width:9%" data-i18n="thOther">أخرى</th>
-                <th style="width:12%" data-i18n="thTotal">الإجمالي</th>
+                <th style="width:8%" data-i18n="thEntryType">نوع الإدخال</th>
+                <th style="width:9%" data-i18n="thSaleDate">التاريخ</th>
+                <th style="width:11%" data-i18n="thBranch">الفرع</th>
+                <th style="width:8%" data-i18n="thCash">كاش</th>
+                <th style="width:9%" data-i18n="thVisa">فيزا/بطاقة</th>
+                <th style="width:8%" data-i18n="thTalabat">طلبات</th>
+                <th style="width:8%" data-i18n="thZad">زادكم</th>
+                <th style="width:8%" data-i18n="thSnoonu">سنونو</th>
+                <th style="width:8%" data-i18n="thTmdone">تم دن</th>
+                <th style="width:7%" data-i18n="thOther">أخرى</th>
+                <th style="width:11%" data-i18n="thTotal">الإجمالي</th>
                 <th style="width:5%"></th>
               </tr></thead>
               <tbody id="sales-body"></tbody>
             </table>
             </div>
             <button class="add-btn" onclick="addSale()" data-i18n="btnAddSale">+ إضافة مبيعات الشهر</button>
-            <div class="section-total"><span data-i18n="totalSales">إجمالي المبيعات:</span> <b id="sales-total">0.000</b> <span class="cur-suffix"></span></div>
+            <div class="section-total"><span data-i18n="totalSales">المبيعات حسب النظام:</span> <b id="sales-total">0.000</b> <span class="cur-suffix"></span></div>
+            <div class="section-total"><span data-i18n="totalSalesAfterCut">المبيعات بعد الخصم:</span> <b id="sales-total-after-cut">0.000</b> <span class="cur-suffix"></span></div>
           </div>
           <div class="section">
             <h2><span class="icon">💳</span> <span data-i18n="sectionPaymentMethods">المبيعات حسب طريقة الدفع</span></h2>
@@ -770,6 +775,14 @@
                 <tr>
                   <td data-i18n="zadPctLabel">نسبة عمولة زادكم (%)</td>
                   <td><input type="number" id="settings-zad" min="0" max="100" step="any"></td>
+                </tr>
+                <tr>
+                  <td data-i18n="snoonuPctLabel">نسبة عمولة سنونو (%)</td>
+                  <td><input type="number" id="settings-snoonu" min="0" max="100" step="any"></td>
+                </tr>
+                <tr>
+                  <td data-i18n="tmdonePctLabel">نسبة عمولة تم دن (%)</td>
+                  <td><input type="number" id="settings-tmdone" min="0" max="100" step="any"></td>
                 </tr>
                 <tr>
                   <td data-i18n="discountsLabel">الخصومات (ر.ع.)</td>
@@ -1174,9 +1187,10 @@ const I18N = {
     btnAddMaterial:'+ إضافة مادة خام', placeholderMaterialName:'اسم المادة الخام',
     salesTitle:'المبيعات', salesSubtitle:'إدخال المبيعات الشهرية حسب طريقة الدفع لكل فرع',
     thMonth:'الشهر', thSaleDate:'التاريخ', thEntryType:'نوع الإدخال', optionMonthly:'شهري', optionDaily:'يومي',
-    thCash:'كاش', thVisa:'فيزا/بطاقة', thTalabat:'طلبات', thZad:'زادكم', thOther:'أخرى',
-    btnAddSale:'+ إضافة مبيعات الشهر', totalSales:'إجمالي المبيعات:', sectionPaymentMethods:'المبيعات حسب طريقة الدفع',
-    pm_cash:'كاش', pm_visa:'فيزا/بطاقة', pm_talabat:'طلبات', pm_zad:'زادكم', pm_other:'أخرى',
+    thCash:'كاش', thVisa:'فيزا/بطاقة', thTalabat:'طلبات', thZad:'زادكم', thSnoonu:'سنونو', thTmdone:'تم دن', thOther:'أخرى',
+    btnAddSale:'+ إضافة مبيعات الشهر', totalSales:'المبيعات حسب النظام:', totalSalesAfterCut:'المبيعات بعد الخصم:', sectionPaymentMethods:'المبيعات حسب طريقة الدفع',
+    pm_cash:'كاش', pm_visa:'فيزا/بطاقة', pm_talabat:'طلبات', pm_zad:'زادكم', pm_snoonu:'سنونو', pm_tmdone:'تم دن', pm_other:'أخرى',
+    snoonuPctLabel:'نسبة عمولة سنونو (%)', tmdonePctLabel:'نسبة عمولة تم دن (%)',
     profitTitle:'حساب الأرباح', profitSubtitle:'صافي الربح = (فيزا + طلبات + زادكم + أخرى) - إجمالي المصروفات - العمولات - الخصومات — ملاحظة: الكاش لا يُحتسب ضمن إجمالي الأرباح',
     settingsTitle:'إعدادات الحساب', visaPctLabel:'نسبة عمولة فيزا (%)', talabatPctLabel:'نسبة عمولة طلبات (%)', zadPctLabel:'نسبة عمولة زادكم (%)',
     discountsLabel:'الخصومات (ر.ع.)', profitReportTitle:'تقرير الأرباح',
@@ -1327,9 +1341,10 @@ const I18N = {
     btnAddMaterial:'+ Add Raw Material', placeholderMaterialName:'Raw material name',
     salesTitle:'Sales', salesSubtitle:'Enter monthly sales by payment method for each branch',
     thMonth:'Month', thSaleDate:'Date', thEntryType:'Entry Type', optionMonthly:'Monthly', optionDaily:'Daily',
-    thCash:'Cash', thVisa:'Visa/Card', thTalabat:'Talabat', thZad:'Zadkom', thOther:'Other',
-    btnAddSale:'+ Add Monthly Sales', totalSales:'Total Sales:', sectionPaymentMethods:'Sales by Payment Method',
-    pm_cash:'Cash', pm_visa:'Visa/Card', pm_talabat:'Talabat', pm_zad:'Zadkom', pm_other:'Other',
+    thCash:'Cash', thVisa:'Visa/Card', thTalabat:'Talabat', thZad:'Zadkom', thSnoonu:'Snoonu', thTmdone:'Tmdone', thOther:'Other',
+    btnAddSale:'+ Add Monthly Sales', totalSales:'Sales in System:', totalSalesAfterCut:'Sales After Commission Cut:', sectionPaymentMethods:'Sales by Payment Method',
+    pm_cash:'Cash', pm_visa:'Visa/Card', pm_talabat:'Talabat', pm_zad:'Zadkom', pm_snoonu:'Snoonu', pm_tmdone:'Tmdone', pm_other:'Other',
+    snoonuPctLabel:'Snoonu Commission Rate (%)', tmdonePctLabel:'Tmdone Commission Rate (%)',
     profitTitle:'Profit Calculation', profitSubtitle:'Net Profit = (Visa + Talabat + Zadkom + Other) − Total Expenses − Commissions − Discounts — note: cash is not counted toward total profit',
     settingsTitle:'Calculation Settings', visaPctLabel:'Visa Commission Rate (%)', talabatPctLabel:'Talabat Commission Rate (%)', zadPctLabel:'Zadkom Commission Rate (%)',
     discountsLabel:'Discounts (OMR)', profitReportTitle:'Profit Report',
@@ -1515,7 +1530,7 @@ const STORAGE_SESSION_KEY = 'aventus_erp_session_v1';
 const CAT_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--cat-7)','var(--cat-8)'];
 const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','franchise','housingRent','other'];
 const BRANCH_STATUS_KEYS = ['active','stopped','preparing'];
-const PAYMENT_METHODS = ['cash','visa','talabat','zad','other'];
+const PAYMENT_METHODS = ['cash','visa','talabat','zad','snoonu','tmdone','other'];
 
 function roleLabel(role){ return t('role' + role.charAt(0).toUpperCase() + role.slice(1)); }
 function statusLabel(key){ return t('status' + key.charAt(0).toUpperCase() + key.slice(1)); }
@@ -1601,7 +1616,7 @@ function defaultState(){
     suppliers: [],
     stock: [],
     sales: [],
-    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, discounts: 0, customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} } },
+    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, snoonuPct: 0, tmdonePct: 0, discounts: 0, customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} } },
     auditLog: [],
     notes: [],
   };
@@ -1924,7 +1939,7 @@ function otherExpenseTotal(o){
   if(o.qty != null || o.unitPrice != null) return num(o.qty) * num(o.unitPrice);
   return num(o.amount) || 0; /* توافق مع سجلات قديمة محفوظة بحقل amount فقط */
 }
-function saleTotal(s){ return num(s.cash)+num(s.visa)+num(s.talabat)+num(s.zad)+num(s.other); }
+function saleTotal(s){ return num(s.cash)+num(s.visa)+num(s.talabat)+num(s.zad)+num(s.snoonu)+num(s.tmdone)+num(s.other); }
 
 function totalSalaries(branchId){
   return state.salaries.filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+salaryTotal(s),0);
@@ -1951,7 +1966,7 @@ function totalSales(branchId, period){
 /* المبيعات المعتمدة لحساب الأرباح فقط: لا تشمل الكاش بناءً على طلب العميل */
 function salesForProfit(branchId, period){
   return filterSalesByPeriod(period).filter(s => !branchId || s.branchId===branchId)
-    .reduce((a,s)=>a + num(s.visa)+num(s.talabat)+num(s.zad)+num(s.other), 0);
+    .reduce((a,s)=>a + num(s.visa)+num(s.talabat)+num(s.zad)+num(s.snoonu)+num(s.tmdone)+num(s.other), 0);
 }
 function filterSalesByPeriod(period){
   const today = todayStr();
@@ -1969,7 +1984,10 @@ function commissionsTotal(period, branchId){
   const visa = rows.reduce((a,s)=>a+num(s.visa),0);
   const talabat = rows.reduce((a,s)=>a+num(s.talabat),0);
   const zad = rows.reduce((a,s)=>a+num(s.zad),0);
-  return visa * (num(state.settings.visaPct)/100) + talabat * (num(state.settings.talabatPct)/100) + zad * (num(state.settings.zadPct)/100);
+  const snoonu = rows.reduce((a,s)=>a+num(s.snoonu),0);
+  const tmdone = rows.reduce((a,s)=>a+num(s.tmdone),0);
+  return visa * (num(state.settings.visaPct)/100) + talabat * (num(state.settings.talabatPct)/100) + zad * (num(state.settings.zadPct)/100)
+    + snoonu * (num(state.settings.snoonuPct)/100) + tmdone * (num(state.settings.tmdonePct)/100);
 }
 
 function barRow(label, value, max, color, extra){
@@ -2508,7 +2526,7 @@ function renderStock(){
 function addSale(){
   if(!confirm(t('confirmAddSale'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
-  state.sales.push({id:uid(), date:todayStr().slice(0,7), entryType:'monthly', branchId, cash:0, visa:0, talabat:0, zad:0, other:0});
+  state.sales.push({id:uid(), date:todayStr().slice(0,7), entryType:'monthly', branchId, cash:0, visa:0, talabat:0, zad:0, snoonu:0, tmdone:0, other:0});
   logAction('logAddSale');
   renderSales();
 }
@@ -2555,6 +2573,8 @@ function renderSales(){
       <td><input type="number" min="0" step="any" value="${s.visa}" oninput="updateSale('${s.id}','visa',this.value); renderSalesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.talabat}" oninput="updateSale('${s.id}','talabat',this.value); renderSalesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.zad}" oninput="updateSale('${s.id}','zad',this.value); renderSalesTotals();"></td>
+      <td><input type="number" min="0" step="any" value="${s.snoonu ?? 0}" oninput="updateSale('${s.id}','snoonu',this.value); renderSalesTotals();"></td>
+      <td><input type="number" min="0" step="any" value="${s.tmdone ?? 0}" oninput="updateSale('${s.id}','tmdone',this.value); renderSalesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.other}" oninput="updateSale('${s.id}','other',this.value); renderSalesTotals();"></td>
       <td class="row-total">${formatCurrency(saleTotal(s))}</td>
       <td><button class="del-btn" onclick="removeSale('${s.id}')">✕</button></td>
@@ -2574,6 +2594,7 @@ function renderSalesTotals(){
 
   const grand = rows.reduce((a,s)=>a+saleTotal(s),0);
   document.getElementById('sales-total').textContent = formatNum(grand);
+  document.getElementById('sales-total-after-cut').textContent = formatNum(grand - commissionsTotal('all', scope));
 
   const totals = paymentMethodsWithTotals(rows);
   const max = Math.max(1, ...totals.map(t=>t.total));
@@ -2592,6 +2613,12 @@ document.getElementById('settings-talabat').addEventListener('input', function()
 document.getElementById('settings-zad').addEventListener('input', function(){
   state.settings.zadPct = this.value; saveState(); renderProfit();
 });
+document.getElementById('settings-snoonu').addEventListener('input', function(){
+  state.settings.snoonuPct = this.value; saveState(); renderProfit();
+});
+document.getElementById('settings-tmdone').addEventListener('input', function(){
+  state.settings.tmdonePct = this.value; saveState(); renderProfit();
+});
 document.getElementById('settings-discounts').addEventListener('input', function(){
   state.settings.discounts = this.value; saveState(); renderProfit();
 });
@@ -2600,6 +2627,8 @@ function renderProfit(){
   document.getElementById('settings-visa').value = state.settings.visaPct;
   document.getElementById('settings-talabat').value = state.settings.talabatPct;
   document.getElementById('settings-zad').value = state.settings.zadPct;
+  document.getElementById('settings-snoonu').value = state.settings.snoonuPct;
+  document.getElementById('settings-tmdone').value = state.settings.tmdonePct;
   document.getElementById('settings-discounts').value = state.settings.discounts;
 
   const scope = activeBranchId();
@@ -3081,8 +3110,8 @@ function csvEscape(v){
   return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
 }
 const CSV_CONFIGS = {
-  sales: { rows: () => state.sales, headers: ['thMonth','thBranch','thCash','thVisa','thTalabat','thZad','thOther','thTotal'],
-    row: s => [s.date, branchNameById(s.branchId), num(s.cash), num(s.visa), num(s.talabat), num(s.zad), num(s.other), saleTotal(s)] },
+  sales: { rows: () => state.sales, headers: ['thMonth','thBranch','thCash','thVisa','thTalabat','thZad','thSnoonu','thTmdone','thOther','thTotal'],
+    row: s => [s.date, branchNameById(s.branchId), num(s.cash), num(s.visa), num(s.talabat), num(s.zad), num(s.snoonu), num(s.tmdone), num(s.other), saleTotal(s)] },
   stock: { rows: () => state.stock, headers: ['thMaterialName','thQuantity','thDate'],
     row: i => [i.name, num(i.quantity), i.date] },
   suppliers: { rows: () => state.suppliers, headers: ['thCompanyName','thContact','thMaterialType','thBranch','thInvoiceValue','thPaid','thRemaining','thDueDate'],
