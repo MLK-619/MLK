@@ -178,24 +178,31 @@
     display:none;background:rgba(220,38,38,.1);color:var(--danger);border:1px solid rgba(220,38,38,.3);
     border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;text-align:center;
   }
-  body.cloud-offline .add-btn,
-  body.cloud-offline [id$="-body"] input,
-  body.cloud-offline [id$="-body"] select,
-  body.cloud-offline [id$="-body"] button,
-  body.cloud-offline #note-text-input,
-  body.cloud-offline #note-date-input,
-  body.cloud-offline #add-note-btn,
-  body.cloud-offline #theme-accent-input,
-  body.cloud-offline #theme-accent-light-input,
-  body.cloud-offline #settings-visa,
-  body.cloud-offline #settings-talabat,
-  body.cloud-offline #settings-zad,
-  body.cloud-offline #settings-discounts,
-  body.cloud-offline #branch-add-btn,
-  body.cloud-offline #add-supplier-btn,
-  body.cloud-offline #add-user-btn,
-  body.cloud-offline #stock-add-btn,
-  body.cloud-offline #create-backup-btn{
+  .role-readonly-banner{
+    display:none;background:var(--accent-tint-08);color:var(--accent);border:1px solid var(--accent-tint-12);
+    border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:.85rem;text-align:center;
+  }
+  body.role-readonly .role-readonly-banner{display:block;}
+  :is(body.cloud-offline, body.role-readonly) .add-btn,
+  :is(body.cloud-offline, body.role-readonly) .clear-btn,
+  :is(body.cloud-offline, body.role-readonly) .restore-backup-btn,
+  :is(body.cloud-offline, body.role-readonly) [id$="-body"] input,
+  :is(body.cloud-offline, body.role-readonly) [id$="-body"] select,
+  :is(body.cloud-offline, body.role-readonly) [id$="-body"] button,
+  :is(body.cloud-offline, body.role-readonly) #note-text-input,
+  :is(body.cloud-offline, body.role-readonly) #note-date-input,
+  :is(body.cloud-offline, body.role-readonly) #add-note-btn,
+  :is(body.cloud-offline, body.role-readonly) #theme-accent-input,
+  :is(body.cloud-offline, body.role-readonly) #theme-accent-light-input,
+  :is(body.cloud-offline, body.role-readonly) #settings-visa,
+  :is(body.cloud-offline, body.role-readonly) #settings-talabat,
+  :is(body.cloud-offline, body.role-readonly) #settings-zad,
+  :is(body.cloud-offline, body.role-readonly) #settings-discounts,
+  :is(body.cloud-offline, body.role-readonly) #branch-add-btn,
+  :is(body.cloud-offline, body.role-readonly) #add-supplier-btn,
+  :is(body.cloud-offline, body.role-readonly) #add-user-btn,
+  :is(body.cloud-offline, body.role-readonly) #stock-add-btn,
+  :is(body.cloud-offline, body.role-readonly) #create-backup-btn{
     pointer-events:none;opacity:.5;
   }
   .role-tag{
@@ -211,8 +218,8 @@
   .wrap{max-width:1180px;margin:0 auto;padding:26px 20px 60px;width:100%;}
   .view{display:none;}
   .view.active{display:block;}
-  h1.page-title{font-size:1.5rem;margin:0 0 4px;font-weight:800;}
-  .subtitle{color:var(--muted);margin:0 0 22px;font-size:.9rem;}
+  h1.page-title{font-size:1.5rem;margin:0 0 4px;font-weight:800;letter-spacing:.01em;}
+  .subtitle{color:var(--muted);margin:0 0 22px;font-size:.9rem;padding-bottom:14px;border-bottom:1px solid var(--border);}
 
   .toolbar{display:flex;justify-content:space-between;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
   .toolbar-right{display:flex;gap:10px;flex-wrap:wrap;}
@@ -224,7 +231,7 @@
   .toolbar button.clear-btn:hover{border-color:var(--danger);color:var(--danger);}
 
   .section{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:20px;box-shadow:0 2px 10px rgba(20,60,120,.04);}
-  .section h2{display:flex;align-items:center;gap:10px;font-size:1.05rem;margin:0 0 16px;font-weight:700;}
+  .section h2{display:flex;align-items:center;gap:10px;font-size:1.05rem;margin:0 0 16px;font-weight:800;padding-bottom:14px;border-bottom:1px solid var(--border);}
   .section h2 .icon{
     width:34px;height:34px;border-radius:9px;background:var(--card2);
     display:flex;align-items:center;justify-content:center;font-size:1rem;color:var(--accent);
@@ -269,10 +276,15 @@
 
   /* بطاقات KPI */
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px;}
-  .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(20,60,120,.04);}
+  .kpi-card{
+    background:var(--card);border:1px solid var(--border);border-top:3px solid var(--accent);
+    border-radius:14px;padding:16px 18px;box-shadow:0 2px 10px rgba(20,60,120,.04);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .kpi-card:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(20,60,120,.09);}
   .kpi-card.grand{border-color:var(--accent);background:var(--accent-tint-06);}
-  .kpi-label{font-size:.78rem;color:var(--muted);margin-bottom:8px;}
-  .kpi-value{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums;}
+  .kpi-label{font-size:.74rem;color:var(--muted);margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  .kpi-value{font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums;}
   .kpi-card.grand .kpi-value{color:var(--accent);font-size:1.55rem;}
   .kpi-sub{font-size:.76rem;color:var(--muted);margin-top:4px;}
 
@@ -442,11 +454,18 @@
       <div class="wrap">
 
         <div class="cloud-offline-banner" id="cloud-offline-banner" data-i18n="cloudOfflineBanner">⚠️ غير متصلة بقاعدة البيانات — تعطّل إدخال وتعديل البيانات مؤقتاً لحمايتها من الفقدان. انتظري حتى تظهر "متصل".</div>
+        <div class="role-readonly-banner" id="role-readonly-banner" data-i18n="roleReadonlyBanner">👁️ هذا الحساب للمشاهدة فقط — لا يمكن إضافة أو تعديل أو حذف أي بيانات.</div>
 
         <!-- ============ لوحة التحكم ============ -->
         <section class="view" id="view-dashboard">
           <h1 class="page-title" data-i18n="dashboardTitle">لوحة التحكم الرئيسية</h1>
           <p class="subtitle" data-i18n="dashboardSubtitle">نظام إدارة فروع شركة المزن التجارية — ملخص سريع</p>
+          <div class="toolbar">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+              <label style="font-size:.85rem;color:var(--muted);" data-i18n="dashboardBranchLabel">عرض بيانات فرع:</label>
+              <select id="dashboard-branch" onchange="renderDashboard()"></select>
+            </div>
+          </div>
           <div class="kpi-grid" id="dashboard-kpis"></div>
           <div class="section">
             <h2><span class="icon">🏆</span> <span data-i18n="sectionBranchSales">المبيعات حسب الفرع</span></h2>
@@ -1083,7 +1102,7 @@ const I18N = {
     backToChooser:'‹ تغيير الاختيار',
     labelUsername:'اسم المستخدم', placeholderUsername:'أدخل اسم المستخدم',
     labelPassword:'كلمة المرور', placeholderPassword:'أدخل كلمة المرور',
-    labelRole:'الدور الوظيفي', roleOwner:'مالك', roleManager:'مدير', roleAccountant:'محاسب', roleStaff:'موظف إدخال',
+    labelRole:'الدور الوظيفي', roleOwner:'مالك', roleManager:'مدير', roleAccountant:'محاسب', roleStaff:'موظف إدخال', roleViewer:'مشاهدة فقط',
     labelLoginBranch:'الفرع', allBranches:'كل الفروع', noBranchesYet:'لا توجد فروع بعد',
     labelAllowedBrand:'البراند المسموح', brandAny:'أي براند',
     errBrandMismatch:'هذا الحساب مخصص لبراند آخر. الرجاء تسجيل الدخول من الشعار الصحيح.',
@@ -1109,7 +1128,9 @@ const I18N = {
     welcomeText:'مرحباً،', logout:'تسجيل الخروج',
     cloudStatus_offline:'⚠️ محلي فقط', cloudStatus_connecting:'⏳ يتصل...', cloudStatus_online:'☁️ متصل',
     cloudOfflineBanner:'⚠️ غير متصلة بقاعدة البيانات — تعطّل إدخال وتعديل البيانات مؤقتاً لحمايتها من الفقدان. انتظري حتى تظهر "متصل".',
+    roleReadonlyBanner:'👁️ هذا الحساب للمشاهدة فقط — لا يمكن إضافة أو تعديل أو حذف أي بيانات.',
     dashboardTitle:'لوحة التحكم الرئيسية', dashboardSubtitle:'نظام إدارة فروع شركة المزن التجارية — ملخص سريع',
+    dashboardBranchLabel:'عرض بيانات فرع:',
     kpiSalesToday:'إجمالي المبيعات (اليوم)', kpiSalesMonth:'إجمالي المبيعات (الشهر)',
     kpiExpensesMonth:'إجمالي المصروفات (شهري)', kpiNetProfit:'صافي الربح التقديري',
     kpiTopBranch:'أفضل فرع مبيعاً', kpiTopSupplier:'أكثر مورد يتم التعامل معه',
@@ -1234,7 +1255,7 @@ const I18N = {
     backToChooser:'‹ Change selection',
     labelUsername:'Username', placeholderUsername:'Enter username',
     labelPassword:'Password', placeholderPassword:'Enter password',
-    labelRole:'Role', roleOwner:'Owner', roleManager:'Manager', roleAccountant:'Accountant', roleStaff:'Data Entry Staff',
+    labelRole:'Role', roleOwner:'Owner', roleManager:'Manager', roleAccountant:'Accountant', roleStaff:'Data Entry Staff', roleViewer:'View Only',
     labelLoginBranch:'Branch', allBranches:'All Branches', noBranchesYet:'No branches yet',
     labelAllowedBrand:'Allowed Brand', brandAny:'Any brand',
     errBrandMismatch:'This account is assigned to a different brand. Please log in from the correct logo.',
@@ -1260,7 +1281,9 @@ const I18N = {
     welcomeText:'Welcome,', logout:'Log Out',
     cloudStatus_offline:'⚠️ Local only', cloudStatus_connecting:'⏳ Connecting...', cloudStatus_online:'☁️ Synced',
     cloudOfflineBanner:'⚠️ Not connected to the database — adding and editing data is temporarily disabled to protect it from loss. Wait until it shows "Synced".',
+    roleReadonlyBanner:'👁️ This account is view-only — it cannot add, edit, or delete any data.',
     dashboardTitle:'Main Dashboard', dashboardSubtitle:'Al Muzn Trading Co. Branch Management System — Quick Summary',
+    dashboardBranchLabel:'Show data for branch:',
     kpiSalesToday:'Total Sales (Today)', kpiSalesMonth:'Total Sales (This Month)',
     kpiExpensesMonth:'Total Expenses (Monthly)', kpiNetProfit:'Estimated Net Profit',
     kpiTopBranch:'Top Selling Branch', kpiTopSupplier:'Most Engaged Supplier',
@@ -1504,6 +1527,7 @@ const PERMS = {
   manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport'],                   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:true},
   accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport'],                              costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false},
   staff:      {nav:['sales','cashPurchases','stock'],                                                                                  costSubtabs:[],                                       deleteInvoice:false, editBranches:false, manageStockNames:false},
+  viewer:     {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports','paymentReport'],   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false, readOnly:true},
 };
 function activeBranchId(){ return (session && session.branchId) || null; }
 
@@ -1738,7 +1762,7 @@ function renderCloudBackupsList(){
       const b = doc.data();
       return `<li style="justify-content:space-between;">
         <span>${b.manual ? '🔖' : '🕒'} ${escapeHtml(b.createdAtLabel||'')} — ${escapeHtml(b.createdBy||'')}</span>
-        <button onclick="restoreCloudBackup('${doc.id}')">${t('btnRestoreThis')}</button>
+        <button class="restore-backup-btn" onclick="restoreCloudBackup('${doc.id}')">${t('btnRestoreThis')}</button>
       </li>`;
     }).join('') + `</ul>`;
   }).catch(err => {
@@ -1833,6 +1857,7 @@ function startApp(){
   document.querySelectorAll('.nav-item').forEach(item => {
     item.style.display = perms.nav.includes(item.dataset.perm) ? 'flex' : 'none';
   });
+  document.body.classList.toggle('role-readonly', !!perms.readOnly);
 
   if(!perms.costSubtabs.includes(costSub)) costSub = perms.costSubtabs[0];
 
@@ -1970,7 +1995,8 @@ function paymentMethodsWithTotals(rows){
    لوحة التحكم
 ========================================================= */
 function renderDashboard(){
-  const scope = activeBranchId();
+  populateReportBranchSelect('dashboard-branch');
+  const scope = activeBranchId() || document.getElementById('dashboard-branch').value || null;
   const dashBranches = scope ? state.branches.filter(b=>b.id===scope) : state.branches;
   const dashSuppliers = scope ? state.suppliers.filter(s=>s.branchId===scope) : state.suppliers;
 
@@ -2880,7 +2906,7 @@ function renderUsers(){
       <td><input type="text" class="user-username-input" value="${escapeHtml(u.username)}" placeholder="${t('labelUsername')}"></td>
       <td><input type="text" class="user-password-input" value="${escapeHtml(u.password)}" placeholder="${t('labelPassword')}"></td>
       <td><select onchange="updateUser('${u.id}','role',this.value)">
-        ${['owner','manager','accountant','staff'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${t('role'+r.charAt(0).toUpperCase()+r.slice(1))}</option>`).join('')}
+        ${['owner','manager','accountant','staff','viewer'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${t('role'+r.charAt(0).toUpperCase()+r.slice(1))}</option>`).join('')}
       </select></td>
       <td><select onchange="updateUser('${u.id}','branchId',this.value)">${branchOptionsWithAll(u.branchId)}</select></td>
       <td><select onchange="updateUser('${u.id}','brand',this.value)">
