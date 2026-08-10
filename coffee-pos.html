@@ -129,7 +129,7 @@ input,select,textarea{font-family:inherit;color:var(--text);}
 
 #body-wrap{flex:1;display:flex;min-height:0;}
 #sidenav{
-  width:88px;flex:none;background:var(--card);border-left:1px solid var(--border);
+  width:88px;flex:none;background:var(--card);border-inline-end:1px solid var(--border);
   display:flex;flex-direction:column;padding:12px 6px;gap:4px;overflow-y:auto;
 }
 #sidenav button{
@@ -162,7 +162,7 @@ input,select,textarea{font-family:inherit;color:var(--text);}
 .product-name{font-weight:700;font-size:.85rem;line-height:1.3;}
 .product-price{color:var(--accent-dark);font-weight:800;font-size:.85rem;}
 .product-card.unavailable{opacity:.5;}
-.product-card.unavailable::after{content:"غير متوفر";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.8);border-radius:16px;font-weight:800;color:var(--danger);font-size:.78rem;}
+.product-card.unavailable::after{content:attr(data-unavail);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.8);border-radius:16px;font-weight:800;color:var(--danger);font-size:.78rem;}
 
 .pos-cart{
   width:360px;flex:none;background:var(--card);border-radius:18px;border:1px solid var(--border);
@@ -211,7 +211,7 @@ input,select,textarea{font-family:inherit;color:var(--text);}
 .kpi-label{color:var(--muted);font-size:.78rem;font-weight:700;margin-bottom:6px;}
 .kpi-value{font-size:1.5rem;font-weight:800;color:var(--accent-dark);}
 .data-table{width:100%;border-collapse:collapse;font-size:.85rem;}
-.data-table th{text-align:right;color:var(--muted);font-weight:700;padding:10px 8px;border-bottom:2px solid var(--border);font-size:.78rem;}
+.data-table th{text-align:start;color:var(--muted);font-weight:700;padding:10px 8px;border-bottom:2px solid var(--border);font-size:.78rem;}
 .data-table td{padding:10px 8px;border-bottom:1px solid var(--border);}
 .data-table tr:last-child td{border-bottom:none;}
 .filter-tabs{display:flex;gap:6px;flex-wrap:wrap;}
@@ -219,7 +219,7 @@ input,select,textarea{font-family:inherit;color:var(--text);}
 .bar-label{width:130px;flex:none;font-weight:700;}
 .bar-track{flex:1;height:16px;background:var(--card2);border-radius:8px;overflow:hidden;}
 .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent-light),var(--accent));border-radius:8px;}
-.bar-val{width:90px;flex:none;text-align:left;font-weight:700;color:var(--accent-dark);}
+.bar-val{width:90px;flex:none;text-align:end;font-weight:700;color:var(--accent-dark);}
 .alert-banner{background:var(--warning-tint);border:1px solid var(--warning);color:#7a5000;border-radius:12px;padding:12px 16px;margin-bottom:16px;font-size:.85rem;font-weight:700;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
@@ -265,7 +265,7 @@ input:checked + .slider::before{transform:translateX(-20px);}
 @media print{
   body *{visibility:hidden;}
   #receipt-print,#receipt-print *{visibility:visible;}
-  #receipt-print{display:block;position:absolute;top:0;right:0;width:80mm;padding:6px;}
+  #receipt-print{display:block;position:absolute;top:0;inset-inline-end:0;width:80mm;padding:6px;}
 }
 
 @media(max-width:1000px){
@@ -296,10 +296,10 @@ input:checked + .slider::before{transform:translateX(-20px);}
 <div class="pin-overlay hidden" id="pinOverlay">
   <div class="pin-box">
     <div style="font-weight:800;font-size:1.05rem;" id="pinStaffName"></div>
-    <div style="color:var(--muted);font-size:.8rem;">أدخل الرقم السري المكوّن من 4 أرقام</div>
+    <div style="color:var(--muted);font-size:.8rem;" id="pinPrompt">أدخل الرقم السري المكوّن من 4 أرقام</div>
     <div class="pin-dots" id="pinDots"></div>
     <div class="keypad" id="keypad"></div>
-    <button class="pin-cancel" id="pinCancelBtn">إلغاء</button>
+    <button class="pin-cancel" id="pinCancelBtn"></button>
   </div>
 </div>
 
@@ -311,7 +311,7 @@ input:checked + .slider::before{transform:translateX(-20px);}
     <div class="top-right">
       <span class="clock" id="clock"></span>
       <span class="staff-chip" id="staffChip"></span>
-      <button id="logoutBtn">خروج</button>
+      <button id="logoutBtn"></button>
     </div>
   </header>
   <div id="body-wrap">
@@ -339,15 +339,22 @@ function fmt(n){ return (Math.round((n+Number.EPSILON)*100)/100).toFixed(2) + ' 
 function money(n){ return Math.round((n+Number.EPSILON)*100)/100; }
 
 function pad(n){ return n<10 ? '0'+n : ''+n; }
+const MONTH_NAMES = {
+  ar:['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+  en:['January','February','March','April','May','June','July','August','September','October','November','December']
+};
+function currentLang(){ return (state&&state.settings&&state.settings.language)||'ar'; }
 function formatDateTime(ts){
   const d = new Date(ts);
-  const days=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
-  let h = d.getHours(); const ampm = h>=12?'م':'ص'; h = h%12; if(h===0) h=12;
-  return `${d.getDate()} ${days[d.getMonth()]} ${d.getFullYear()} - ${h}:${pad(d.getMinutes())} ${ampm}`;
+  const lang = currentLang();
+  const months = MONTH_NAMES[lang]||MONTH_NAMES.ar;
+  let h = d.getHours(); const ampm = lang==='en'?(h>=12?'PM':'AM'):(h>=12?'م':'ص'); h = h%12; if(h===0) h=12;
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()} - ${h}:${pad(d.getMinutes())} ${ampm}`;
 }
 function formatTime(ts){
   const d = new Date(ts);
-  let h = d.getHours(); const ampm = h>=12?'م':'ص'; h = h%12; if(h===0) h=12;
+  const lang = currentLang();
+  let h = d.getHours(); const ampm = lang==='en'?(h>=12?'PM':'AM'):(h>=12?'م':'ص'); h = h%12; if(h===0) h=12;
   return `${h}:${pad(d.getMinutes())} ${ampm}`;
 }
 function formatDateShort(ts){
@@ -362,20 +369,323 @@ function startOfDay(ts){ const d=new Date(ts); d.setHours(0,0,0,0); return d.get
 
 /* ---------------- Default seed data ---------------- */
 const CURRENCIES = [
-  {symbol:'ر.س', label:'ريال سعودي'},
-  {symbol:'د.إ', label:'درهم إماراتي'},
-  {symbol:'د.ك', label:'دينار كويتي'},
-  {symbol:'ر.ق', label:'ريال قطري'},
-  {symbol:'د.ب', label:'دينار بحريني'},
-  {symbol:'ر.ع', label:'ريال عماني'},
-  {symbol:'ج.م', label:'جنيه مصري'},
-  {symbol:'د.أ', label:'دينار أردني'},
-  {symbol:'د.ع', label:'دينار عراقي'},
-  {symbol:'$', label:'دولار أمريكي'},
-  {symbol:'€', label:'يورو'},
-  {symbol:'£', label:'جنيه إسترليني'}
+  {symbol:'ر.س', label:'ريال سعودي', labelEn:'Saudi Riyal'},
+  {symbol:'د.إ', label:'درهم إماراتي', labelEn:'UAE Dirham'},
+  {symbol:'د.ك', label:'دينار كويتي', labelEn:'Kuwaiti Dinar'},
+  {symbol:'ر.ق', label:'ريال قطري', labelEn:'Qatari Riyal'},
+  {symbol:'د.ب', label:'دينار بحريني', labelEn:'Bahraini Dinar'},
+  {symbol:'ر.ع', label:'ريال عماني', labelEn:'Omani Rial'},
+  {symbol:'ج.م', label:'جنيه مصري', labelEn:'Egyptian Pound'},
+  {symbol:'د.أ', label:'دينار أردني', labelEn:'Jordanian Dinar'},
+  {symbol:'د.ع', label:'دينار عراقي', labelEn:'Iraqi Dinar'},
+  {symbol:'$', label:'دولار أمريكي', labelEn:'US Dollar'},
+  {symbol:'€', label:'يورو', labelEn:'Euro'},
+  {symbol:'£', label:'جنيه إسترليني', labelEn:'British Pound'}
 ];
 const TAX_PRESETS = [0, 5, 15];
+
+/* ---------------- i18n ---------------- */
+const T = {
+  ar:{
+    cancel:'إلغاء', save:'حفظ', edit:'تعديل', delete:'حذف', apply:'تطبيق', logout:'خروج',
+    pin_prompt:'أدخل الرقم السري المكوّن من 4 أرقام',
+    login_subtitle:'نظام نقاط بيع محل القهوة — اختر اسمك لتسجيل الدخول',
+    role_manager:'مدير', role_cashier:'كاشير',
+    nav_pos:'نقطة البيع', nav_tables:'الطاولات', nav_orders:'الطلبات', nav_reports:'التقارير',
+    nav_menu:'القائمة', nav_inventory:'المخزون', nav_staff:'الموظفون', nav_settings:'الإعدادات',
+    order_takeaway:'سفري', order_dinein:'صالة', order_delivery:'توصيل',
+    toast_choose_table:'اختر طاولة لبدء طلب صالة',
+    toast_added_cart:'أُضيف إلى السلة ✓',
+    toast_hold_or_clear_first:'أفرغ أو علّق الطلب الحالي أولًا',
+    toast_order_held:'تم تعليق الطلب',
+    toast_table_busy:'الطاولة قيد الاستخدام حاليًا',
+    toast_cash_insufficient:'المبلغ المستلم غير كافٍ',
+    toast_split_mismatch:'مجموع الدفع المقسوم لا يساوي الإجمالي',
+    toast_order_voided:'تم إلغاء الطلب',
+    toast_discount_applied:'تم تطبيق الخصم',
+    toast_saved:'تم الحفظ',
+    toast_category_has_products:'لا يمكن حذف فئة تحتوي على أصناف',
+    toast_pick_image:'الرجاء اختيار ملف صورة',
+    toast_logo_uploaded:'تم رفع الشعار',
+    toast_enter_material_name:'أدخل اسم المادة',
+    toast_enter_staff_name:'أدخل اسم الموظف',
+    toast_settings_saved:'تم حفظ الإعدادات',
+    toast_storage_cloud:'تم اختيار الحفظ السحابي',
+    toast_storage_local:'تم اختيار الحفظ في الجهاز',
+    default_unnamed_item:'صنف بدون اسم',
+    default_new_category:'فئة جديدة',
+    confirm_clear_cart:'هل تريد إفراغ السلة الحالية؟',
+    confirm_void_order:'هل تريد إلغاء هذا الطلب؟',
+    confirm_delete_material:'حذف هذه المادة من المخزون؟',
+    confirm_delete_staff:'حذف هذا الموظف؟',
+    confirm_reset_data:'سيتم حذف جميع البيانات (المبيعات، المخزون، الإعدادات) والعودة للبيانات التجريبية. متابعة؟',
+    search_placeholder:'🔍 ابحث عن صنف...',
+    no_matching_items:'لا توجد أصناف مطابقة',
+    cart_title:'🧾 الطلب الحالي',
+    held:'معلّق',
+    choose_table_badge:'اختر طاولة',
+    customer_info_btn:'بيانات العميل',
+    clear_btn:'🗑️ إفراغ',
+    cart_empty:'السلة فارغة',
+    cart_empty_sub:'ابدأ بإضافة أصناف من القائمة',
+    items_count:'عدد الأصناف',
+    subtotal:'المجموع الفرعي',
+    discount_label:'الخصم',
+    add_discount_btn:'إضافة خصم',
+    vat_label:'ضريبة القيمة المضافة',
+    total_label:'الإجمالي',
+    hold_btn:'⏸️ تعليق',
+    pay_btn:'💳 الدفع',
+    remove_btn:'إزالة',
+    note_prefix:'ملاحظة',
+    customize_size:'الحجم', customize_milk:'نوع الحليب', customize_sugar:'مستوى السكر',
+    customize_syrup:'النكهة الإضافية', customize_shot:'شوت إسبريسو إضافي', per_shot:'لكل شوت', shot_word:'شوت',
+    qty_label:'الكمية', note_optional:'ملاحظة (اختياري)', note_placeholder:'مثال: بدون كريمة',
+    add_to_cart_btn:'إضافة للسلة',
+    discount_modal_title:'إضافة خصم',
+    discount_type_percent:'نسبة % من الفاتورة', discount_type_fixed:'مبلغ ثابت',
+    quick_percentages:'نسب سريعة',
+    discount_percent_label:'نسبة الخصم %', discount_amount_label:'المبلغ',
+    discount_reason_label:'سبب الخصم (اختياري)', discount_reason_placeholder:'مثال: عميل مميز',
+    before_discount_total:'مجموع الفاتورة قبل الخصم', discount_amount_value_label:'قيمة الخصم',
+    after_discount_total:'إجمالي الفاتورة بعد الخصم', remove_discount_btn:'إزالة الخصم',
+    held_orders_title:'الطلبات المعلّقة', no_held_orders:'لا توجد طلبات معلّقة حاليًا',
+    items_unit:'صنف', resume_btn:'استئناف',
+    customer_info_title:'بيانات العميل', customer_name_label:'اسم العميل', customer_phone_label:'رقم الجوال',
+    tables_title:'الطاولات', table_free:'متاحة', table_held:'معلّق', table_occupied:'قيد الطلب',
+    checkout_title:'الدفع', total_due:'الإجمالي المطلوب',
+    pay_cash:'💵 نقدي', pay_card:'💳 بطاقة', pay_applepay:'📱 آبل باي', pay_split:'➗ مقسوم',
+    amount_received_label:'المبلغ المستلم', insufficient_amount:'المبلغ غير كافٍ', change_due:'الباقي للعميل',
+    label_cash:'نقدي', label_card:'بطاقة',
+    split_total_note:'المجموع', must_equal_note:'يجب أن يساوي',
+    confirm_payment_btn:'تأكيد الدفع',
+    receipt_phone_label:'هاتف', order_number_label:'رقم الطلب', date_label:'التاريخ', staff_label:'الموظف',
+    order_type_label:'نوع الطلب', customer_label:'العميل', payment_method_label:'طريقة الدفع',
+    received_label:'المستلم', change_label:'الباقي',
+    pay_method_cash:'نقدي', pay_method_card:'بطاقة', pay_method_applepay:'آبل باي', pay_method_split:'مقسوم',
+    dinein_table:'صالة - طاولة',
+    receipt_success_title:'✅ تم الدفع بنجاح', print_btn:'🖨️ طباعة', new_order_btn:'طلب جديد',
+    orders_title:'الطلبات', filter_today:'اليوم', filter_week:'آخر 7 أيام', filter_all:'الكل', filter_void:'ملغاة',
+    orders_search_placeholder:'🔍 ابحث برقم الطلب أو اسم العميل أو الطاولة',
+    th_order_no:'#الطلب', th_time:'الوقت', th_type:'النوع', th_items:'الأصناف', th_total:'الإجمالي',
+    th_payment:'الدفع', th_status:'الحالة', th_staff:'الموظف',
+    status_completed:'مكتمل', status_void:'ملغى', view_btn:'عرض', void_btn:'إلغاء', no_orders:'لا توجد طلبات',
+    reports_title:'التقارير', tab_overview:'نظرة عامة (اليوم)', tab_detailed:'تقارير تفصيلية',
+    low_stock_alert:'صنف في المخزون بحاجة لإعادة تعبئة',
+    kpi_today_sales:'مبيعات اليوم', kpi_orders_count:'عدد الطلبات', kpi_avg_order:'متوسط قيمة الطلب',
+    kpi_held_orders:'الطلبات المعلّقة', top_selling_today:'الأكثر مبيعًا اليوم', pcs_unit:'قطعة',
+    no_data_yet:'لا توجد بيانات بعد', recent_orders:'آخر الطلبات', no_orders_yet:'لا توجد طلبات بعد',
+    from_date:'من تاريخ', to_date:'إلى تاريخ', print_report_btn:'🖨️ طباعة التقرير',
+    kpi_total_sales:'إجمالي المبيعات', sales_by_category:'المبيعات حسب الفئة', no_data:'لا توجد بيانات',
+    sales_by_payment:'المبيعات حسب طريقة الدفع', top_revenue_items:'الأصناف الأكثر تحقيقًا للإيرادات',
+    other_category:'أخرى',
+    menu_title:'إدارة القائمة', add_category_btn:'+ فئة جديدة', add_product_btn:'+ صنف جديد',
+    edit_category_btn:'تعديل الفئة', avail_yes:'متوفر', avail_no:'موقوف', unavailable_overlay:'غير متوفر',
+    product_new_title:'صنف جديد', product_edit_title:'تعديل صنف', product_name_label:'اسم الصنف',
+    icon_label:'الرمز (إيموجي)', base_price_label:'السعر الأساسي', category_label:'الفئة',
+    available_in_menu:'متوفر في القائمة', delete_item_btn:'🗑️ حذف الصنف',
+    category_new_title:'فئة جديدة', category_edit_title:'تعديل الفئة', category_name_label:'اسم الفئة',
+    available_options_title:'الخيارات المتاحة لأصناف هذه الفئة',
+    mod_shot:'شوت إضافي', mod_syrup:'نكهة إضافية', delete_category_btn:'🗑️ حذف الفئة',
+    inventory_title:'المخزون', add_material_btn:'+ مادة جديدة',
+    low_stock_banner_suffix:'مادة تحتاج إعادة تعبئة',
+    th_material:'المادة', th_current_qty:'الكمية الحالية', th_unit:'الوحدة', th_min_threshold:'الحد الأدنى',
+    status_low:'منخفض', status_good:'جيد', new_material_title:'مادة مخزون جديدة', name_label:'الاسم',
+    adjust_step_label:'خطوة التعديل',
+    staff_title:'الموظفون', add_staff_btn:'+ موظف جديد', th_name:'الاسم', th_role:'الدور', th_pin:'الرمز السري',
+    staff_new_title:'موظف جديد', staff_edit_title:'تعديل موظف', role_label:'الدور',
+    pin_label:'الرمز السري (4 أرقام)',
+    settings_title:'الإعدادات', shop_data_title:'بيانات المحل', shop_name_label:'اسم المحل',
+    logo_emoji_label:'الشعار (إيموجي)', upload_logo_label:'أو ارفع صورة شعار (يُفضّل شعار بخلفية شفافة)',
+    logo_upload_note:'عند رفع صورة، تُستخدم بدل الإيموجي في شاشة الدخول والشريط العلوي والفاتورة.',
+    address_label:'العنوان', phone_label:'الهاتف', receipt_footer_label:'نص أسفل الفاتورة',
+    financial_settings_title:'إعدادات مالية وتشغيلية', currency_label:'العملة',
+    other_currency_option:'أخرى (تحديد يدوي)', custom_currency_label:'رمز العملة المخصص',
+    vat_percent_label:'ضريبة القيمة المضافة %', extra_shot_price_label:'سعر شوت الإسبريسو الإضافي',
+    tables_count_label:'عدد الطاولات', allow_discount_label:'السماح بإضافة خصم على الطلبات في نقطة البيع',
+    discount_presets_label:'نسب الخصم السريعة (افصل بينها بفاصلة)',
+    reset_data_btn:'↺ إعادة ضبط البيانات التجريبية',
+    branch_data_title:'بيانات الفرع', branch_name_label:'اسم الفرع',
+    branch_location_label:'موقع الفرع (العنوان أو رابط خرائط)',
+    branch_note:'يظهر اسم الفرع وموقعه في الشريط العلوي وعلى الفاتورة المطبوعة — مفيد عند إدارة أكثر من فرع.',
+    storage_mode_title:'طريقة حفظ البيانات', storage_local_chip:'📱 في الجهاز', storage_cloud_chip:'☁️ سحابي',
+    storage_note_local_b:'في الجهاز:', storage_note_local:'جميع البيانات (المبيعات، المخزون، الطلبات) تُحفظ محليًا على هذا التابلت فقط.',
+    storage_note_cloud_b:'سحابي:',
+    storage_note_cloud:'يُهيّئ النظام لمزامنة البيانات بين عدة أجهزة/فروع. تفعيل المزامنة الفعلية يتطلب ربط قاعدة بيانات سحابية (مثل Firebase) بمشروعكم الخاص — أخبرني إذا رغبت أن أجهّز هذا الربط.',
+    save_settings_btn:'حفظ الإعدادات', language_title:'اللغة',
+    branch_name_placeholder:'مثال: فرع العليا', currency_custom_placeholder:'مثال: ر.ي',
+    logo_alt:'شعار', branch_location_placeholder:'مثال: الرياض - حي العليا، أو رابط Google Maps'
+  },
+  en:{
+    cancel:'Cancel', save:'Save', edit:'Edit', delete:'Delete', apply:'Apply', logout:'Logout',
+    pin_prompt:'Enter your 4-digit PIN',
+    login_subtitle:'Coffee Shop Point of Sale — choose your name to sign in',
+    role_manager:'Manager', role_cashier:'Cashier',
+    nav_pos:'Point of Sale', nav_tables:'Tables', nav_orders:'Orders', nav_reports:'Reports',
+    nav_menu:'Menu', nav_inventory:'Inventory', nav_staff:'Staff', nav_settings:'Settings',
+    order_takeaway:'Takeaway', order_dinein:'Dine-in', order_delivery:'Delivery',
+    toast_choose_table:'Choose a table to start a dine-in order',
+    toast_added_cart:'Added to cart ✓',
+    toast_hold_or_clear_first:'Clear or hold the current order first',
+    toast_order_held:'Order held',
+    toast_table_busy:'This table is currently in use',
+    toast_cash_insufficient:'Amount received is insufficient',
+    toast_split_mismatch:'Split payment total does not match the invoice total',
+    toast_order_voided:'Order voided',
+    toast_discount_applied:'Discount applied',
+    toast_saved:'Saved',
+    toast_category_has_products:'Cannot delete a category that has items',
+    toast_pick_image:'Please choose an image file',
+    toast_logo_uploaded:'Logo uploaded',
+    toast_enter_material_name:'Enter the item name',
+    toast_enter_staff_name:'Enter the staff name',
+    toast_settings_saved:'Settings saved',
+    toast_storage_cloud:'Cloud storage selected',
+    toast_storage_local:'On-device storage selected',
+    default_unnamed_item:'Unnamed item',
+    default_new_category:'New Category',
+    confirm_clear_cart:'Clear the current cart?',
+    confirm_void_order:'Void this order?',
+    confirm_delete_material:'Delete this item from inventory?',
+    confirm_delete_staff:'Delete this staff member?',
+    confirm_reset_data:'All data (sales, inventory, settings) will be deleted and reset to demo data. Continue?',
+    search_placeholder:'🔍 Search items...',
+    no_matching_items:'No matching items',
+    cart_title:'🧾 Current Order',
+    held:'Held',
+    choose_table_badge:'Choose a table',
+    customer_info_btn:'Customer info',
+    clear_btn:'🗑️ Clear',
+    cart_empty:'Cart is empty',
+    cart_empty_sub:'Start by adding items from the menu',
+    items_count:'Items',
+    subtotal:'Subtotal',
+    discount_label:'Discount',
+    add_discount_btn:'Add discount',
+    vat_label:'VAT',
+    total_label:'Total',
+    hold_btn:'⏸️ Hold',
+    pay_btn:'💳 Pay',
+    remove_btn:'Remove',
+    note_prefix:'Note',
+    customize_size:'Size', customize_milk:'Milk type', customize_sugar:'Sugar level',
+    customize_syrup:'Extra flavor', customize_shot:'Extra espresso shot', per_shot:'per shot', shot_word:'shot',
+    qty_label:'Quantity', note_optional:'Note (optional)', note_placeholder:'e.g. no whipped cream',
+    add_to_cart_btn:'Add to cart',
+    discount_modal_title:'Add Discount',
+    discount_type_percent:'% of invoice', discount_type_fixed:'Fixed amount',
+    quick_percentages:'Quick percentages',
+    discount_percent_label:'Discount %', discount_amount_label:'Amount',
+    discount_reason_label:'Discount reason (optional)', discount_reason_placeholder:'e.g. VIP customer',
+    before_discount_total:'Invoice total before discount', discount_amount_value_label:'Discount amount',
+    after_discount_total:'Invoice total after discount', remove_discount_btn:'Remove discount',
+    held_orders_title:'Held Orders', no_held_orders:'No held orders currently',
+    items_unit:'items', resume_btn:'Resume',
+    customer_info_title:'Customer Info', customer_name_label:'Customer name', customer_phone_label:'Phone number',
+    tables_title:'Tables', table_free:'Free', table_held:'Held', table_occupied:'Occupied',
+    checkout_title:'Payment', total_due:'Total due',
+    pay_cash:'💵 Cash', pay_card:'💳 Card', pay_applepay:'📱 Apple Pay', pay_split:'➗ Split',
+    amount_received_label:'Amount received', insufficient_amount:'Insufficient amount', change_due:'Change due',
+    label_cash:'Cash', label_card:'Card',
+    split_total_note:'Total', must_equal_note:'must equal',
+    confirm_payment_btn:'Confirm Payment',
+    receipt_phone_label:'Phone', order_number_label:'Order #', date_label:'Date', staff_label:'Staff',
+    order_type_label:'Order type', customer_label:'Customer', payment_method_label:'Payment method',
+    received_label:'Received', change_label:'Change',
+    pay_method_cash:'Cash', pay_method_card:'Card', pay_method_applepay:'Apple Pay', pay_method_split:'Split',
+    dinein_table:'Dine-in - Table',
+    receipt_success_title:'✅ Payment Successful', print_btn:'🖨️ Print', new_order_btn:'New Order',
+    orders_title:'Orders', filter_today:'Today', filter_week:'Last 7 days', filter_all:'All', filter_void:'Voided',
+    orders_search_placeholder:'🔍 Search by order #, customer name, or table',
+    th_order_no:'Order #', th_time:'Time', th_type:'Type', th_items:'Items', th_total:'Total',
+    th_payment:'Payment', th_status:'Status', th_staff:'Staff',
+    status_completed:'Completed', status_void:'Void', view_btn:'View', void_btn:'Void', no_orders:'No orders',
+    reports_title:'Reports', tab_overview:'Overview (Today)', tab_detailed:'Detailed Reports',
+    low_stock_alert:'inventory item(s) need restocking',
+    kpi_today_sales:"Today's Sales", kpi_orders_count:'Orders Count', kpi_avg_order:'Average Order Value',
+    kpi_held_orders:'Held Orders', top_selling_today:'Top Selling Today', pcs_unit:'pcs',
+    no_data_yet:'No data yet', recent_orders:'Recent Orders', no_orders_yet:'No orders yet',
+    from_date:'From date', to_date:'To date', print_report_btn:'🖨️ Print Report',
+    kpi_total_sales:'Total Sales', sales_by_category:'Sales by Category', no_data:'No data',
+    sales_by_payment:'Sales by Payment Method', top_revenue_items:'Top Revenue-Generating Items',
+    other_category:'Other',
+    menu_title:'Menu Management', add_category_btn:'+ New Category', add_product_btn:'+ New Item',
+    edit_category_btn:'Edit Category', avail_yes:'Available', avail_no:'Unavailable', unavailable_overlay:'Unavailable',
+    product_new_title:'New Item', product_edit_title:'Edit Item', product_name_label:'Item name',
+    icon_label:'Icon (emoji)', base_price_label:'Base price', category_label:'Category',
+    available_in_menu:'Available on the menu', delete_item_btn:'🗑️ Delete Item',
+    category_new_title:'New Category', category_edit_title:'Edit Category', category_name_label:'Category name',
+    available_options_title:'Options available for items in this category',
+    mod_shot:'Extra shot', mod_syrup:'Extra flavor', delete_category_btn:'🗑️ Delete Category',
+    inventory_title:'Inventory', add_material_btn:'+ New Item',
+    low_stock_banner_suffix:'item(s) need restocking',
+    th_material:'Item', th_current_qty:'Current Qty', th_unit:'Unit', th_min_threshold:'Min Threshold',
+    status_low:'Low', status_good:'Good', new_material_title:'New Inventory Item', name_label:'Name',
+    adjust_step_label:'Adjustment step',
+    staff_title:'Staff', add_staff_btn:'+ New Staff', th_name:'Name', th_role:'Role', th_pin:'PIN',
+    staff_new_title:'New Staff', staff_edit_title:'Edit Staff', role_label:'Role',
+    pin_label:'PIN (4 digits)',
+    settings_title:'Settings', shop_data_title:'Shop Info', shop_name_label:'Shop name',
+    logo_emoji_label:'Logo (emoji)', upload_logo_label:'Or upload a logo image (transparent background preferred)',
+    logo_upload_note:'Once uploaded, the image replaces the emoji on the login screen, top bar, and receipt.',
+    address_label:'Address', phone_label:'Phone', receipt_footer_label:'Receipt footer text',
+    financial_settings_title:'Financial & Operational Settings', currency_label:'Currency',
+    other_currency_option:'Other (manual)', custom_currency_label:'Custom currency symbol',
+    vat_percent_label:'VAT %', extra_shot_price_label:'Extra espresso shot price',
+    tables_count_label:'Number of tables', allow_discount_label:'Allow discounts on orders at point of sale',
+    discount_presets_label:'Quick discount percentages (comma-separated)',
+    reset_data_btn:'↺ Reset Demo Data',
+    branch_data_title:'Branch Info', branch_name_label:'Branch name',
+    branch_location_label:'Branch location (address or maps link)',
+    branch_note:'The branch name and location appear in the top bar and on printed receipts — useful when managing more than one branch.',
+    storage_mode_title:'Data Storage Method', storage_local_chip:'📱 On Device', storage_cloud_chip:'☁️ Cloud',
+    storage_note_local_b:'On device:', storage_note_local:'All data (sales, inventory, orders) is stored locally on this tablet only.',
+    storage_note_cloud_b:'Cloud:',
+    storage_note_cloud:'Prepares the system to sync data across multiple devices/branches. Enabling real sync requires connecting a cloud database (like Firebase) to your own project — let me know if you would like this set up.',
+    save_settings_btn:'Save Settings', language_title:'Language',
+    branch_name_placeholder:'e.g. Olaya Branch', currency_custom_placeholder:'e.g. YER',
+    logo_alt:'Logo', branch_location_placeholder:'e.g. Riyadh - Olaya District, or a Google Maps link'
+  }
+};
+function t(key){ const lang=(state&&state.settings&&state.settings.language)||'ar'; return (T[lang]&&T[lang][key]!==undefined)?T[lang][key]:(T.ar[key]||key); }
+const LABEL_TR = {
+  'قهوة ساخنة':'Hot Coffee', 'قهوة باردة':'Iced Coffee', 'مشروبات ساخنة':'Hot Drinks',
+  'مشروبات باردة':'Cold Drinks', 'حلويات ومخبوزات':'Pastries & Bakery', 'سناكس':'Snacks',
+  'إسبريسو':'Espresso', 'أمريكانو':'Americano', 'لاتيه':'Latte', 'كابتشينو':'Cappuccino',
+  'فلات وايت':'Flat White', 'ماكياتو':'Macchiato', 'موكا':'Mocha', 'قهوة تركية':'Turkish Coffee',
+  'آيس أمريكانو':'Iced Americano', 'آيس لاتيه':'Iced Latte', 'فرابتشينو كراميل':'Caramel Frappuccino',
+  'فرابتشينو موكا':'Mocha Frappuccino', 'كولد برو':'Cold Brew', 'آيس ماكياتو':'Iced Macchiato',
+  'شاي أحمر':'Black Tea', 'شاي أخضر':'Green Tea', 'كركديه':'Hibiscus Tea',
+  'شوكولاتة ساخنة':'Hot Chocolate', 'يانسون':'Anise Tea',
+  'عصير برتقال طازج':'Fresh Orange Juice', 'عصير مانجو':'Mango Juice', 'موهيتو أزرق':'Blue Mojito',
+  'موهيتو فراولة':'Strawberry Mojito', 'ريد بول':'Red Bull', 'مياه معدنية':'Mineral Water',
+  'كرواسون زبدة':'Butter Croissant', 'كرواسون شوكولاتة':'Chocolate Croissant', 'تشيز كيك':'Cheesecake',
+  'براوني':'Brownie', 'كوكيز شوكوليت':'Chocolate Cookies', 'مافن بلوبيري':'Blueberry Muffin',
+  'ساندويتش جبن وزعتر':'Cheese & Zaatar Sandwich', 'ساندويتش تركي':'Turkey Sandwich', 'توست فرنسي':'French Toast',
+  'صغير':'Small', 'وسط':'Medium', 'كبير':'Large',
+  'حليب كامل الدسم':'Whole Milk', 'حليب خالي الدسم':'Skim Milk', 'حليب لوز':'Almond Milk', 'حليب شوفان':'Oat Milk',
+  'بدون سكر':'No Sugar', 'قليل':'Less Sugar', 'عادي':'Regular', 'زيادة':'Extra Sugar',
+  'بدون':'None', 'فانيليا':'Vanilla', 'كراميل':'Caramel', 'بندق':'Hazelnut',
+  'حبوب قهوة':'Coffee Beans', 'سكر':'Sugar', 'شراب كراميل':'Caramel Syrup', 'شراب فانيليا':'Vanilla Syrup',
+  'مكعبات ثلج':'Ice Cubes', 'ريد بول (علبة)':'Red Bull (can)', 'كرواسون نيء':'Raw Croissant',
+  'تشيز كيك (قطعة)':'Cheesecake (slice)', 'أكواب صغيرة':'Small Cups', 'أكواب كبيرة':'Large Cups',
+  'غم':'g', 'مل':'ml', 'كوب':'cup', 'قطعة':'pc',
+  'الفرع الرئيسي':'Main Branch',
+  'مدير النظام':'System Admin', 'سارة (كاشير)':'Sarah (Cashier)', 'أحمد (باريستا)':'Ahmad (Barista)',
+  'شارع الأمير سلطان، الرياض':'Prince Sultan St, Riyadh',
+  'شكرًا لزيارتكم ☕ نتشرف بخدمتكم دائمًا':'Thank you for visiting ☕ We are always happy to serve you'
+};
+function L(text){
+  if(!text) return text;
+  const lang=(state&&state.settings&&state.settings.language)||'ar';
+  if(lang!=='en') return text;
+  return LABEL_TR[text]!==undefined ? LABEL_TR[text] : text;
+}
+function applyDocDir(){
+  const lang=(state&&state.settings&&state.settings.language)||'ar';
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang==='en' ? 'ltr' : 'rtl';
+}
 
 const DEFAULT_DATA = {
   settings:{
@@ -386,6 +696,8 @@ const DEFAULT_DATA = {
     branchLocation:'',
     storageMode:'local',
     discountEnabled:true,
+    discountPresets:[10, 15, 20, 25, 50],
+    language:'ar',
     currency:'ر.س',
     taxRate:15,
     address:'شارع الأمير سلطان، الرياض',
@@ -505,13 +817,14 @@ let ordersSearch = '';
 function initials(name){
   return name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('');
 }
+function roleLabel(role){ return role==='manager' ? t('role_manager') : t('role_cashier'); }
 function renderStaffGrid(){
   const el = document.getElementById('staffGrid');
   el.innerHTML = state.staff.map(s=>`
     <button class="staff-card" data-staff="${s.id}">
-      <div class="staff-avatar">${initials(s.name)}</div>
-      <div class="staff-name">${s.name}</div>
-      <div class="staff-role">${s.role==='manager'?'مدير':'كاشير'}</div>
+      <div class="staff-avatar">${initials(L(s.name))}</div>
+      <div class="staff-name">${L(s.name)}</div>
+      <div class="staff-role">${roleLabel(s.role)}</div>
     </button>`).join('');
   el.querySelectorAll('.staff-card').forEach(btn=>{
     btn.addEventListener('click', ()=> openPinPad(btn.dataset.staff));
@@ -523,7 +836,7 @@ let pinTargetStaff = null;
 function openPinPad(staffId){
   pinTargetStaff = state.staff.find(s=>s.id===staffId);
   pinEntry = '';
-  document.getElementById('pinStaffName').textContent = pinTargetStaff.name;
+  document.getElementById('pinStaffName').textContent = L(pinTargetStaff.name);
   renderPinDots();
   const kp = document.getElementById('keypad');
   const keys = ['1','2','3','4','5','6','7','8','9','','0','del'];
@@ -593,37 +906,38 @@ function hasAccess(view){
    NAV / HEADER
    ============================================================ */
 const NAV_ITEMS = [
-  {id:'pos', label:'نقطة البيع', icon:'🧾'},
-  {id:'tables', label:'الطاولات', icon:'🍽️'},
-  {id:'orders', label:'الطلبات', icon:'📋'},
-  {id:'reports', label:'التقارير', icon:'📊'},
-  {id:'menu', label:'القائمة', icon:'🧋'},
-  {id:'inventory', label:'المخزون', icon:'📦'},
-  {id:'staff', label:'الموظفون', icon:'👥'},
-  {id:'settings', label:'الإعدادات', icon:'⚙️'}
+  {id:'pos', key:'nav_pos', icon:'🧾'},
+  {id:'tables', key:'nav_tables', icon:'🍽️'},
+  {id:'orders', key:'nav_orders', icon:'📋'},
+  {id:'reports', key:'nav_reports', icon:'📊'},
+  {id:'menu', key:'nav_menu', icon:'🧋'},
+  {id:'inventory', key:'nav_inventory', icon:'📦'},
+  {id:'staff', key:'nav_staff', icon:'👥'},
+  {id:'settings', key:'nav_settings', icon:'⚙️'}
 ];
 function renderNav(){
   const el = document.getElementById('sidenav');
   el.innerHTML = NAV_ITEMS.filter(i=>hasAccess(i.id)).map(i=>`
     <button data-view="${i.id}" class="${currentView===i.id?'active':''}">
-      <span class="nav-ic">${i.icon}</span><span>${i.label}</span>
+      <span class="nav-ic">${i.icon}</span><span>${t(i.key)}</span>
     </button>`).join('');
   el.querySelectorAll('button').forEach(b=>{
     b.addEventListener('click', ()=>{ currentView = b.dataset.view; renderAll(); });
   });
 }
 function logoMarkup(className){
-  if(state.settings.logoImage) return `<img src="${state.settings.logoImage}" class="${className}" alt="شعار">`;
+  if(state.settings.logoImage) return `<img src="${state.settings.logoImage}" class="${className}" alt="${t('logo_alt')}">`;
   return state.settings.logo;
 }
 function renderTopbar(){
   document.getElementById('brandLogo').innerHTML = logoMarkup('logo-img');
   document.getElementById('brandName').textContent = state.settings.shopName;
-  document.getElementById('brandBranch').textContent = state.settings.branchName ? ('📍 ' + state.settings.branchName) : '';
-  document.getElementById('staffChip').textContent = '👤 ' + (currentStaff?currentStaff.name:'');
+  document.getElementById('brandBranch').textContent = state.settings.branchName ? ('📍 ' + L(state.settings.branchName)) : '';
+  document.getElementById('staffChip').textContent = '👤 ' + (currentStaff?L(currentStaff.name):'');
+  document.getElementById('logoutBtn').textContent = t('logout');
   const sw = document.getElementById('orderTypeSwitch');
-  const types = [{id:'takeaway',label:'سفري'},{id:'dine-in',label:'صالة'},{id:'delivery',label:'توصيل'}];
-  sw.innerHTML = types.map(t=>`<button data-type="${t.id}" class="${cart.orderType===t.id?'active':''}">${t.label}</button>`).join('');
+  const types = [{id:'takeaway',key:'order_takeaway'},{id:'dine-in',key:'order_dinein'},{id:'delivery',key:'order_delivery'}];
+  sw.innerHTML = types.map(ot=>`<button data-type="${ot.id}" class="${cart.orderType===ot.id?'active':''}">${t(ot.key)}</button>`).join('');
   sw.querySelectorAll('button').forEach(b=>{
     b.addEventListener('click', ()=> setOrderType(b.dataset.type));
   });
@@ -639,7 +953,7 @@ function setOrderType(type){
     currentView='tables';
     cart.orderType='dine-in'; saveCart();
     renderAll();
-    showToast('اختر طاولة لبدء طلب صالة');
+    showToast(t('toast_choose_table'));
     return;
   }
   if(type!=='dine-in' && cart.table){
@@ -699,9 +1013,9 @@ function renderPOS(){
   <div class="pos-layout">
     <div class="pos-products">
       <div class="cat-tabs">
-        ${cats.map(c=>`<button class="cat-tab ${c.id===currentCategory?'active':''}" data-cat="${c.id}">${c.icon} ${c.name}</button>`).join('')}
+        ${cats.map(c=>`<button class="cat-tab ${c.id===currentCategory?'active':''}" data-cat="${c.id}">${c.icon} ${L(c.name)}</button>`).join('')}
       </div>
-      <div class="search-bar"><input id="posSearch" placeholder="🔍 ابحث عن صنف..." value=""></div>
+      <div class="search-bar"><input id="posSearch" placeholder="${t('search_placeholder')}" value=""></div>
       <div class="product-grid" id="productGrid">${renderProductCards(products)}</div>
     </div>
     <aside class="pos-cart">
@@ -710,11 +1024,11 @@ function renderPOS(){
   </div>`;
 }
 function renderProductCards(products){
-  if(!products.length) return '<div class="cart-empty">لا توجد أصناف مطابقة</div>';
+  if(!products.length) return `<div class="cart-empty">${t('no_matching_items')}</div>`;
   return products.map(p=>`
-    <button class="product-card ${!p.available?'unavailable':''}" data-product="${p.id}" ${!p.available?'disabled':''}>
+    <button class="product-card ${!p.available?'unavailable':''}" data-product="${p.id}" data-unavail="${t('unavailable_overlay')}" ${!p.available?'disabled':''}>
       <div class="product-ic">${p.icon}</div>
-      <div class="product-name">${p.name}</div>
+      <div class="product-name">${L(p.name)}</div>
       <div class="product-price">${fmt(p.price)}</div>
     </button>`).join('');
 }
@@ -722,9 +1036,9 @@ function renderCartPanel(){
   const heldCount = state.heldOrders.length;
   let tableBadge = '';
   if(cart.orderType==='dine-in'){
-    tableBadge = cart.table ? `<span class="table-badge">🍽️ طاولة ${cart.table}</span>` : `<span class="table-badge">اختر طاولة</span>`;
+    tableBadge = cart.table ? `<span class="table-badge">🍽️ ${t('dinein_table')} ${cart.table}</span>` : `<span class="table-badge">${t('choose_table_badge')}</span>`;
   }
-  const itemsHtml = cart.items.length ? cart.items.map(it=>renderCartItem(it)).join('') : '<div class="cart-empty">السلة فارغة<br>ابدأ بإضافة أصناف من القائمة</div>';
+  const itemsHtml = cart.items.length ? cart.items.map(it=>renderCartItem(it)).join('') : `<div class="cart-empty">${t('cart_empty')}<br>${t('cart_empty_sub')}</div>`;
   const subtotal = cartSubtotal();
   const discount = cartDiscountAmount(subtotal);
   const taxable = subtotal - discount;
@@ -733,42 +1047,42 @@ function renderCartPanel(){
   return `
     <div class="cart-header">
       <div class="cart-header-row">
-        <span class="cart-title">🧾 الطلب الحالي</span>
-        <button class="btn btn-sm btn-outline" id="heldOrdersBtn">معلّق ${heldCount?`<span class="badge">${heldCount}</span>`:''}</button>
+        <span class="cart-title">${t('cart_title')}</span>
+        <button class="btn btn-sm btn-outline" id="heldOrdersBtn">${t('held')} ${heldCount?`<span class="badge">${heldCount}</span>`:''}</button>
       </div>
       <div class="cart-meta-row">${tableBadge}
-        ${cart.orderType==='delivery' ? `<button class="btn btn-sm btn-outline" id="custBtn">👤 ${cart.customer.name||'بيانات العميل'}</button>`:''}
-        ${cart.items.length ? `<button class="btn btn-sm btn-outline" id="clearCartBtn">🗑️ إفراغ</button>`:''}
+        ${cart.orderType==='delivery' ? `<button class="btn btn-sm btn-outline" id="custBtn">👤 ${cart.customer.name||t('customer_info_btn')}</button>`:''}
+        ${cart.items.length ? `<button class="btn btn-sm btn-outline" id="clearCartBtn">${t('clear_btn')}</button>`:''}
       </div>
     </div>
     <div class="cart-items">${itemsHtml}</div>
     <div class="cart-summary">
-      <div class="sum-row"><span>عدد الأصناف</span><span>${cart.items.reduce((a,i)=>a+i.qty,0)}</span></div>
-      <div class="sum-row"><span>المجموع الفرعي</span><span>${fmt(subtotal)}</span></div>
+      <div class="sum-row"><span>${t('items_count')}</span><span>${cart.items.reduce((a,i)=>a+i.qty,0)}</span></div>
+      <div class="sum-row"><span>${t('subtotal')}</span><span>${fmt(subtotal)}</span></div>
       ${state.settings.discountEnabled!==false?`
       <div class="sum-row">
-        <span>الخصم ${cart.discount.value>0?`(${cart.discount.type==='percent'?cart.discount.value+'%':fmt(cart.discount.value)})`:''}</span>
-        <span><button class="cart-item-remove" id="discountBtn" style="color:var(--accent-dark)">${discount>0?'-'+fmt(discount):'إضافة خصم'}</button></span>
+        <span>${t('discount_label')} ${cart.discount.value>0?`(${cart.discount.type==='percent'?cart.discount.value+'%':fmt(cart.discount.value)})`:''}</span>
+        <span><button class="cart-item-remove" id="discountBtn" style="color:var(--accent-dark)">${discount>0?'-'+fmt(discount):t('add_discount_btn')}</button></span>
       </div>`:''}
-      <div class="sum-row"><span>ضريبة القيمة المضافة ${state.settings.taxRate}%</span><span>${fmt(tax)}</span></div>
-      <div class="sum-row total"><span>الإجمالي</span><span>${fmt(total)}</span></div>
+      <div class="sum-row"><span>${t('vat_label')} ${state.settings.taxRate}%</span><span>${fmt(tax)}</span></div>
+      <div class="sum-row total"><span>${t('total_label')}</span><span>${fmt(total)}</span></div>
     </div>
     <div class="cart-actions">
-      <button class="btn btn-outline" id="holdBtn" ${!cart.items.length?'disabled':''}>⏸️ تعليق</button>
-      <button class="btn btn-accent btn-lg" id="checkoutBtn" ${!cart.items.length?'disabled':''}>💳 الدفع · ${fmt(total)}</button>
+      <button class="btn btn-outline" id="holdBtn" ${!cart.items.length?'disabled':''}>${t('hold_btn')}</button>
+      <button class="btn btn-accent btn-lg" id="checkoutBtn" ${!cart.items.length?'disabled':''}>${t('pay_btn')} · ${fmt(total)}</button>
     </div>`;
 }
 function renderCartItem(it){
-  const mods = [it.size, it.milk, it.sugar, it.shots?`+${it.shots} شوت`:'', (it.syrup&&it.syrup!=='بدون')?it.syrup:'']
+  const mods = [L(it.size), L(it.milk), L(it.sugar), it.shots?`+${it.shots} ${t('shot_word')}`:'', (it.syrup&&it.syrup!=='بدون')?L(it.syrup):'']
     .filter(Boolean).join(' · ');
   return `
   <div class="cart-item" data-uid="${it.uid}">
     <div class="cart-item-top">
-      <span class="cart-item-name">${it.icon||''} ${it.name}</span>
-      <button class="cart-item-remove" data-remove="${it.uid}">إزالة</button>
+      <span class="cart-item-name">${it.icon||''} ${L(it.name)}</span>
+      <button class="cart-item-remove" data-remove="${it.uid}">${t('remove_btn')}</button>
     </div>
     ${mods?`<div class="cart-item-mods">${mods}</div>`:''}
-    ${it.note?`<div class="cart-item-mods">ملاحظة: ${it.note}</div>`:''}
+    ${it.note?`<div class="cart-item-mods">${t('note_prefix')}: ${it.note}</div>`:''}
     <div class="cart-item-bottom">
       <div class="qty-stepper">
         <button data-dec="${it.uid}">−</button><span>${it.qty}</span><button data-inc="${it.uid}">+</button>
@@ -796,7 +1110,7 @@ function addToCart(cfg){
   if(existing){ existing.qty += cfg.qty; }
   else { cart.items.push(Object.assign({uid:uid()}, cfg)); }
   saveCart(); renderAll();
-  showToast('أُضيف إلى السلة ✓');
+  showToast(t('toast_added_cart'));
 }
 function changeQty(uidVal, delta){
   const it = cart.items.find(i=>i.uid===uidVal); if(!it) return;
@@ -853,25 +1167,25 @@ function openCustomizeModal(p){
   }
   function html(){
     return `
-    <div class="modal-head"><span class="modal-title">${p.icon} ${p.name}</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${p.icon} ${L(p.name)}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
-      ${mods.size?`<div class="modal-section"><div class="modal-section-title">الحجم</div><div class="chip-row">${S.sizePrices.map(s=>`<button class="chip ${sel.size===s.name?'active':''}" data-act="size" data-v="${s.name}">${s.name} ${s.diff?(s.diff>0?'+':'')+s.diff:''}</button>`).join('')}</div></div>`:''}
-      ${mods.milk?`<div class="modal-section"><div class="modal-section-title">نوع الحليب</div><div class="chip-row">${S.milkOptions.map(m=>`<button class="chip ${sel.milk===m.name?'active':''}" data-act="milk" data-v="${m.name}">${m.name} ${m.diff?'+'+m.diff:''}</button>`).join('')}</div></div>`:''}
-      ${mods.sugar?`<div class="modal-section"><div class="modal-section-title">مستوى السكر</div><div class="chip-row">${S.sugarLevels.map(s=>`<button class="chip ${sel.sugar===s?'active':''}" data-act="sugar" data-v="${s}">${s}</button>`).join('')}</div></div>`:''}
-      ${mods.syrup?`<div class="modal-section"><div class="modal-section-title">النكهة الإضافية</div><div class="chip-row">${S.syrupOptions.map(s=>`<button class="chip ${sel.syrup===s.name?'active':''}" data-act="syrup" data-v="${s.name}">${s.name} ${s.diff?'+'+s.diff:''}</button>`).join('')}</div></div>`:''}
-      ${mods.shot?`<div class="modal-section"><div class="modal-section-title">شوت إسبريسو إضافي (+${S.extraShotPrice} لكل شوت)</div>
+      ${mods.size?`<div class="modal-section"><div class="modal-section-title">${t('customize_size')}</div><div class="chip-row">${S.sizePrices.map(s=>`<button class="chip ${sel.size===s.name?'active':''}" data-act="size" data-v="${s.name}">${L(s.name)} ${s.diff?(s.diff>0?'+':'')+s.diff:''}</button>`).join('')}</div></div>`:''}
+      ${mods.milk?`<div class="modal-section"><div class="modal-section-title">${t('customize_milk')}</div><div class="chip-row">${S.milkOptions.map(m=>`<button class="chip ${sel.milk===m.name?'active':''}" data-act="milk" data-v="${m.name}">${L(m.name)} ${m.diff?'+'+m.diff:''}</button>`).join('')}</div></div>`:''}
+      ${mods.sugar?`<div class="modal-section"><div class="modal-section-title">${t('customize_sugar')}</div><div class="chip-row">${S.sugarLevels.map(s=>`<button class="chip ${sel.sugar===s?'active':''}" data-act="sugar" data-v="${s}">${L(s)}</button>`).join('')}</div></div>`:''}
+      ${mods.syrup?`<div class="modal-section"><div class="modal-section-title">${t('customize_syrup')}</div><div class="chip-row">${S.syrupOptions.map(s=>`<button class="chip ${sel.syrup===s.name?'active':''}" data-act="syrup" data-v="${s.name}">${L(s.name)} ${s.diff?'+'+s.diff:''}</button>`).join('')}</div></div>`:''}
+      ${mods.shot?`<div class="modal-section"><div class="modal-section-title">${t('customize_shot')} (+${S.extraShotPrice} ${t('per_shot')})</div>
         <div class="qty-big"><button data-act="shotdec">−</button><span id="shotVal">${sel.shots}</span><button data-act="shotinc">+</button></div></div>`:''}
       <div class="modal-section">
-        <div class="modal-section-title">الكمية</div>
+        <div class="modal-section-title">${t('qty_label')}</div>
         <div class="qty-big"><button data-act="qdec">−</button><span id="qtyVal">${sel.qty}</span><button data-act="qinc">+</button></div>
       </div>
       <div class="modal-section">
-        <div class="modal-section-title">ملاحظة (اختياري)</div>
-        <textarea id="noteInput" rows="2" placeholder="مثال: بدون كريمة">${sel.note}</textarea>
+        <div class="modal-section-title">${t('note_optional')}</div>
+        <textarea id="noteInput" rows="2" placeholder="${t('note_placeholder')}">${sel.note}</textarea>
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-accent btn-lg" id="addBtn">إضافة للسلة · ${fmt(unitPrice()*sel.qty)}</button>
+      <button class="btn btn-accent btn-lg" id="addBtn">${t('add_to_cart_btn')} · ${fmt(unitPrice()*sel.qty)}</button>
     </div>`;
   }
   openModal(html());
@@ -902,7 +1216,6 @@ function openCustomizeModal(p){
 }
 
 /* discount modal */
-const DISCOUNT_PERCENT_PRESETS = [10, 15, 20, 25, 50];
 function openDiscountModal(){
   const subtotal = cartSubtotal();
   let type = cart.discount.type, value = cart.discount.value, reason = cart.discount.reason;
@@ -922,29 +1235,29 @@ function openDiscountModal(){
     const beforeTotal = money(subtotal*(1+state.settings.taxRate/100));
     const {discountAmt, newTotal} = computePreview();
     return `
-    <div class="modal-head"><span class="modal-title">إضافة خصم</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${t('discount_modal_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
       <div class="chip-row" style="margin-bottom:14px;">
-        <button class="chip ${type==='percent'?'active':''}" data-t="percent">نسبة % من الفاتورة</button>
-        <button class="chip ${type==='fixed'?'active':''}" data-t="fixed">مبلغ ثابت</button>
+        <button class="chip ${type==='percent'?'active':''}" data-t="percent">${t('discount_type_percent')}</button>
+        <button class="chip ${type==='fixed'?'active':''}" data-t="fixed">${t('discount_type_fixed')}</button>
       </div>
       ${type==='percent'?`
-      <div class="modal-section-title">نسب سريعة</div>
+      <div class="modal-section-title">${t('quick_percentages')}</div>
       <div class="chip-row" style="margin-bottom:14px;">
-        ${DISCOUNT_PERCENT_PRESETS.map(p=>`<button class="chip ${value===p?'active':''}" data-preset-pct="${p}">${p}%</button>`).join('')}
+        ${(state.settings.discountPresets&&state.settings.discountPresets.length?state.settings.discountPresets:[10,15,20,25,50]).map(p=>`<button class="chip ${value===p?'active':''}" data-preset-pct="${p}">${p}%</button>`).join('')}
       </div>`:''}
-      <div class="form-row"><label>${type==='percent'?'نسبة الخصم %':'المبلغ ('+state.settings.currency+')'}</label>
+      <div class="form-row"><label>${type==='percent'?t('discount_percent_label'):t('discount_amount_label')+' ('+state.settings.currency+')'}</label>
         <input type="number" min="0" id="discVal" value="${value||''}"></div>
-      <div class="form-row"><label>سبب الخصم (اختياري)</label><input id="discReason" value="${reason||''}" placeholder="مثال: عميل مميز"></div>
+      <div class="form-row"><label>${t('discount_reason_label')}</label><input id="discReason" value="${reason||''}" placeholder="${t('discount_reason_placeholder')}"></div>
       <div class="card" style="background:var(--card2);padding:14px;">
-        <div class="sum-row"><span>مجموع الفاتورة قبل الخصم</span><span>${fmt(beforeTotal)}</span></div>
-        <div class="sum-row"><span>قيمة الخصم</span><span id="discAmtPreview" style="color:var(--danger);">-${fmt(discountAmt)}</span></div>
-        <div class="sum-row total"><span>إجمالي الفاتورة بعد الخصم</span><span id="discTotalPreview">${fmt(newTotal)}</span></div>
+        <div class="sum-row"><span>${t('before_discount_total')}</span><span>${fmt(beforeTotal)}</span></div>
+        <div class="sum-row"><span>${t('discount_amount_value_label')}</span><span id="discAmtPreview" style="color:var(--danger);">-${fmt(discountAmt)}</span></div>
+        <div class="sum-row total"><span>${t('after_discount_total')}</span><span id="discTotalPreview">${fmt(newTotal)}</span></div>
       </div>
     </div>
     <div class="modal-foot">
-      ${cart.discount.value>0?'<button class="btn btn-outline" id="removeDisc">إزالة الخصم</button>':''}
-      <button class="btn btn-accent" id="applyDisc">تطبيق</button>
+      ${cart.discount.value>0?`<button class="btn btn-outline" id="removeDisc">${t('remove_discount_btn')}</button>`:''}
+      <button class="btn btn-accent" id="applyDisc">${t('apply')}</button>
     </div>`;
   }
   openModal(html()); bind();
@@ -960,7 +1273,7 @@ function openDiscountModal(){
     document.getElementById('applyDisc').onclick = ()=>{
       cart.discount = {type, value:value||0, reason};
       saveCart(); closeModal(); renderAll();
-      showToast('تم تطبيق الخصم');
+      showToast(t('toast_discount_applied'));
     };
   }
 }
@@ -969,20 +1282,20 @@ function openDiscountModal(){
 function openHeldOrdersModal(){
   function html(){
     if(!state.heldOrders.length) return `
-      <div class="modal-head"><span class="modal-title">الطلبات المعلّقة</span><button class="modal-close" id="mClose">✕</button></div>
-      <div class="modal-body"><div class="cart-empty">لا توجد طلبات معلّقة حاليًا</div></div>`;
+      <div class="modal-head"><span class="modal-title">${t('held_orders_title')}</span><button class="modal-close" id="mClose">✕</button></div>
+      <div class="modal-body"><div class="cart-empty">${t('no_held_orders')}</div></div>`;
     return `
-    <div class="modal-head"><span class="modal-title">الطلبات المعلّقة</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${t('held_orders_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
       ${state.heldOrders.map(h=>`
         <div class="card" style="margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">
           <div>
-            <div style="font-weight:800;">${h.orderType==='dine-in'?'🍽️ طاولة '+h.table : h.orderType==='delivery'?'🚚 توصيل':'🥤 سفري'}</div>
-            <div style="color:var(--muted);font-size:.8rem;">${h.items.length} صنف · ${fmt(h.items.reduce((a,i)=>a+i.unitPrice*i.qty,0))} · ${formatTime(h.time)}</div>
+            <div style="font-weight:800;">${h.orderType==='dine-in'?'🍽️ '+t('dinein_table')+' '+h.table : h.orderType==='delivery'?'🚚 '+t('order_delivery'):'🥤 '+t('order_takeaway')}</div>
+            <div style="color:var(--muted);font-size:.8rem;">${h.items.length} ${t('items_unit')} · ${fmt(h.items.reduce((a,i)=>a+i.unitPrice*i.qty,0))} · ${formatTime(h.time)}</div>
           </div>
           <div style="display:flex;gap:6px;">
-            <button class="btn btn-sm btn-accent" data-resume="${h.id}">استئناف</button>
-            <button class="btn btn-sm btn-outline" data-discard="${h.id}">حذف</button>
+            <button class="btn btn-sm btn-accent" data-resume="${h.id}">${t('resume_btn')}</button>
+            <button class="btn btn-sm btn-outline" data-discard="${h.id}">${t('delete')}</button>
           </div>
         </div>`).join('')}
     </div>`;
@@ -990,7 +1303,7 @@ function openHeldOrdersModal(){
   openModal(html());
   document.getElementById('mClose').onclick=closeModal;
   document.querySelectorAll('[data-resume]').forEach(b=>b.onclick=()=>{
-    if(cart.items.length){ showToast('أفرغ أو علّق الطلب الحالي أولًا'); return; }
+    if(cart.items.length){ showToast(t('toast_hold_or_clear_first')); return; }
     const h = state.heldOrders.find(x=>x.id===b.dataset.resume);
     cart = {items:h.items, orderType:h.orderType, table:h.table, customer:h.customer||{name:'',phone:''}, discount:h.discount, note:h.note||''};
     state.heldOrders = state.heldOrders.filter(x=>x.id!==h.id);
@@ -1012,19 +1325,19 @@ function holdCurrentOrder(){
   save();
   cart = freshCart(); saveCart();
   renderAll();
-  showToast('تم تعليق الطلب');
+  showToast(t('toast_order_held'));
 }
 
 /* customer modal (delivery) */
 function openCustomerModal(){
   let name = cart.customer.name, phone = cart.customer.phone;
   const html = `
-    <div class="modal-head"><span class="modal-title">بيانات العميل</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${t('customer_info_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
-      <div class="form-row"><label>اسم العميل</label><input id="custName" value="${name}"></div>
-      <div class="form-row"><label>رقم الجوال</label><input id="custPhone" value="${phone}"></div>
+      <div class="form-row"><label>${t('customer_name_label')}</label><input id="custName" value="${name}"></div>
+      <div class="form-row"><label>${t('customer_phone_label')}</label><input id="custPhone" value="${phone}"></div>
     </div>
-    <div class="modal-foot"><button class="btn btn-accent" id="saveCust">حفظ</button></div>`;
+    <div class="modal-foot"><button class="btn btn-accent" id="saveCust">${t('save')}</button></div>`;
   openModal(html);
   document.getElementById('mClose').onclick=closeModal;
   document.getElementById('saveCust').onclick=()=>{
@@ -1038,12 +1351,12 @@ function openCustomerModal(){
    ============================================================ */
 function renderTables(){
   return `
-  <div class="section-head"><div class="section-title">الطاولات</div></div>
+  <div class="section-head"><div class="section-title">${t('tables_title')}</div></div>
   <div class="tables-grid">
-    ${state.tables.map(t=>`
-      <button class="table-card ${t.status}" data-table="${t.num}">
-        <div class="table-num">${t.num}</div>
-        <div class="table-status">${t.status==='free'?'متاحة':(t.heldId?'معلّق':'قيد الطلب')}</div>
+    ${state.tables.map(tb=>`
+      <button class="table-card ${tb.status}" data-table="${tb.num}">
+        <div class="table-num">${tb.num}</div>
+        <div class="table-status">${tb.status==='free'?t('table_free'):(tb.heldId?t('table_held'):t('table_occupied'))}</div>
       </button>`).join('')}
   </div>`;
 }
@@ -1056,7 +1369,7 @@ function selectTable(num){
   const t = state.tables.find(t=>t.num===num);
   if(!t) return;
   if(t.status==='occupied' && t.heldId){
-    if(cart.items.length){ showToast('أفرغ أو علّق الطلب الحالي أولًا'); return; }
+    if(cart.items.length){ showToast(t('toast_hold_or_clear_first')); return; }
     const h = state.heldOrders.find(x=>x.id===t.heldId);
     if(h){
       cart = {items:h.items, orderType:h.orderType, table:h.table, customer:h.customer||{name:'',phone:''}, discount:h.discount, note:h.note||''};
@@ -1066,7 +1379,7 @@ function selectTable(num){
     currentView='pos'; renderAll(); return;
   }
   if(t.status==='occupied' && !t.heldId){
-    showToast('الطاولة قيد الاستخدام حاليًا');
+    showToast(t('toast_table_busy'));
     return;
   }
   if(cart.table) freeTable(cart.table);
@@ -1090,35 +1403,35 @@ function openCheckoutModal(){
   function html(){
     const change = method==='cash' ? money(cashGiven - total) : 0;
     return `
-    <div class="modal-head"><span class="modal-title">الدفع</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${t('checkout_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
       <div class="kpi-card" style="text-align:center;margin-bottom:16px;">
-        <div class="kpi-label">الإجمالي المطلوب</div>
+        <div class="kpi-label">${t('total_due')}</div>
         <div class="kpi-value" style="font-size:2rem;">${fmt(total)}</div>
       </div>
       <div class="chip-row" style="margin-bottom:16px;">
-        <button class="chip ${method==='cash'?'active':''}" data-m="cash">💵 نقدي</button>
-        <button class="chip ${method==='card'?'active':''}" data-m="card">💳 بطاقة</button>
-        <button class="chip ${method==='applepay'?'active':''}" data-m="applepay">📱 آبل باي</button>
-        <button class="chip ${method==='split'?'active':''}" data-m="split">➗ مقسوم</button>
+        <button class="chip ${method==='cash'?'active':''}" data-m="cash">${t('pay_cash')}</button>
+        <button class="chip ${method==='card'?'active':''}" data-m="card">${t('pay_card')}</button>
+        <button class="chip ${method==='applepay'?'active':''}" data-m="applepay">${t('pay_applepay')}</button>
+        <button class="chip ${method==='split'?'active':''}" data-m="split">${t('pay_split')}</button>
       </div>
       ${method==='cash'?`
-        <div class="form-row"><label>المبلغ المستلم</label><input type="number" id="cashGiven" value="${cashGiven}"></div>
+        <div class="form-row"><label>${t('amount_received_label')}</label><input type="number" id="cashGiven" value="${cashGiven}"></div>
         <div class="chip-row" style="margin-bottom:10px;">
           ${[total, Math.ceil(total/10)*10, Math.ceil(total/50)*50, Math.ceil(total/100)*100].filter((v,i,a)=>a.indexOf(v)===i).map(v=>`<button class="chip" data-preset="${v}">${fmt(v)}</button>`).join('')}
         </div>
         <div class="sum-row ${change<0?'':''}" style="font-weight:800;color:${change<0?'var(--danger)':'var(--success)'}">
-          <span>${change<0?'المبلغ غير كافٍ':'الباقي للعميل'}</span><span>${fmt(Math.abs(change))}</span>
+          <span>${change<0?t('insufficient_amount'):t('change_due')}</span><span>${fmt(Math.abs(change))}</span>
         </div>`:''}
       ${method==='split'?`
-        <div class="form-row"><label>نقدي</label><input type="number" id="splitCashInp" value="${splitCash}"></div>
-        <div class="form-row"><label>بطاقة</label><input type="number" id="splitCardInp" value="${splitCard}"></div>
-        <div style="font-size:.82rem;color:var(--muted);">المجموع: ${fmt(splitCash+splitCard)} (يجب أن يساوي ${fmt(total)})</div>
+        <div class="form-row"><label>${t('label_cash')}</label><input type="number" id="splitCashInp" value="${splitCash}"></div>
+        <div class="form-row"><label>${t('label_card')}</label><input type="number" id="splitCardInp" value="${splitCard}"></div>
+        <div style="font-size:.82rem;color:var(--muted);">${t('split_total_note')}: ${fmt(splitCash+splitCard)} (${t('must_equal_note')} ${fmt(total)})</div>
       `:''}
     </div>
     <div class="modal-foot">
-      <button class="btn btn-outline" id="cancelPay">إلغاء</button>
-      <button class="btn btn-accent btn-lg" id="confirmPay">تأكيد الدفع</button>
+      <button class="btn btn-outline" id="cancelPay">${t('cancel')}</button>
+      <button class="btn btn-accent btn-lg" id="confirmPay">${t('confirm_payment_btn')}</button>
     </div>`;
   }
   openModal(html()); bind();
@@ -1133,8 +1446,8 @@ function openCheckoutModal(){
     if(sc) sc.oninput = e=>{ splitCash=parseFloat(e.target.value)||0; };
     if(sk) sk.oninput = e=>{ splitCard=parseFloat(e.target.value)||0; };
     document.getElementById('confirmPay').onclick=()=>{
-      if(method==='cash' && cashGiven<total){ showToast('المبلغ المستلم غير كافٍ'); return; }
-      if(method==='split' && Math.abs((splitCash+splitCard)-total)>0.01){ showToast('مجموع الدفع المقسوم لا يساوي الإجمالي'); return; }
+      if(method==='cash' && cashGiven<total){ showToast(t('toast_cash_insufficient')); return; }
+      if(method==='split' && Math.abs((splitCash+splitCard)-total)>0.01){ showToast(t('toast_split_mismatch')); return; }
       const payment = {method, total,
         cashGiven: method==='cash'?cashGiven:(method==='split'?splitCash:0),
         change: method==='cash'?money(cashGiven-total):0,
@@ -1195,43 +1508,43 @@ function finalizeOrder({subtotal, discount, tax, total, payment}){
 function receiptHtml(order){
   const S = state.settings;
   const itemsRows = order.items.map(it=>{
-    const mods = [it.size,it.milk,it.sugar,it.shots?`+${it.shots}شوت`:'',it.syrup&&it.syrup!=='بدون'?it.syrup:''].filter(Boolean).join(' · ');
-    return `<div class="receipt-line"><span>${it.qty} × ${it.name}</span><span>${fmt(it.unitPrice*it.qty)}</span></div>${mods?`<div style="font-size:.7rem;color:#555;">${mods}</div>`:''}`;
+    const mods = [L(it.size),L(it.milk),L(it.sugar),it.shots?`+${it.shots}${t('shot_word')}`:'',it.syrup&&it.syrup!=='بدون'?L(it.syrup):''].filter(Boolean).join(' · ');
+    return `<div class="receipt-line"><span>${it.qty} × ${L(it.name)}</span><span>${fmt(it.unitPrice*it.qty)}</span></div>${mods?`<div style="font-size:.7rem;color:#555;">${mods}</div>`:''}`;
   }).join('');
-  const payLabel = {cash:'نقدي',card:'بطاقة',applepay:'آبل باي',split:'مدفوع مقسوم'}[order.payment.method]||'';
+  const payLabel = {cash:t('pay_method_cash'),card:t('pay_method_card'),applepay:t('pay_method_applepay'),split:t('pay_method_split')}[order.payment.method]||'';
   return `
     ${S.logoImage?`<div class="r-center"><img src="${S.logoImage}" style="height:44px;width:44px;object-fit:contain;"></div>`:''}
     <div class="r-center" style="font-weight:800;font-size:1.05rem;">${S.shopName}</div>
-    ${S.branchName?`<div class="r-center" style="font-size:.78rem;font-weight:700;">${S.branchName}</div>`:''}
-    <div class="r-center" style="font-size:.75rem;">${S.address}</div>
+    ${S.branchName?`<div class="r-center" style="font-size:.78rem;font-weight:700;">${L(S.branchName)}</div>`:''}
+    <div class="r-center" style="font-size:.75rem;">${L(S.address)}</div>
     ${S.branchLocation?`<div class="r-center" style="font-size:.72rem;">📍 ${S.branchLocation}</div>`:''}
-    <div class="r-center" style="font-size:.75rem;">هاتف: ${S.phone}</div>
+    <div class="r-center" style="font-size:.75rem;">${t('receipt_phone_label')}: ${S.phone}</div>
     <hr>
-    <div class="receipt-line"><span>رقم الطلب</span><span>#${order.id}</span></div>
-    <div class="receipt-line"><span>التاريخ</span><span>${formatDateTime(order.time)}</span></div>
-    <div class="receipt-line"><span>الموظف</span><span>${order.staffName}</span></div>
-    <div class="receipt-line"><span>نوع الطلب</span><span>${order.type==='dine-in'?'صالة - طاولة '+order.table:order.type==='delivery'?'توصيل':'سفري'}</span></div>
-    ${order.customer && order.customer.name?`<div class="receipt-line"><span>العميل</span><span>${order.customer.name}</span></div>`:''}
+    <div class="receipt-line"><span>${t('order_number_label')}</span><span>#${order.id}</span></div>
+    <div class="receipt-line"><span>${t('date_label')}</span><span>${formatDateTime(order.time)}</span></div>
+    <div class="receipt-line"><span>${t('staff_label')}</span><span>${L(order.staffName)}</span></div>
+    <div class="receipt-line"><span>${t('order_type_label')}</span><span>${order.type==='dine-in'?t('dinein_table')+' '+order.table:order.type==='delivery'?t('order_delivery'):t('order_takeaway')}</span></div>
+    ${order.customer && order.customer.name?`<div class="receipt-line"><span>${t('customer_label')}</span><span>${order.customer.name}</span></div>`:''}
     <hr>
     ${itemsRows}
     <hr>
-    <div class="receipt-line"><span>المجموع الفرعي</span><span>${fmt(order.subtotal)}</span></div>
-    ${order.discount.amount?`<div class="receipt-line"><span>الخصم</span><span>-${fmt(order.discount.amount)}</span></div>`:''}
-    <div class="receipt-line"><span>ضريبة القيمة المضافة (${S.taxRate}%)</span><span>${fmt(order.tax)}</span></div>
-    <div class="receipt-line" style="font-weight:800;font-size:.95rem;"><span>الإجمالي</span><span>${fmt(order.total)}</span></div>
+    <div class="receipt-line"><span>${t('subtotal')}</span><span>${fmt(order.subtotal)}</span></div>
+    ${order.discount.amount?`<div class="receipt-line"><span>${t('discount_label')}</span><span>-${fmt(order.discount.amount)}</span></div>`:''}
+    <div class="receipt-line"><span>${t('vat_label')} (${S.taxRate}%)</span><span>${fmt(order.tax)}</span></div>
+    <div class="receipt-line" style="font-weight:800;font-size:.95rem;"><span>${t('total_label')}</span><span>${fmt(order.total)}</span></div>
     <hr>
-    <div class="receipt-line"><span>طريقة الدفع</span><span>${payLabel}</span></div>
-    ${order.payment.method==='cash'?`<div class="receipt-line"><span>المستلم</span><span>${fmt(order.payment.cashGiven)}</span></div><div class="receipt-line"><span>الباقي</span><span>${fmt(order.payment.change)}</span></div>`:''}
+    <div class="receipt-line"><span>${t('payment_method_label')}</span><span>${payLabel}</span></div>
+    ${order.payment.method==='cash'?`<div class="receipt-line"><span>${t('received_label')}</span><span>${fmt(order.payment.cashGiven)}</span></div><div class="receipt-line"><span>${t('change_label')}</span><span>${fmt(order.payment.change)}</span></div>`:''}
     <hr>
-    <div class="r-center" style="font-size:.78rem;">${S.receiptFooter}</div>`;
+    <div class="r-center" style="font-size:.78rem;">${L(S.receiptFooter)}</div>`;
 }
 function openReceiptModal(order){
   const html = `
-    <div class="modal-head"><span class="modal-title">✅ تم الدفع بنجاح</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${t('receipt_success_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body"><div class="receipt-preview">${receiptHtml(order)}</div></div>
     <div class="modal-foot">
-      <button class="btn btn-outline" id="printBtn">🖨️ طباعة</button>
-      <button class="btn btn-accent btn-lg" id="newOrderBtn">طلب جديد</button>
+      <button class="btn btn-outline" id="printBtn">${t('print_btn')}</button>
+      <button class="btn btn-accent btn-lg" id="newOrderBtn">${t('new_order_btn')}</button>
     </div>`;
   openModal(html);
   document.getElementById('mClose').onclick=closeModal;
@@ -1258,31 +1571,31 @@ function renderOrders(){
   }
   return `
   <div class="section-head">
-    <div class="section-title">الطلبات</div>
+    <div class="section-title">${t('orders_title')}</div>
     <div class="filter-tabs">
-      ${[['today','اليوم'],['week','آخر 7 أيام'],['all','الكل'],['void','ملغاة']].map(([k,l])=>`<button class="pill ${ordersFilter===k?'active':''}" data-of="${k}">${l}</button>`).join('')}
+      ${[['today',t('filter_today')],['week',t('filter_week')],['all',t('filter_all')],['void',t('filter_void')]].map(([k,l])=>`<button class="pill ${ordersFilter===k?'active':''}" data-of="${k}">${l}</button>`).join('')}
     </div>
   </div>
-  <div class="search-bar"><input id="ordersSearchInp" placeholder="🔍 ابحث برقم الطلب أو اسم العميل أو الطاولة" value="${ordersSearch}"></div>
+  <div class="search-bar"><input id="ordersSearchInp" placeholder="${t('orders_search_placeholder')}" value="${ordersSearch}"></div>
   <div class="card" style="padding:0;overflow-x:auto;">
     <table class="data-table">
-      <thead><tr><th>#الطلب</th><th>الوقت</th><th>النوع</th><th>الأصناف</th><th>الإجمالي</th><th>الدفع</th><th>الحالة</th><th>الموظف</th><th></th></tr></thead>
+      <thead><tr><th>${t('th_order_no')}</th><th>${t('th_time')}</th><th>${t('th_type')}</th><th>${t('th_items')}</th><th>${t('th_total')}</th><th>${t('th_payment')}</th><th>${t('th_status')}</th><th>${t('th_staff')}</th><th></th></tr></thead>
       <tbody>
         ${list.length? list.map(o=>`
         <tr>
           <td>#${o.id}</td>
           <td>${formatDateShort(o.time)} ${formatTime(o.time)}</td>
-          <td>${o.type==='dine-in'?'صالة '+o.table:o.type==='delivery'?'توصيل':'سفري'}</td>
+          <td>${o.type==='dine-in'?t('dinein_table')+' '+o.table:o.type==='delivery'?t('order_delivery'):t('order_takeaway')}</td>
           <td>${o.items.reduce((a,i)=>a+i.qty,0)}</td>
           <td>${fmt(o.total)}</td>
-          <td>${({cash:'نقدي',card:'بطاقة',applepay:'آبل باي',split:'مقسوم'})[o.payment.method]||''}</td>
-          <td><span class="tag ${o.status==='completed'?'ok':'bad'}">${o.status==='completed'?'مكتمل':'ملغى'}</span></td>
-          <td>${o.staffName}</td>
+          <td>${({cash:t('pay_method_cash'),card:t('pay_method_card'),applepay:t('pay_method_applepay'),split:t('pay_method_split')})[o.payment.method]||''}</td>
+          <td><span class="tag ${o.status==='completed'?'ok':'bad'}">${o.status==='completed'?t('status_completed'):t('status_void')}</span></td>
+          <td>${L(o.staffName)}</td>
           <td style="white-space:nowrap;">
-            <button class="btn btn-sm btn-outline" data-view-order="${o.id}">عرض</button>
-            ${(currentStaff.role==='manager' && o.status==='completed')?`<button class="btn btn-sm btn-danger" data-void-order="${o.id}">إلغاء</button>`:''}
+            <button class="btn btn-sm btn-outline" data-view-order="${o.id}">${t('view_btn')}</button>
+            ${(currentStaff.role==='manager' && o.status==='completed')?`<button class="btn btn-sm btn-danger" data-void-order="${o.id}">${t('void_btn')}</button>`:''}
           </td>
-        </tr>`).join('') : `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px;">لا توجد طلبات</td></tr>`}
+        </tr>`).join('') : `<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:30px;">${t('no_orders')}</td></tr>`}
       </tbody>
     </table>
   </div>`;
@@ -1293,7 +1606,7 @@ function voidOrder(orderId){
   o.status='void';
   restockInventory(o);
   save(); renderAll();
-  showToast('تم إلغاء الطلب #'+orderId);
+  showToast(t('toast_order_voided')+' #'+orderId);
 }
 
 /* ============================================================
@@ -1305,10 +1618,10 @@ function renderReports(){
   if(reportsTab==='overview'){ fromTs = startOfDay(now); }
   return `
   <div class="section-head">
-    <div class="section-title">التقارير</div>
+    <div class="section-title">${t('reports_title')}</div>
     ${currentStaff.role==='manager' ? `<div class="filter-tabs">
-      <button class="pill ${reportsTab==='overview'?'active':''}" data-rt="overview">نظرة عامة (اليوم)</button>
-      <button class="pill ${reportsTab==='detailed'?'active':''}" data-rt="detailed">تقارير تفصيلية</button>
+      <button class="pill ${reportsTab==='overview'?'active':''}" data-rt="overview">${t('tab_overview')}</button>
+      <button class="pill ${reportsTab==='detailed'?'active':''}" data-rt="detailed">${t('tab_detailed')}</button>
     </div>`:''}
   </div>
   ${reportsTab==='overview' || currentStaff.role!=='manager' ? renderOverviewReport() : renderDetailedReport()}
@@ -1332,7 +1645,7 @@ function computeStats(orders){
       byProduct[it.name].qty += it.qty;
       byProduct[it.name].revenue += it.unitPrice*it.qty;
       const p = state.products.find(x=>x.id===it.productId);
-      const catName = p ? (state.categories.find(c=>c.id===p.cat)||{}).name : 'أخرى';
+      const catName = p ? (state.categories.find(c=>c.id===p.cat)||{}).name : t('other_category');
       byCategory[catName] = (byCategory[catName]||0) + it.unitPrice*it.qty;
     });
   });
@@ -1345,25 +1658,25 @@ function renderOverviewReport(){
   const topProducts = Object.entries(stats.byProduct).sort((a,b)=>b[1].qty-a[1].qty).slice(0,5);
   const recent = state.orders.slice(0,6);
   return `
-    ${lowStock.length?`<div class="alert-banner">⚠️ يوجد ${lowStock.length} صنف في المخزون بحاجة لإعادة تعبئة: ${lowStock.map(m=>m.name).join('، ')}</div>`:''}
+    ${lowStock.length?`<div class="alert-banner">⚠️ ${lowStock.length} ${t('low_stock_alert')}: ${lowStock.map(m=>L(m.name)).join(state.settings.language==='en'?', ':'، ')}</div>`:''}
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-label">مبيعات اليوم</div><div class="kpi-value">${fmt(stats.totalSales)}</div></div>
-      <div class="kpi-card"><div class="kpi-label">عدد الطلبات</div><div class="kpi-value">${stats.count}</div></div>
-      <div class="kpi-card"><div class="kpi-label">متوسط قيمة الطلب</div><div class="kpi-value">${fmt(stats.avg)}</div></div>
-      <div class="kpi-card"><div class="kpi-label">الطلبات المعلّقة</div><div class="kpi-value">${state.heldOrders.length}</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('kpi_today_sales')}</div><div class="kpi-value">${fmt(stats.totalSales)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('kpi_orders_count')}</div><div class="kpi-value">${stats.count}</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('kpi_avg_order')}</div><div class="kpi-value">${fmt(stats.avg)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('kpi_held_orders')}</div><div class="kpi-value">${state.heldOrders.length}</div></div>
     </div>
     <div class="grid-2">
       <div class="card">
-        <div class="section-title" style="font-size:1rem;margin-bottom:12px;">الأكثر مبيعًا اليوم</div>
+        <div class="section-title" style="font-size:1rem;margin-bottom:12px;">${t('top_selling_today')}</div>
         ${topProducts.length? topProducts.map(([name,d])=>`
-          <div class="bar-row"><span class="bar-label">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, d.qty/(topProducts[0][1].qty||1)*100)}%"></div></div><span class="bar-val">${d.qty} قطعة</span></div>
-        `).join('') : '<div class="cart-empty">لا توجد بيانات بعد</div>'}
+          <div class="bar-row"><span class="bar-label">${L(name)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(100, d.qty/(topProducts[0][1].qty||1)*100)}%"></div></div><span class="bar-val">${d.qty} ${t('pcs_unit')}</span></div>
+        `).join('') : `<div class="cart-empty">${t('no_data_yet')}</div>`}
       </div>
       <div class="card">
-        <div class="section-title" style="font-size:1rem;margin-bottom:12px;">آخر الطلبات</div>
+        <div class="section-title" style="font-size:1rem;margin-bottom:12px;">${t('recent_orders')}</div>
         ${recent.length? recent.map(o=>`
           <div class="bar-row" style="justify-content:space-between;"><span>#${o.id} · ${formatTime(o.time)}</span><span style="font-weight:800;color:var(--accent-dark)">${fmt(o.total)}</span></div>
-        `).join(''):'<div class="cart-empty">لا توجد طلبات بعد</div>'}
+        `).join(''):`<div class="cart-empty">${t('no_orders_yet')}</div>`}
       </div>
     </div>`;
 }
@@ -1376,41 +1689,41 @@ function renderDetailedReport(){
   const topByRevenue = Object.entries(stats.byProduct).sort((a,b)=>b[1].revenue-a[1].revenue).slice(0,8);
   const catEntries = Object.entries(stats.byCategory).sort((a,b)=>b[1]-a[1]);
   const payEntries = Object.entries(stats.byPayment);
-  const payLabels = {cash:'نقدي',card:'بطاقة',applepay:'آبل باي',split:'مقسوم'};
+  const payLabels = {cash:t('pay_method_cash'),card:t('pay_method_card'),applepay:t('pay_method_applepay'),split:t('pay_method_split')};
   const maxCat = Math.max(1,...catEntries.map(e=>e[1]));
   const maxPay = Math.max(1,...payEntries.map(e=>e[1]));
   const maxProd = Math.max(1,...topByRevenue.map(e=>e[1].revenue));
   return `
     <div class="card" style="margin-bottom:16px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
-      <div class="form-row" style="margin:0;"><label>من تاريخ</label><input type="date" id="repFrom" value="${window._reportRange.from}"></div>
-      <div class="form-row" style="margin:0;"><label>إلى تاريخ</label><input type="date" id="repTo" value="${window._reportRange.to}"></div>
-      <button class="btn btn-accent" id="applyRange">تطبيق</button>
-      <button class="btn btn-outline" id="printReport">🖨️ طباعة التقرير</button>
+      <div class="form-row" style="margin:0;"><label>${t('from_date')}</label><input type="date" id="repFrom" value="${window._reportRange.from}"></div>
+      <div class="form-row" style="margin:0;"><label>${t('to_date')}</label><input type="date" id="repTo" value="${window._reportRange.to}"></div>
+      <button class="btn btn-accent" id="applyRange">${t('apply')}</button>
+      <button class="btn btn-outline" id="printReport">${t('print_report_btn')}</button>
     </div>
     <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-label">إجمالي المبيعات</div><div class="kpi-value">${fmt(stats.totalSales)}</div></div>
-      <div class="kpi-card"><div class="kpi-label">عدد الطلبات</div><div class="kpi-value">${stats.count}</div></div>
-      <div class="kpi-card"><div class="kpi-label">متوسط قيمة الطلب</div><div class="kpi-value">${fmt(stats.avg)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('kpi_total_sales')}</div><div class="kpi-value">${fmt(stats.totalSales)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('kpi_orders_count')}</div><div class="kpi-value">${stats.count}</div></div>
+      <div class="kpi-card"><div class="kpi-label">${t('kpi_avg_order')}</div><div class="kpi-value">${fmt(stats.avg)}</div></div>
     </div>
     <div class="grid-2">
       <div class="card">
-        <div class="section-title" style="font-size:1rem;margin-bottom:12px;">المبيعات حسب الفئة</div>
+        <div class="section-title" style="font-size:1rem;margin-bottom:12px;">${t('sales_by_category')}</div>
         ${catEntries.length?catEntries.map(([name,val])=>`
-          <div class="bar-row"><span class="bar-label">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${val/maxCat*100}%"></div></div><span class="bar-val">${fmt(val)}</span></div>
-        `).join(''):'<div class="cart-empty">لا توجد بيانات</div>'}
+          <div class="bar-row"><span class="bar-label">${L(name)}</span><div class="bar-track"><div class="bar-fill" style="width:${val/maxCat*100}%"></div></div><span class="bar-val">${fmt(val)}</span></div>
+        `).join(''):`<div class="cart-empty">${t('no_data')}</div>`}
       </div>
       <div class="card">
-        <div class="section-title" style="font-size:1rem;margin-bottom:12px;">المبيعات حسب طريقة الدفع</div>
+        <div class="section-title" style="font-size:1rem;margin-bottom:12px;">${t('sales_by_payment')}</div>
         ${payEntries.length?payEntries.map(([k,val])=>`
           <div class="bar-row"><span class="bar-label">${payLabels[k]||k}</span><div class="bar-track"><div class="bar-fill" style="width:${val/maxPay*100}%"></div></div><span class="bar-val">${fmt(val)}</span></div>
-        `).join(''):'<div class="cart-empty">لا توجد بيانات</div>'}
+        `).join(''):`<div class="cart-empty">${t('no_data')}</div>`}
       </div>
     </div>
     <div class="card" style="margin-top:16px;">
-      <div class="section-title" style="font-size:1rem;margin-bottom:12px;">الأصناف الأكثر تحقيقًا للإيرادات</div>
+      <div class="section-title" style="font-size:1rem;margin-bottom:12px;">${t('top_revenue_items')}</div>
       ${topByRevenue.length?topByRevenue.map(([name,d])=>`
-        <div class="bar-row"><span class="bar-label">${name}</span><div class="bar-track"><div class="bar-fill" style="width:${d.revenue/maxProd*100}%"></div></div><span class="bar-val">${fmt(d.revenue)}</span></div>
-      `).join(''):'<div class="cart-empty">لا توجد بيانات</div>'}
+        <div class="bar-row"><span class="bar-label">${L(name)}</span><div class="bar-track"><div class="bar-fill" style="width:${d.revenue/maxProd*100}%"></div></div><span class="bar-val">${fmt(d.revenue)}</span></div>
+      `).join(''):`<div class="cart-empty">${t('no_data')}</div>`}
     </div>`;
 }
 function formatInputDate(ts){
@@ -1424,25 +1737,25 @@ function formatInputDate(ts){
 function renderMenu(){
   return `
   <div class="section-head">
-    <div class="section-title">إدارة القائمة</div>
+    <div class="section-title">${t('menu_title')}</div>
     <div style="display:flex;gap:8px;">
-      <button class="btn btn-outline" id="addCatBtn">+ فئة جديدة</button>
-      <button class="btn btn-accent" id="addProdBtn">+ صنف جديد</button>
+      <button class="btn btn-outline" id="addCatBtn">${t('add_category_btn')}</button>
+      <button class="btn btn-accent" id="addProdBtn">${t('add_product_btn')}</button>
     </div>
   </div>
   ${state.categories.map(c=>`
     <div class="card" style="margin-bottom:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-        <div style="font-weight:800;">${c.icon} ${c.name}</div>
-        <button class="btn btn-sm btn-outline" data-edit-cat="${c.id}">تعديل الفئة</button>
+        <div style="font-weight:800;">${c.icon} ${L(c.name)}</div>
+        <button class="btn btn-sm btn-outline" data-edit-cat="${c.id}">${t('edit_category_btn')}</button>
       </div>
       <div class="product-grid">
         ${state.products.filter(p=>p.cat===c.id).map(p=>`
           <div class="product-card" data-edit-prod="${p.id}" style="cursor:pointer;">
             <div class="product-ic">${p.icon}</div>
-            <div class="product-name">${p.name}</div>
+            <div class="product-name">${L(p.name)}</div>
             <div class="product-price">${fmt(p.price)}</div>
-            <span class="tag ${p.available?'ok':'bad'}" style="position:absolute;top:8px;left:8px;">${p.available?'متوفر':'موقوف'}</span>
+            <span class="tag ${p.available?'ok':'bad'}" style="position:absolute;top:8px;inset-inline-end:8px;">${p.available?t('avail_yes'):t('avail_no')}</span>
           </div>`).join('')}
       </div>
     </div>`).join('')}`;
@@ -1452,26 +1765,26 @@ function openProductModal(product){
   const p = product ? clone(product) : {id:uid(), cat:state.categories[0].id, name:'', price:0, icon:'☕', available:true, recipe:[]};
   function html(){
     return `
-    <div class="modal-head"><span class="modal-title">${isNew?'صنف جديد':'تعديل صنف'}</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${isNew?t('product_new_title'):t('product_edit_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-row"><label>اسم الصنف</label><input id="pName" value="${p.name}"></div>
-        <div class="form-row"><label>الرمز (إيموجي)</label><input id="pIcon" value="${p.icon}"></div>
-        <div class="form-row"><label>السعر الأساسي</label><input type="number" id="pPrice" value="${p.price}"></div>
-        <div class="form-row"><label>الفئة</label><select id="pCat">${state.categories.map(c=>`<option value="${c.id}" ${c.id===p.cat?'selected':''}>${c.name}</option>`).join('')}</select></div>
+        <div class="form-row"><label>${t('product_name_label')}</label><input id="pName" value="${p.name}"></div>
+        <div class="form-row"><label>${t('icon_label')}</label><input id="pIcon" value="${p.icon}"></div>
+        <div class="form-row"><label>${t('base_price_label')}</label><input type="number" id="pPrice" value="${p.price}"></div>
+        <div class="form-row"><label>${t('category_label')}</label><select id="pCat">${state.categories.map(c=>`<option value="${c.id}" ${c.id===p.cat?'selected':''}>${L(c.name)}</option>`).join('')}</select></div>
       </div>
       <div class="toggle" style="margin-bottom:14px;">
         <label class="switch"><input type="checkbox" id="pAvail" ${p.available?'checked':''}><span class="slider"></span></label>
-        <span>متوفر في القائمة</span>
+        <span>${t('available_in_menu')}</span>
       </div>
-      ${!isNew?`<button class="btn btn-danger btn-sm" id="delProd" style="width:100%;">🗑️ حذف الصنف</button>`:''}
+      ${!isNew?`<button class="btn btn-danger btn-sm" id="delProd" style="width:100%;">${t('delete_item_btn')}</button>`:''}
     </div>
-    <div class="modal-foot"><button class="btn btn-accent btn-lg" id="saveProd">حفظ</button></div>`;
+    <div class="modal-foot"><button class="btn btn-accent btn-lg" id="saveProd">${t('save')}</button></div>`;
   }
   openModal(html());
   document.getElementById('mClose').onclick=closeModal;
   document.getElementById('saveProd').onclick=()=>{
-    p.name = document.getElementById('pName').value.trim() || 'صنف بدون اسم';
+    p.name = document.getElementById('pName').value.trim() || t('default_unnamed_item');
     p.icon = document.getElementById('pIcon').value.trim() || '☕';
     p.price = parseFloat(document.getElementById('pPrice').value)||0;
     p.cat = document.getElementById('pCat').value;
@@ -1479,7 +1792,7 @@ function openProductModal(product){
     if(isNew) state.products.push(p);
     else Object.assign(state.products.find(x=>x.id===p.id), p);
     save(); closeModal(); renderAll();
-    showToast('تم الحفظ');
+    showToast(t('toast_saved'));
   };
   const delBtn = document.getElementById('delProd');
   if(delBtn) delBtn.onclick=()=>{
@@ -1492,25 +1805,25 @@ function openCategoryModal(cat){
   const c = cat ? clone(cat) : {id:uid(), name:'', icon:'☕', color:'var(--cat-1)', mods:{size:true,milk:false,sugar:true,shot:false,syrup:false}};
   function html(){
     return `
-    <div class="modal-head"><span class="modal-title">${isNew?'فئة جديدة':'تعديل الفئة'}</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${isNew?t('category_new_title'):t('category_edit_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-row"><label>اسم الفئة</label><input id="cName" value="${c.name}"></div>
-        <div class="form-row"><label>الرمز (إيموجي)</label><input id="cIcon" value="${c.icon}"></div>
+        <div class="form-row"><label>${t('category_name_label')}</label><input id="cName" value="${c.name}"></div>
+        <div class="form-row"><label>${t('icon_label')}</label><input id="cIcon" value="${c.icon}"></div>
       </div>
-      <div class="modal-section-title">الخيارات المتاحة لأصناف هذه الفئة</div>
-      ${['size:الحجم','milk:نوع الحليب','sugar:مستوى السكر','shot:شوت إضافي','syrup:نكهة إضافية'].map(pair=>{
-        const [k,label]=pair.split(':');
+      <div class="modal-section-title">${t('available_options_title')}</div>
+      ${[['size',t('customize_size')],['milk',t('customize_milk')],['sugar',t('customize_sugar')],['shot',t('mod_shot')],['syrup',t('mod_syrup')]].map(pair=>{
+        const [k,label]=pair;
         return `<div class="toggle" style="margin-bottom:8px;"><label class="switch"><input type="checkbox" data-mod="${k}" ${c.mods[k]?'checked':''}><span class="slider"></span></label><span>${label}</span></div>`;
       }).join('')}
-      ${!isNew?`<button class="btn btn-danger btn-sm" id="delCat" style="width:100%;margin-top:10px;">🗑️ حذف الفئة</button>`:''}
+      ${!isNew?`<button class="btn btn-danger btn-sm" id="delCat" style="width:100%;margin-top:10px;">${t('delete_category_btn')}</button>`:''}
     </div>
-    <div class="modal-foot"><button class="btn btn-accent btn-lg" id="saveCat">حفظ</button></div>`;
+    <div class="modal-foot"><button class="btn btn-accent btn-lg" id="saveCat">${t('save')}</button></div>`;
   }
   openModal(html());
   document.getElementById('mClose').onclick=closeModal;
   document.getElementById('saveCat').onclick=()=>{
-    c.name = document.getElementById('cName').value.trim()||'فئة جديدة';
+    c.name = document.getElementById('cName').value.trim()||t('default_new_category');
     c.icon = document.getElementById('cIcon').value.trim()||'☕';
     document.querySelectorAll('[data-mod]').forEach(cb=>{ c.mods[cb.dataset.mod] = cb.checked; });
     if(isNew) state.categories.push(c);
@@ -1519,7 +1832,7 @@ function openCategoryModal(cat){
   };
   const delBtn = document.getElementById('delCat');
   if(delBtn) delBtn.onclick=()=>{
-    if(state.products.some(p=>p.cat===c.id)){ showToast('لا يمكن حذف فئة تحتوي على أصناف'); return; }
+    if(state.products.some(p=>p.cat===c.id)){ showToast(t('toast_category_has_products')); return; }
     state.categories = state.categories.filter(x=>x.id!==c.id);
     save(); closeModal(); renderAll();
   };
@@ -1532,25 +1845,25 @@ function renderInventory(){
   const low = state.inventory.filter(m=>m.qty<=m.min);
   return `
   <div class="section-head">
-    <div class="section-title">المخزون</div>
-    <button class="btn btn-accent" id="addMatBtn">+ مادة جديدة</button>
+    <div class="section-title">${t('inventory_title')}</div>
+    <button class="btn btn-accent" id="addMatBtn">${t('add_material_btn')}</button>
   </div>
-  ${low.length?`<div class="alert-banner">⚠️ ${low.length} مادة تحتاج إعادة تعبئة</div>`:''}
+  ${low.length?`<div class="alert-banner">⚠️ ${low.length} ${t('low_stock_banner_suffix')}</div>`:''}
   <div class="card" style="padding:0;overflow-x:auto;">
     <table class="data-table">
-      <thead><tr><th>المادة</th><th>الكمية الحالية</th><th>الوحدة</th><th>الحد الأدنى</th><th>الحالة</th><th></th></tr></thead>
+      <thead><tr><th>${t('th_material')}</th><th>${t('th_current_qty')}</th><th>${t('th_unit')}</th><th>${t('th_min_threshold')}</th><th>${t('th_status')}</th><th></th></tr></thead>
       <tbody>
         ${state.inventory.map(m=>`
         <tr>
-          <td>${m.name}</td>
+          <td>${L(m.name)}</td>
           <td>${m.qty}</td>
-          <td>${m.unit}</td>
+          <td>${L(m.unit)}</td>
           <td>${m.min}</td>
-          <td><span class="tag ${m.qty<=m.min?'bad':'ok'}">${m.qty<=m.min?'منخفض':'جيد'}</span></td>
+          <td><span class="tag ${m.qty<=m.min?'bad':'ok'}">${m.qty<=m.min?t('status_low'):t('status_good')}</span></td>
           <td style="white-space:nowrap;display:flex;gap:6px;">
             <button class="btn btn-sm btn-outline" data-mat-dec="${m.id}">-${m.step}</button>
             <button class="btn btn-sm btn-outline" data-mat-inc="${m.id}">+${m.step}</button>
-            <button class="btn btn-sm btn-danger" data-mat-del="${m.id}">حذف</button>
+            <button class="btn btn-sm btn-danger" data-mat-del="${m.id}">${t('delete')}</button>
           </td>
         </tr>`).join('')}
       </tbody>
@@ -1560,22 +1873,22 @@ function renderInventory(){
 function openMaterialModal(){
   const m = {id:uid(), name:'', unit:'قطعة', qty:0, min:0, step:1};
   const html = `
-    <div class="modal-head"><span class="modal-title">مادة مخزون جديدة</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${t('new_material_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
-      <div class="form-row"><label>الاسم</label><input id="matName"></div>
+      <div class="form-row"><label>${t('name_label')}</label><input id="matName"></div>
       <div class="form-grid">
-        <div class="form-row"><label>الوحدة</label><input id="matUnit" value="قطعة"></div>
-        <div class="form-row"><label>الكمية الحالية</label><input type="number" id="matQty" value="0"></div>
-        <div class="form-row"><label>الحد الأدنى</label><input type="number" id="matMin" value="0"></div>
-        <div class="form-row"><label>خطوة التعديل</label><input type="number" id="matStep" value="1"></div>
+        <div class="form-row"><label>${t('th_unit')}</label><input id="matUnit" value="${L('قطعة')}"></div>
+        <div class="form-row"><label>${t('th_current_qty')}</label><input type="number" id="matQty" value="0"></div>
+        <div class="form-row"><label>${t('th_min_threshold')}</label><input type="number" id="matMin" value="0"></div>
+        <div class="form-row"><label>${t('adjust_step_label')}</label><input type="number" id="matStep" value="1"></div>
       </div>
     </div>
-    <div class="modal-foot"><button class="btn btn-accent btn-lg" id="saveMat">حفظ</button></div>`;
+    <div class="modal-foot"><button class="btn btn-accent btn-lg" id="saveMat">${t('save')}</button></div>`;
   openModal(html);
   document.getElementById('mClose').onclick=closeModal;
   document.getElementById('saveMat').onclick=()=>{
     m.name = document.getElementById('matName').value.trim();
-    if(!m.name){ showToast('أدخل اسم المادة'); return; }
+    if(!m.name){ showToast(t('toast_enter_material_name')); return; }
     m.unit = document.getElementById('matUnit').value||'قطعة';
     m.qty = parseFloat(document.getElementById('matQty').value)||0;
     m.min = parseFloat(document.getElementById('matMin').value)||0;
@@ -1590,21 +1903,21 @@ function openMaterialModal(){
 function renderStaffView(){
   return `
   <div class="section-head">
-    <div class="section-title">الموظفون</div>
-    <button class="btn btn-accent" id="addStaffBtn">+ موظف جديد</button>
+    <div class="section-title">${t('staff_title')}</div>
+    <button class="btn btn-accent" id="addStaffBtn">${t('add_staff_btn')}</button>
   </div>
   <div class="card" style="padding:0;overflow-x:auto;">
     <table class="data-table">
-      <thead><tr><th>الاسم</th><th>الدور</th><th>الرمز السري</th><th></th></tr></thead>
+      <thead><tr><th>${t('th_name')}</th><th>${t('th_role')}</th><th>${t('th_pin')}</th><th></th></tr></thead>
       <tbody>
         ${state.staff.map(s=>`
         <tr>
-          <td>${s.name}</td>
-          <td>${s.role==='manager'?'مدير':'كاشير'}</td>
+          <td>${L(s.name)}</td>
+          <td>${roleLabel(s.role)}</td>
           <td>••••</td>
           <td style="white-space:nowrap;">
-            <button class="btn btn-sm btn-outline" data-edit-staff="${s.id}">تعديل</button>
-            ${state.staff.length>1?`<button class="btn btn-sm btn-danger" data-del-staff="${s.id}">حذف</button>`:''}
+            <button class="btn btn-sm btn-outline" data-edit-staff="${s.id}">${t('edit')}</button>
+            ${state.staff.length>1?`<button class="btn btn-sm btn-danger" data-del-staff="${s.id}">${t('delete')}</button>`:''}
           </td>
         </tr>`).join('')}
       </tbody>
@@ -1615,21 +1928,21 @@ function openStaffModal(staffMember){
   const isNew = !staffMember;
   const s = staffMember ? clone(staffMember) : {id:uid(), name:'', role:'cashier', pin:'0000'};
   const html = `
-    <div class="modal-head"><span class="modal-title">${isNew?'موظف جديد':'تعديل موظف'}</span><button class="modal-close" id="mClose">✕</button></div>
+    <div class="modal-head"><span class="modal-title">${isNew?t('staff_new_title'):t('staff_edit_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
-      <div class="form-row"><label>الاسم</label><input id="stName" value="${s.name}"></div>
-      <div class="form-row"><label>الدور</label><select id="stRole"><option value="cashier" ${s.role==='cashier'?'selected':''}>كاشير</option><option value="manager" ${s.role==='manager'?'selected':''}>مدير</option></select></div>
-      <div class="form-row"><label>الرمز السري (4 أرقام)</label><input id="stPin" maxlength="4" value="${s.pin}"></div>
+      <div class="form-row"><label>${t('name_label')}</label><input id="stName" value="${s.name}"></div>
+      <div class="form-row"><label>${t('role_label')}</label><select id="stRole"><option value="cashier" ${s.role==='cashier'?'selected':''}>${t('role_cashier')}</option><option value="manager" ${s.role==='manager'?'selected':''}>${t('role_manager')}</option></select></div>
+      <div class="form-row"><label>${t('pin_label')}</label><input id="stPin" maxlength="4" value="${s.pin}"></div>
     </div>
     <div class="modal-foot">
-      ${!isNew?`<button class="btn btn-danger" id="delStaff">حذف</button>`:''}
-      <button class="btn btn-accent btn-lg" id="saveStaff">حفظ</button>
+      ${!isNew?`<button class="btn btn-danger" id="delStaff">${t('delete')}</button>`:''}
+      <button class="btn btn-accent btn-lg" id="saveStaff">${t('save')}</button>
     </div>`;
   openModal(html);
   document.getElementById('mClose').onclick=closeModal;
   document.getElementById('saveStaff').onclick=()=>{
     s.name = document.getElementById('stName').value.trim();
-    if(!s.name){ showToast('أدخل اسم الموظف'); return; }
+    if(!s.name){ showToast(t('toast_enter_staff_name')); return; }
     s.role = document.getElementById('stRole').value;
     const pin = document.getElementById('stPin').value.trim();
     s.pin = /^\d{4}$/.test(pin) ? pin : '0000';
@@ -1651,80 +1964,90 @@ function renderSettings(){
   const S = state.settings;
   const knownCurrency = CURRENCIES.some(c=>c.symbol===S.currency);
   return `
-  <div class="section-head"><div class="section-title">الإعدادات</div></div>
+  <div class="section-head"><div class="section-title">${t('settings_title')}</div></div>
   <div class="grid-2">
     <div class="card">
-      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">بيانات المحل</div>
-      <div class="form-row"><label>اسم المحل</label><input id="setShopName" value="${S.shopName}"></div>
-      <div class="form-row"><label>الشعار (إيموجي)</label><input id="setLogo" value="${S.logo}"></div>
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('shop_data_title')}</div>
+      <div class="form-row"><label>${t('shop_name_label')}</label><input id="setShopName" value="${S.shopName}"></div>
+      <div class="form-row"><label>${t('logo_emoji_label')}</label><input id="setLogo" value="${S.logo}"></div>
       <div class="form-row">
-        <label>أو ارفع صورة شعار (يُفضّل شعار بخلفية شفافة)</label>
+        <label>${t('upload_logo_label')}</label>
         <div style="display:flex;align-items:center;gap:12px;">
           <img src="${S.logoImage||''}" class="logo-upload-preview" style="${S.logoImage?'':'display:none;'}" id="logoPreviewImg">
           <input type="file" accept="image/*" id="setLogoFile" style="flex:1;">
-          ${S.logoImage?`<button type="button" class="btn btn-sm btn-outline" id="removeLogoBtn">إزالة</button>`:''}
+          ${S.logoImage?`<button type="button" class="btn btn-sm btn-outline" id="removeLogoBtn">${t('delete')}</button>`:''}
         </div>
-        <div style="color:var(--muted);font-size:.75rem;margin-top:4px;">عند رفع صورة، تُستخدم بدل الإيموجي في شاشة الدخول والشريط العلوي والفاتورة.</div>
+        <div style="color:var(--muted);font-size:.75rem;margin-top:4px;">${t('logo_upload_note')}</div>
       </div>
-      <div class="form-row"><label>العنوان</label><input id="setAddress" value="${S.address}"></div>
-      <div class="form-row"><label>الهاتف</label><input id="setPhone" value="${S.phone}"></div>
-      <div class="form-row"><label>نص أسفل الفاتورة</label><textarea id="setFooter" rows="2">${S.receiptFooter}</textarea></div>
+      <div class="form-row"><label>${t('address_label')}</label><input id="setAddress" value="${S.address}"></div>
+      <div class="form-row"><label>${t('phone_label')}</label><input id="setPhone" value="${S.phone}"></div>
+      <div class="form-row"><label>${t('receipt_footer_label')}</label><textarea id="setFooter" rows="2">${S.receiptFooter}</textarea></div>
     </div>
     <div class="card">
-      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">إعدادات مالية وتشغيلية</div>
-      <div class="form-row"><label>العملة</label>
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('financial_settings_title')}</div>
+      <div class="form-row"><label>${t('currency_label')}</label>
         <select id="setCurrency">
-          ${CURRENCIES.map(c=>`<option value="${c.symbol}" ${S.currency===c.symbol?'selected':''}>${c.symbol} — ${c.label}</option>`).join('')}
-          <option value="__other__" ${!knownCurrency?'selected':''}>أخرى (تحديد يدوي)</option>
+          ${CURRENCIES.map(c=>`<option value="${c.symbol}" ${S.currency===c.symbol?'selected':''}>${c.symbol} — ${state.settings.language==='en'?c.labelEn:c.label}</option>`).join('')}
+          <option value="__other__" ${!knownCurrency?'selected':''}>${t('other_currency_option')}</option>
         </select>
       </div>
       <div class="form-row" id="setCurrencyCustomWrap" style="${knownCurrency?'display:none;':''}">
-        <label>رمز العملة المخصص</label>
-        <input id="setCurrencyCustom" value="${!knownCurrency?S.currency:''}" placeholder="مثال: ر.ي">
+        <label>${t('custom_currency_label')}</label>
+        <input id="setCurrencyCustom" value="${!knownCurrency?S.currency:''}" placeholder="${t('currency_custom_placeholder')}">
       </div>
-      <div class="form-row"><label>ضريبة القيمة المضافة %</label>
+      <div class="form-row"><label>${t('vat_percent_label')}</label>
         <input type="number" id="setTax" value="${S.taxRate}">
         <div class="chip-row" style="margin-top:8px;">
           ${TAX_PRESETS.map(p=>`<button type="button" class="chip ${S.taxRate===p?'active':''}" data-tax-preset="${p}">${p}%</button>`).join('')}
         </div>
       </div>
       <div class="form-grid">
-        <div class="form-row"><label>سعر شوت الإسبريسو الإضافي</label><input type="number" id="setShotPrice" value="${S.extraShotPrice}"></div>
-        <div class="form-row"><label>عدد الطاولات</label><input type="number" id="setTables" value="${S.tablesCount}"></div>
+        <div class="form-row"><label>${t('extra_shot_price_label')}</label><input type="number" id="setShotPrice" value="${S.extraShotPrice}"></div>
+        <div class="form-row"><label>${t('tables_count_label')}</label><input type="number" id="setTables" value="${S.tablesCount}"></div>
       </div>
       <div class="toggle" style="margin:6px 0 14px;">
         <label class="switch"><input type="checkbox" id="setDiscountEnabled" ${S.discountEnabled!==false?'checked':''}><span class="slider"></span></label>
-        <span>السماح بإضافة خصم على الطلبات في نقطة البيع</span>
+        <span>${t('allow_discount_label')}</span>
       </div>
-      <button class="btn btn-danger btn-sm" id="resetDataBtn" style="width:100%;margin-top:6px;">↺ إعادة ضبط البيانات التجريبية</button>
+      <div class="form-row"><label>${t('discount_presets_label')}</label><input id="setDiscountPresets" value="${(S.discountPresets||[]).join(', ')}" placeholder="10, 15, 20, 25, 50"></div>
+      <button class="btn btn-danger btn-sm" id="resetDataBtn" style="width:100%;margin-top:6px;">${t('reset_data_btn')}</button>
     </div>
   </div>
   <div class="grid-2" style="margin-top:16px;">
     <div class="card">
-      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">بيانات الفرع</div>
-      <div class="form-row"><label>اسم الفرع</label><input id="setBranchName" value="${S.branchName||''}" placeholder="مثال: فرع العليا"></div>
-      <div class="form-row"><label>موقع الفرع (العنوان أو رابط خرائط)</label><input id="setBranchLocation" value="${S.branchLocation||''}" placeholder="مثال: الرياض - حي العليا، أو رابط Google Maps"></div>
-      <div style="color:var(--muted);font-size:.78rem;">يظهر اسم الفرع وموقعه في الشريط العلوي وعلى الفاتورة المطبوعة — مفيد عند إدارة أكثر من فرع.</div>
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('branch_data_title')}</div>
+      <div class="form-row"><label>${t('branch_name_label')}</label><input id="setBranchName" value="${S.branchName||''}" placeholder="${t('branch_name_placeholder')}"></div>
+      <div class="form-row"><label>${t('branch_location_label')}</label><input id="setBranchLocation" value="${S.branchLocation||''}" placeholder="${t('branch_location_placeholder')}"></div>
+      <div style="color:var(--muted);font-size:.78rem;">${t('branch_note')}</div>
     </div>
     <div class="card">
-      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">طريقة حفظ البيانات</div>
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('storage_mode_title')}</div>
       <div class="chip-row" id="storageModeChips">
-        <button type="button" class="chip ${S.storageMode!=='cloud'?'active':''}" data-storage="local">📱 في الجهاز</button>
-        <button type="button" class="chip ${S.storageMode==='cloud'?'active':''}" data-storage="cloud">☁️ سحابي</button>
+        <button type="button" class="chip ${S.storageMode!=='cloud'?'active':''}" data-storage="local">${t('storage_local_chip')}</button>
+        <button type="button" class="chip ${S.storageMode==='cloud'?'active':''}" data-storage="cloud">${t('storage_cloud_chip')}</button>
       </div>
       <div style="color:var(--muted);font-size:.78rem;margin-top:10px;">
-        <b>في الجهاز:</b> جميع البيانات (المبيعات، المخزون، الطلبات) تُحفظ محليًا على هذا التابلت فقط.<br>
-        <b>سحابي:</b> يُهيّئ النظام لمزامنة البيانات بين عدة أجهزة/فروع. تفعيل المزامنة الفعلية يتطلب ربط قاعدة بيانات سحابية (مثل Firebase) بمشروعكم الخاص — أخبرني إذا رغبت أن أجهّز هذا الربط.
+        <b>${t('storage_note_local_b')}</b> ${t('storage_note_local')}<br>
+        <b>${t('storage_note_cloud_b')}</b> ${t('storage_note_cloud')}
+      </div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('language_title')}</div>
+      <div class="chip-row" id="languageChips">
+        <button type="button" class="chip ${S.language!=='en'?'active':''}" data-lang="ar">العربية</button>
+        <button type="button" class="chip ${S.language==='en'?'active':''}" data-lang="en">English</button>
       </div>
     </div>
   </div>
   <div class="card" style="margin-top:16px;">
-    <button class="btn btn-accent btn-lg" id="saveSettingsBtn" style="width:100%;">حفظ الإعدادات</button>
+    <button class="btn btn-accent btn-lg" id="saveSettingsBtn" style="width:100%;">${t('save_settings_btn')}</button>
   </div>`;
 }
 function handleLogoUpload(file){
   if(!file) return;
-  if(!file.type.startsWith('image/')){ showToast('الرجاء اختيار ملف صورة'); return; }
+  if(!file.type.startsWith('image/')){ showToast(t('toast_pick_image')); return; }
   const reader = new FileReader();
   reader.onload = (e)=>{
     const img = new Image();
@@ -1740,7 +2063,7 @@ function handleLogoUpload(file){
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
       state.settings.logoImage = canvas.toDataURL('image/png');
       save(); renderAll();
-      showToast('تم رفع الشعار');
+      showToast(t('toast_logo_uploaded'));
     };
     img.src = e.target.result;
   };
@@ -1759,6 +2082,9 @@ function saveSettingsForm(){
   S.extraShotPrice = parseFloat(document.getElementById('setShotPrice').value)||0;
   S.discountEnabled = document.getElementById('setDiscountEnabled').checked;
   if(!S.discountEnabled){ cart.discount = {type:'percent',value:0,reason:''}; saveCart(); }
+  const presets = document.getElementById('setDiscountPresets').value
+    .split(',').map(v=>parseFloat(v.trim())).filter(v=>!isNaN(v) && v>0 && v<=100);
+  S.discountPresets = presets.length ? [...new Set(presets)].sort((a,b)=>a-b) : [10,15,20,25,50];
   S.branchName = document.getElementById('setBranchName').value;
   S.branchLocation = document.getElementById('setBranchLocation').value;
   const newCount = parseInt(document.getElementById('setTables').value)||S.tablesCount;
@@ -1771,7 +2097,7 @@ function saveSettingsForm(){
     S.tablesCount = newCount;
   }
   save(); renderAll();
-  showToast('تم حفظ الإعدادات');
+  showToast(t('toast_settings_saved'));
 }
 
 /* ============================================================
@@ -1803,7 +2129,7 @@ function attachViewHandlers(){
   const heldBtn = root.querySelector('#heldOrdersBtn'); if(heldBtn) heldBtn.addEventListener('click', openHeldOrdersModal);
   const custBtn = root.querySelector('#custBtn'); if(custBtn) custBtn.addEventListener('click', openCustomerModal);
   const clearBtn = root.querySelector('#clearCartBtn'); if(clearBtn) clearBtn.addEventListener('click', ()=>{
-    if(confirm('هل تريد إفراغ السلة الحالية؟')) clearCartConfirmed();
+    if(confirm(t('confirm_clear_cart'))) clearCartConfirmed();
   });
   const holdBtn = root.querySelector('#holdBtn'); if(holdBtn) holdBtn.addEventListener('click', holdCurrentOrder);
   const checkoutBtn = root.querySelector('#checkoutBtn'); if(checkoutBtn) checkoutBtn.addEventListener('click', openCheckoutModal);
@@ -1820,7 +2146,7 @@ function attachViewHandlers(){
     if(o) openReceiptModal(o);
   }));
   root.querySelectorAll('[data-void-order]').forEach(b=>b.addEventListener('click', ()=>{
-    if(confirm('هل تريد إلغاء هذا الطلب؟')) voidOrder(parseInt(b.dataset.voidOrder));
+    if(confirm(t('confirm_void_order'))) voidOrder(parseInt(b.dataset.voidOrder));
   }));
 
   // Reports
@@ -1848,14 +2174,14 @@ function attachViewHandlers(){
     const m = state.inventory.find(x=>x.id===b.dataset.matDec); m.qty = money(Math.max(0,m.qty-m.step)); save(); renderAll();
   }));
   root.querySelectorAll('[data-mat-del]').forEach(b=>b.addEventListener('click', ()=>{
-    if(confirm('حذف هذه المادة من المخزون؟')){ state.inventory = state.inventory.filter(x=>x.id!==b.dataset.matDel); save(); renderAll(); }
+    if(confirm(t('confirm_delete_material'))){ state.inventory = state.inventory.filter(x=>x.id!==b.dataset.matDel); save(); renderAll(); }
   }));
 
   // Staff
   const addStaffBtn = root.querySelector('#addStaffBtn'); if(addStaffBtn) addStaffBtn.addEventListener('click', ()=>openStaffModal());
   root.querySelectorAll('[data-edit-staff]').forEach(b=>b.addEventListener('click', ()=>openStaffModal(state.staff.find(s=>s.id===b.dataset.editStaff))));
   root.querySelectorAll('[data-del-staff]').forEach(b=>b.addEventListener('click', ()=>{
-    if(confirm('حذف هذا الموظف؟')){ state.staff = state.staff.filter(s=>s.id!==b.dataset.delStaff); save(); renderAll(); }
+    if(confirm(t('confirm_delete_staff'))){ state.staff = state.staff.filter(s=>s.id!==b.dataset.delStaff); save(); renderAll(); }
   }));
 
   // Settings
@@ -1877,12 +2203,16 @@ function attachViewHandlers(){
   root.querySelectorAll('[data-storage]').forEach(b=>b.addEventListener('click', ()=>{
     state.settings.storageMode = b.dataset.storage;
     save();
-    showToast(b.dataset.storage==='cloud' ? 'تم اختيار الحفظ السحابي' : 'تم اختيار الحفظ في الجهاز');
+    showToast(b.dataset.storage==='cloud' ? t('toast_storage_cloud') : t('toast_storage_local'));
     root.querySelectorAll('[data-storage]').forEach(x=>x.classList.toggle('active', x.dataset.storage===b.dataset.storage));
+  }));
+  root.querySelectorAll('[data-lang]').forEach(b=>b.addEventListener('click', ()=>{
+    state.settings.language = b.dataset.lang;
+    save(); applyDocDir(); renderAll();
   }));
   const saveSettingsBtn = root.querySelector('#saveSettingsBtn'); if(saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettingsForm);
   const resetBtn = root.querySelector('#resetDataBtn'); if(resetBtn) resetBtn.addEventListener('click', ()=>{
-    if(confirm('سيتم حذف جميع البيانات (المبيعات، المخزون، الإعدادات) والعودة للبيانات التجريبية. متابعة؟')){
+    if(confirm(t('confirm_reset_data'))){
       state = clone(DEFAULT_DATA); save();
       cart = freshCart(); saveCart();
       renderAll();
@@ -1894,9 +2224,12 @@ function attachViewHandlers(){
    BOOT
    ============================================================ */
 function renderLoginBrand(){
+  applyDocDir();
   document.getElementById('loginLogo').innerHTML = logoMarkup('login-logo-img');
   document.getElementById('loginTitle').textContent = state.settings.shopName;
-  document.getElementById('loginSub').textContent = (state.settings.branchName ? state.settings.branchName + ' — ' : '') + 'نظام نقاط بيع محل القهوة — اختر اسمك لتسجيل الدخول';
+  document.getElementById('loginSub').textContent = (state.settings.branchName ? L(state.settings.branchName) + ' — ' : '') + t('login_subtitle');
+  document.getElementById('pinPrompt').textContent = t('pin_prompt');
+  document.getElementById('pinCancelBtn').textContent = t('cancel');
 }
 renderLoginBrand();
 if(currentStaff){
