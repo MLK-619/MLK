@@ -902,21 +902,45 @@ function openCustomizeModal(p){
 }
 
 /* discount modal */
+const DISCOUNT_PERCENT_PRESETS = [10, 15, 20, 25, 50];
 function openDiscountModal(){
   const subtotal = cartSubtotal();
   let type = cart.discount.type, value = cart.discount.value, reason = cart.discount.reason;
+  function computePreview(){
+    const discountAmt = type==='percent' ? money(subtotal*((value||0)/100)) : money(Math.min(value||0, subtotal));
+    const taxable = Math.max(0, subtotal - discountAmt);
+    const tax = money(taxable*(state.settings.taxRate/100));
+    const newTotal = money(taxable + tax);
+    return {discountAmt, newTotal};
+  }
+  function updatePreview(){
+    const {discountAmt, newTotal} = computePreview();
+    document.getElementById('discAmtPreview').textContent = '-' + fmt(discountAmt);
+    document.getElementById('discTotalPreview').textContent = fmt(newTotal);
+  }
   function html(){
+    const beforeTotal = money(subtotal*(1+state.settings.taxRate/100));
+    const {discountAmt, newTotal} = computePreview();
     return `
     <div class="modal-head"><span class="modal-title">إضافة خصم</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body">
       <div class="chip-row" style="margin-bottom:14px;">
-        <button class="chip ${type==='percent'?'active':''}" data-t="percent">نسبة %</button>
+        <button class="chip ${type==='percent'?'active':''}" data-t="percent">نسبة % من الفاتورة</button>
         <button class="chip ${type==='fixed'?'active':''}" data-t="fixed">مبلغ ثابت</button>
       </div>
-      <div class="form-row"><label>${type==='percent'?'النسبة %':'المبلغ ('+state.settings.currency+')'}</label>
+      ${type==='percent'?`
+      <div class="modal-section-title">نسب سريعة</div>
+      <div class="chip-row" style="margin-bottom:14px;">
+        ${DISCOUNT_PERCENT_PRESETS.map(p=>`<button class="chip ${value===p?'active':''}" data-preset-pct="${p}">${p}%</button>`).join('')}
+      </div>`:''}
+      <div class="form-row"><label>${type==='percent'?'نسبة الخصم %':'المبلغ ('+state.settings.currency+')'}</label>
         <input type="number" min="0" id="discVal" value="${value||''}"></div>
       <div class="form-row"><label>سبب الخصم (اختياري)</label><input id="discReason" value="${reason||''}" placeholder="مثال: عميل مميز"></div>
-      <div style="color:var(--muted);font-size:.82rem;">المجموع الفرعي: ${fmt(subtotal)}</div>
+      <div class="card" style="background:var(--card2);padding:14px;">
+        <div class="sum-row"><span>مجموع الفاتورة قبل الخصم</span><span>${fmt(beforeTotal)}</span></div>
+        <div class="sum-row"><span>قيمة الخصم</span><span id="discAmtPreview" style="color:var(--danger);">-${fmt(discountAmt)}</span></div>
+        <div class="sum-row total"><span>إجمالي الفاتورة بعد الخصم</span><span id="discTotalPreview">${fmt(newTotal)}</span></div>
+      </div>
     </div>
     <div class="modal-foot">
       ${cart.discount.value>0?'<button class="btn btn-outline" id="removeDisc">إزالة الخصم</button>':''}
@@ -927,7 +951,8 @@ function openDiscountModal(){
   function bind(){
     document.getElementById('mClose').onclick=closeModal;
     document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{ type=b.dataset.t; openModal(html()); bind(); });
-    document.getElementById('discVal').oninput = e=>{ value = parseFloat(e.target.value)||0; };
+    document.querySelectorAll('[data-preset-pct]').forEach(b=>b.onclick=()=>{ value=parseFloat(b.dataset.presetPct); openModal(html()); bind(); });
+    document.getElementById('discVal').oninput = e=>{ value = parseFloat(e.target.value)||0; updatePreview(); };
     document.getElementById('discReason').oninput = e=>{ reason = e.target.value; };
     const rm = document.getElementById('removeDisc'); if(rm) rm.onclick=()=>{
       cart.discount = {type:'percent',value:0,reason:''}; saveCart(); closeModal(); renderAll();
@@ -935,6 +960,7 @@ function openDiscountModal(){
     document.getElementById('applyDisc').onclick = ()=>{
       cart.discount = {type, value:value||0, reason};
       saveCart(); closeModal(); renderAll();
+      showToast('تم تطبيق الخصم');
     };
   }
 }
