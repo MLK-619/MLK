@@ -504,6 +504,9 @@ const T = {
     vat_percent_label:'ضريبة القيمة المضافة %', extra_shot_price_label:'سعر شوت الإسبريسو الإضافي',
     tables_count_label:'عدد الطاولات', allow_discount_label:'السماح بإضافة خصم على الطلبات في نقطة البيع',
     discount_presets_label:'نسب الخصم السريعة (افصل بينها بفاصلة)',
+    global_discount_title:'خصم تلقائي على جميع الفواتير', global_discount_toggle_label:'تفعيل خصم تلقائي لجميع الزبائن',
+    global_discount_note:'يُطبَّق هذا الخصم تلقائيًا على كل فاتورة جديدة دون الحاجة لإدخاله يدويًا. يمكن للكاشير استبداله بخصم مختلف لطلب معيّن من زر "إضافة خصم".',
+    global_discount_reason:'خصم عام على جميع الفواتير', auto_label:'تلقائي',
     reset_data_btn:'↺ إعادة ضبط البيانات التجريبية',
     branch_data_title:'بيانات الفرع', branch_name_label:'اسم الفرع',
     branch_location_label:'موقع الفرع (العنوان أو رابط خرائط)',
@@ -634,6 +637,9 @@ const T = {
     vat_percent_label:'VAT %', extra_shot_price_label:'Extra espresso shot price',
     tables_count_label:'Number of tables', allow_discount_label:'Allow discounts on orders at point of sale',
     discount_presets_label:'Quick discount percentages (comma-separated)',
+    global_discount_title:'Automatic Discount on All Invoices', global_discount_toggle_label:'Enable an automatic discount for all customers',
+    global_discount_note:'This discount is applied automatically to every new invoice without manual entry. The cashier can still override it for a specific order via "Add discount".',
+    global_discount_reason:'General discount on all invoices', auto_label:'Auto',
     reset_data_btn:'↺ Reset Demo Data',
     branch_data_title:'Branch Info', branch_name_label:'Branch name',
     branch_location_label:'Branch location (address or maps link)',
@@ -697,6 +703,7 @@ const DEFAULT_DATA = {
     storageMode:'local',
     discountEnabled:true,
     discountPresets:[10, 15, 20, 25, 50],
+    globalDiscountEnabled:false, globalDiscountType:'percent', globalDiscountValue:0,
     language:'ar',
     currency:'ر.س',
     taxRate:15,
@@ -1059,11 +1066,14 @@ function renderCartPanel(){
     <div class="cart-summary">
       <div class="sum-row"><span>${t('items_count')}</span><span>${cart.items.reduce((a,i)=>a+i.qty,0)}</span></div>
       <div class="sum-row"><span>${t('subtotal')}</span><span>${fmt(subtotal)}</span></div>
-      ${state.settings.discountEnabled!==false?`
+      ${state.settings.discountEnabled!==false?(()=>{
+        const ed = effectiveDiscount();
+        return `
       <div class="sum-row">
-        <span>${t('discount_label')} ${cart.discount.value>0?`(${cart.discount.type==='percent'?cart.discount.value+'%':fmt(cart.discount.value)})`:''}</span>
+        <span>${t('discount_label')} ${ed.value>0?`(${ed.type==='percent'?ed.value+'%':fmt(ed.value)}${ed.isGlobal?' · '+t('auto_label'):''})`:''}</span>
         <span><button class="cart-item-remove" id="discountBtn" style="color:var(--accent-dark)">${discount>0?'-'+fmt(discount):t('add_discount_btn')}</button></span>
-      </div>`:''}
+      </div>`;
+      })():''}
       <div class="sum-row"><span>${t('vat_label')} ${state.settings.taxRate}%</span><span>${fmt(tax)}</span></div>
       <div class="sum-row total"><span>${t('total_label')}</span><span>${fmt(total)}</span></div>
     </div>
@@ -1092,12 +1102,21 @@ function renderCartItem(it){
   </div>`;
 }
 function cartSubtotal(){ return money(cart.items.reduce((a,i)=>a+i.unitPrice*i.qty,0)); }
+function effectiveDiscount(){
+  if(cart.discount && cart.discount.value>0) return cart.discount;
+  const S = state.settings;
+  if(S.globalDiscountEnabled && S.globalDiscountValue>0){
+    return {type:S.globalDiscountType||'percent', value:S.globalDiscountValue, reason:t('global_discount_reason'), isGlobal:true};
+  }
+  return cart.discount;
+}
 function cartDiscountAmount(subtotal){
   subtotal = subtotal!==undefined?subtotal:cartSubtotal();
   if(state.settings.discountEnabled===false) return 0;
-  if(!cart.discount.value) return 0;
-  if(cart.discount.type==='percent') return money(subtotal * (cart.discount.value/100));
-  return money(Math.min(cart.discount.value, subtotal));
+  const d = effectiveDiscount();
+  if(!d.value) return 0;
+  if(d.type==='percent') return money(subtotal * (d.value/100));
+  return money(Math.min(d.value, subtotal));
 }
 
 /* ---- cart mutations ---- */
@@ -1218,7 +1237,8 @@ function openCustomizeModal(p){
 /* discount modal */
 function openDiscountModal(){
   const subtotal = cartSubtotal();
-  let type = cart.discount.type, value = cart.discount.value, reason = cart.discount.reason;
+  const ed = effectiveDiscount();
+  let type = ed.type, value = ed.value, reason = (ed.isGlobal?'':ed.reason);
   function computePreview(){
     const discountAmt = type==='percent' ? money(subtotal*((value||0)/100)) : money(Math.min(value||0, subtotal));
     const taxable = Math.max(0, subtotal - discountAmt);
@@ -1489,7 +1509,7 @@ function finalizeOrder({subtotal, discount, tax, total, payment}){
     staffId: currentStaff.id, staffName: currentStaff.name,
     type: cart.orderType, table: cart.table, customer: Object.assign({},cart.customer),
     items: clone(cart.items),
-    subtotal, discount: Object.assign({},cart.discount,{amount:discount}), tax, total,
+    subtotal, discount: Object.assign({},effectiveDiscount(),{amount:discount}), tax, total,
     payment, status:'completed', note: cart.note
   };
   state.orders.unshift(order);
@@ -2032,6 +2052,20 @@ function renderSettings(){
       </div>
     </div>
   </div>
+  <div class="card" style="margin-top:16px;">
+    <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('global_discount_title')}</div>
+    <div class="toggle" style="margin-bottom:14px;">
+      <label class="switch"><input type="checkbox" id="setGlobalDiscountEnabled" ${S.globalDiscountEnabled?'checked':''}><span class="slider"></span></label>
+      <span>${t('global_discount_toggle_label')}</span>
+    </div>
+    <div class="chip-row" id="globalDiscountTypeChips" style="margin-bottom:14px;">
+      <button type="button" class="chip ${(S.globalDiscountType||'percent')==='percent'?'active':''}" data-gd-type="percent">${t('discount_type_percent')}</button>
+      <button type="button" class="chip ${S.globalDiscountType==='fixed'?'active':''}" data-gd-type="fixed">${t('discount_type_fixed')}</button>
+    </div>
+    <div class="form-row"><label id="globalDiscountValueLabel">${(S.globalDiscountType||'percent')==='percent'?t('discount_percent_label'):t('discount_amount_label')+' ('+S.currency+')'}</label>
+      <input type="number" min="0" id="setGlobalDiscountValue" value="${S.globalDiscountValue||''}"></div>
+    <div style="color:var(--muted);font-size:.78rem;">${t('global_discount_note')}</div>
+  </div>
   <div class="grid-2" style="margin-top:16px;">
     <div class="card">
       <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('language_title')}</div>
@@ -2085,6 +2119,10 @@ function saveSettingsForm(){
   const presets = document.getElementById('setDiscountPresets').value
     .split(',').map(v=>parseFloat(v.trim())).filter(v=>!isNaN(v) && v>0 && v<=100);
   S.discountPresets = presets.length ? [...new Set(presets)].sort((a,b)=>a-b) : [10,15,20,25,50];
+  S.globalDiscountEnabled = document.getElementById('setGlobalDiscountEnabled').checked;
+  const activeGdType = document.querySelector('[data-gd-type].active');
+  S.globalDiscountType = activeGdType ? activeGdType.dataset.gdType : 'percent';
+  S.globalDiscountValue = parseFloat(document.getElementById('setGlobalDiscountValue').value)||0;
   S.branchName = document.getElementById('setBranchName').value;
   S.branchLocation = document.getElementById('setBranchLocation').value;
   const newCount = parseInt(document.getElementById('setTables').value)||S.tablesCount;
@@ -2199,6 +2237,11 @@ function attachViewHandlers(){
   root.querySelectorAll('[data-tax-preset]').forEach(b=>b.addEventListener('click', ()=>{
     document.getElementById('setTax').value = b.dataset.taxPreset;
     root.querySelectorAll('[data-tax-preset]').forEach(x=>x.classList.toggle('active', x===b));
+  }));
+  root.querySelectorAll('[data-gd-type]').forEach(b=>b.addEventListener('click', ()=>{
+    root.querySelectorAll('[data-gd-type]').forEach(x=>x.classList.toggle('active', x===b));
+    const lbl = document.getElementById('globalDiscountValueLabel');
+    lbl.textContent = b.dataset.gdType==='percent' ? t('discount_percent_label') : t('discount_amount_label')+' ('+state.settings.currency+')';
   }));
   root.querySelectorAll('[data-storage]').forEach(b=>b.addEventListener('click', ()=>{
     state.settings.storageMode = b.dataset.storage;
