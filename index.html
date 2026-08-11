@@ -204,6 +204,7 @@
   :is(body.cloud-offline, body.role-readonly) #add-supplier-btn,
   :is(body.cloud-offline, body.role-readonly) #add-user-btn,
   :is(body.cloud-offline, body.role-readonly) #stock-add-btn,
+  :is(body.cloud-offline, body.role-readonly) .order-settings-list button,
   :is(body.cloud-offline, body.role-readonly) #create-backup-btn{
     pointer-events:none;opacity:.5;
   }
@@ -265,6 +266,13 @@
   .section-total{margin-top:14px;text-align:left;font-size:.95rem;color:var(--muted);border-top:1px dashed var(--border);padding-top:12px;}
   .section-total b{color:var(--text);font-variant-numeric:tabular-nums;}
   .table-scroll{overflow-x:auto;}
+  #reports-sections-wrap{display:flex;flex-direction:column;}
+  .order-settings-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+  .order-settings-list li{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.85rem;}
+  .order-settings-list li .order-btns{display:flex;gap:4px;}
+  .order-settings-list li button{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:.85rem;}
+  .order-settings-list li button:hover{border-color:var(--accent);}
+  .order-settings-list li button:disabled{opacity:.3;cursor:not-allowed;}
 
   /* تبويبات فرعية */
   .subtabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
@@ -367,10 +375,12 @@
   }
 
   @media print{
-    .sidebar,.topbar,.toolbar,.add-btn,.del-btn,footer.app-footer{display:none;}
+    .sidebar,.topbar,.toolbar,.add-btn,.del-btn,footer.app-footer,.order-settings-list{display:none;}
     body{background:#fff;color:#000;}
     .section{border:1px solid #ccc;background:#fff;box-shadow:none;}
     .app-shell{display:block;}
+    #reports-sections-wrap .section{page-break-before:always;break-before:page;}
+    #reports-sections-wrap .section.report-section-first{page-break-before:avoid;break-before:avoid;}
   }
 </style>
 </head>
@@ -956,27 +966,44 @@
             </div>
           </div>
 
-          <div class="section">
+          <div id="reports-sections-wrap">
+          <div class="section" data-report-key="systemSales">
+            <h2><span class="icon">🖥️</span> <span data-i18n="reportSystemSalesDetailTitle">مبيعات النظام (مرجعي) لكل فرع</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thAmount">المبلغ</th>
+                <th data-i18n="thDate">التاريخ</th>
+                <th data-i18n="thNote">ملاحظة</th>
+              </tr></thead>
+              <tbody id="report-system-sales-detail"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalSystemSales">إجمالي مبيعات النظام (مرجعي):</span> <b id="report-system-sales-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+
+          <div class="section" data-report-key="branchSales">
             <h2><span class="icon">🏬</span> <span data-i18n="reportBranchSalesTitle">تقرير مبيعات كل فرع</span></h2>
             <div id="report-branch-sales"></div>
           </div>
 
-          <div class="section">
+          <div class="section" data-report-key="paymentMethods">
             <h2><span class="icon">💳</span> <span data-i18n="reportPaymentMethodsTitle">تقرير الكاش والفيزا والتطبيقات</span></h2>
             <div id="report-payment-methods"></div>
           </div>
 
-          <div class="section">
+          <div class="section" data-report-key="expenses">
             <h2><span class="icon">💸</span> <span data-i18n="reportExpensesTitle">تقرير المصروفات (حسب البند)</span></h2>
             <div id="report-expenses"></div>
           </div>
 
-          <div class="section">
+          <div class="section" data-report-key="profit">
             <h2><span class="icon">📈</span> <span data-i18n="reportProfitTitle">تقرير الأرباح</span></h2>
             <div class="kpi-grid" id="report-profit"></div>
           </div>
 
-          <div class="section">
+          <div class="section" data-report-key="rents">
             <h2><span class="icon">🏢</span> <span data-i18n="reportRentsDetailTitle">تفاصيل الإيجارات لكل فرع</span></h2>
             <div class="table-scroll">
             <table>
@@ -992,7 +1019,7 @@
             <div class="section-total"><span data-i18n="totalRents">إجمالي الإيجارات:</span> <b id="report-rents-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
 
-          <div class="section">
+          <div class="section" data-report-key="housingRent">
             <h2><span class="icon">🏠</span> <span data-i18n="reportHousingRentDetailTitle">تفاصيل إيجار السكن لكل فرع</span></h2>
             <div class="table-scroll">
             <table>
@@ -1009,7 +1036,7 @@
             <div class="section-total"><span data-i18n="totalHousingRent">إجمالي إيجار السكن:</span> <b id="report-housing-rent-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
 
-          <div class="section">
+          <div class="section" data-report-key="purchases">
             <h2><span class="icon">🛒</span> <span data-i18n="reportPurchasesDetailTitle">تفاصيل جميع المشتريات لكل فرع</span></h2>
             <div class="table-scroll">
             <table>
@@ -1027,7 +1054,7 @@
             <div class="section-total"><span data-i18n="totalPurchases">إجمالي المشتريات:</span> <b id="report-purchases-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
 
-          <div class="section">
+          <div class="section" data-report-key="other">
             <h2><span class="icon">🔌</span> <span data-i18n="reportOtherDetailTitle">تفاصيل المصاريف الأخرى لكل فرع</span></h2>
             <div class="table-scroll">
             <table>
@@ -1045,7 +1072,7 @@
             <div class="section-total"><span data-i18n="totalOther">إجمالي المصاريف الأخرى:</span> <b id="report-other-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
 
-          <div class="section">
+          <div class="section" data-report-key="suppliers">
             <h2><span class="icon">🚚</span> <span data-i18n="suppliersTitle">الفواتير المتأخرة</span></h2>
             <div class="table-scroll">
             <table>
@@ -1063,21 +1090,6 @@
             </div>
             <div class="section-total"><span data-i18n="totalRemaining">إجمالي المتبقي:</span> <b id="report-suppliers-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
-
-          <div class="section">
-            <h2><span class="icon">🖥️</span> <span data-i18n="reportSystemSalesDetailTitle">مبيعات النظام (مرجعي) لكل فرع — للمقارنة فقط</span></h2>
-            <div class="table-scroll">
-            <table>
-              <thead><tr>
-                <th data-i18n="thBranch">الفرع</th>
-                <th data-i18n="thAmount">المبلغ</th>
-                <th data-i18n="thDate">التاريخ</th>
-                <th data-i18n="thNote">ملاحظة</th>
-              </tr></thead>
-              <tbody id="report-system-sales-detail"></tbody>
-            </table>
-            </div>
-            <div class="section-total"><span data-i18n="totalSystemSales">إجمالي مبيعات النظام (مرجعي):</span> <b id="report-system-sales-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
         </section>
 
@@ -1161,6 +1173,21 @@
                 <input type="color" id="theme-accent-light-input" style="width:64px;height:40px;padding:2px;cursor:pointer;border:1px solid var(--border);border-radius:8px;background:var(--card2);">
               </label>
               <button class="clear-btn" onclick="resetThemeColors()" data-i18n="btnResetTheme">↩️ استعادة الألوان الافتراضية</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2><span class="icon">🔀</span> <span data-i18n="moreOrderTitle">ترتيب أقسام التقرير والتكاليف التشغيلية</span></h2>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreOrderDesc">تحكمي بترتيب ظهور الأقسام في صفحة التقارير وترتيب تبويبات التكاليف التشغيلية (متاح للمالك فقط).</p>
+            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:240px;">
+                <h3 style="font-size:.85rem;margin:0 0 10px;color:var(--muted);" data-i18n="moreReportOrderLabel">ترتيب أقسام التقرير</h3>
+                <ul class="order-settings-list" id="report-order-list"></ul>
+              </div>
+              <div style="flex:1;min-width:240px;">
+                <h3 style="font-size:.85rem;margin:0 0 10px;color:var(--muted);" data-i18n="moreCostsOrderLabel">ترتيب تبويبات التكاليف التشغيلية</h3>
+                <ul class="order-settings-list" id="costs-order-list"></ul>
+              </div>
             </div>
           </div>
 
@@ -1322,7 +1349,7 @@ const I18N = {
     btnAddSystemSales:'+ إضافة مبلغ مرجعي', totalSystemSales:'إجمالي مبيعات النظام (مرجعي):',
     confirmAddSystemSales:'هل تريدين إضافة مبلغ مرجعي جديد؟',
     logAddSystemSales:'إضافة مبيعات نظام مرجعية', logDeleteSystemSales:'حذف مبيعات نظام مرجعية',
-    reportSystemSalesDetailTitle:'مبيعات النظام (مرجعي) لكل فرع — للمقارنة فقط',
+    reportSystemSalesDetailTitle:'مبيعات النظام (مرجعي) لكل فرع',
     pm_cash:'كاش', pm_visa:'فيزا/بطاقة', pm_talabat:'طلبات', pm_zad:'زادكم', pm_snoonu:'سنونو', pm_tmdone:'تم دن', pm_other:'أخرى',
     snoonuPctLabel:'نسبة عمولة سنونو (%)', tmdonePctLabel:'نسبة عمولة تم دن (%)',
     profitTitle:'حساب الأرباح', profitSubtitle:'صافي الربح = (فيزا + طلبات + زادكم + أخرى) - إجمالي المصروفات - العمولات - الخصومات — ملاحظة: الكاش لا يُحتسب ضمن إجمالي الأرباح',
@@ -1375,6 +1402,9 @@ const I18N = {
     moreLogoBrandNote:'الشعار الحالي لِـ:',
     btnUploadLogo:'⬆️ رفع شعار جديد', btnResetLogo:'↩️ استعادة الشعار الافتراضي',
     moreThemeTitle:'ألوان الثيم', moreThemeDesc:'غيّري اللون الأساسي ولون التدرج لهذا البراند.',
+    moreOrderTitle:'ترتيب أقسام التقرير والتكاليف التشغيلية',
+    moreOrderDesc:'تحكمي بترتيب ظهور الأقسام في صفحة التقارير وترتيب تبويبات التكاليف التشغيلية (متاح للمالك فقط).',
+    moreReportOrderLabel:'ترتيب أقسام التقرير', moreCostsOrderLabel:'ترتيب تبويبات التكاليف التشغيلية',
     labelAccentColor:'اللون الأساسي', labelAccentLightColor:'لون التدرج الفاتح', btnResetTheme:'↩️ استعادة الألوان الافتراضية',
     moreBackupTitle:'النسخ الاحتياطي واستعادة البيانات',
     moreBackupDesc:'نزّلي نسخة من كل بيانات النظام كملف JSON، أو استعيديها لاحقاً على أي جهاز.',
@@ -1490,7 +1520,7 @@ const I18N = {
     btnAddSystemSales:'+ Add Reference Amount', totalSystemSales:'Total System Sales (Reference):',
     confirmAddSystemSales:'Add a new reference amount?',
     logAddSystemSales:'Added reference system sales', logDeleteSystemSales:'Deleted reference system sales',
-    reportSystemSalesDetailTitle:'System Sales (Reference) by Branch — comparison only',
+    reportSystemSalesDetailTitle:'System Sales (Reference) by Branch',
     pm_cash:'Cash', pm_visa:'Visa/Card', pm_talabat:'Talabat', pm_zad:'Zadkom', pm_snoonu:'Snoonu', pm_tmdone:'Tmdone', pm_other:'Other',
     snoonuPctLabel:'Snoonu Commission Rate (%)', tmdonePctLabel:'Tmdone Commission Rate (%)',
     profitTitle:'Profit Calculation', profitSubtitle:'Net Profit = (Visa + Talabat + Zadkom + Other) − Total Expenses − Commissions − Discounts — note: cash is not counted toward total profit',
@@ -1543,6 +1573,9 @@ const I18N = {
     moreLogoBrandNote:'Currently editing logo for:',
     btnUploadLogo:'⬆️ Upload New Logo', btnResetLogo:'↩️ Restore Default Logo',
     moreThemeTitle:'Theme Colors', moreThemeDesc:'Change the accent and gradient colors for this brand.',
+    moreOrderTitle:'Report & Operating Costs Section Order',
+    moreOrderDesc:'Control the order sections appear in the Reports page and the order of the Operating Costs tabs (owner only).',
+    moreReportOrderLabel:'Report Section Order', moreCostsOrderLabel:'Operating Costs Tab Order',
     labelAccentColor:'Accent Color', labelAccentLightColor:'Gradient Light Color', btnResetTheme:'↩️ Restore Default Colors',
     moreBackupTitle:'Backup & Restore',
     moreBackupDesc:'Download all system data as a JSON file, or restore it later on any device.',
@@ -1768,12 +1801,22 @@ function defaultState(){
     suppliers: [],
     stock: [],
     sales: [],
-    settings: { visaPct: 1.5, talabatPct: 20, zadPct: 15, snoonuPct: 0, tmdonePct: 0, discounts: 0, customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} } },
+    settings: {
+      visaPct: 1.5, talabatPct: 20, zadPct: 15, snoonuPct: 0, tmdonePct: 0, discounts: 0,
+      customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} },
+      reportOrder: ['systemSales','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers'],
+      costsOrder: ['salaries','rents','purchases','other','housingRent'],
+    },
     auditLog: [],
     notes: [],
   };
 }
 
+function normalizeOrderList(list, defaults){
+  const base = Array.isArray(list) ? list.filter(k => defaults.includes(k)) : [];
+  defaults.forEach(k => { if(!base.includes(k)) base.push(k); });
+  return base;
+}
 function normalizeSettings(settings){
   if(typeof settings.customLogo === 'string' || !settings.customLogo){
     settings.customLogo = { aventus: (typeof settings.customLogo === 'string' ? settings.customLogo : null), chickenville: null };
@@ -1781,6 +1824,8 @@ function normalizeSettings(settings){
   settings.customTheme = settings.customTheme || {};
   settings.customTheme.aventus = settings.customTheme.aventus || {};
   settings.customTheme.chickenville = settings.customTheme.chickenville || {};
+  settings.reportOrder = normalizeOrderList(settings.reportOrder, ['systemSales','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers']);
+  settings.costsOrder = normalizeOrderList(settings.costsOrder, ['salaries','rents','purchases','other','housingRent']);
   return settings;
 }
 function mergeWithDefaults(parsed){
@@ -2364,6 +2409,7 @@ function renderCosts(){
   document.querySelectorAll('#cost-subtabs .subtab-btn').forEach(btn => {
     btn.style.display = perms.costSubtabs.includes(btn.dataset.sub) ? 'inline-flex' : 'none';
   });
+  applyCostsOrder();
   if(!perms.costSubtabs.includes(costSub)) costSub = perms.costSubtabs[0];
   switchCostSub(costSub);
 
@@ -3031,6 +3077,22 @@ function populateReportBranchSelect(selectId){
     if([...sel.options].some(o => o.value === previousValue)) sel.value = previousValue;
   }
 }
+function applyReportOrder(){
+  const order = state.settings.reportOrder;
+  order.forEach((key, i) => {
+    const el = document.querySelector(`#reports-sections-wrap [data-report-key="${key}"]`);
+    if(!el) return;
+    el.style.order = i;
+    el.classList.toggle('report-section-first', i === 0);
+  });
+}
+function applyCostsOrder(){
+  const order = state.settings.costsOrder;
+  order.forEach((key, i) => {
+    const btn = document.querySelector(`#cost-subtabs [data-sub="${key}"]`);
+    if(btn) btn.style.order = i;
+  });
+}
 function renderReports(){
   renderReportLogo();
   populateReportBranchSelect();
@@ -3170,6 +3232,8 @@ function renderReports(){
     `${t('netProfitRow')}: ${formatCurrency(net)}`,
     `${t('totalPurchases')} ${formatCurrency(reportPurchases.reduce((a,p)=>a+purchaseTotal(p),0))}`,
   ].join('\n');
+
+  applyReportOrder();
 }
 /* =========================================================
    سجل التدقيق
@@ -3262,6 +3326,50 @@ function renderUsers(){
 }
 
 /* =========================================================
+   ترتيب أقسام التقرير وتبويبات التكاليف التشغيلية
+========================================================= */
+const REPORT_ORDER_LABELS = {
+  systemSales:'reportSystemSalesDetailTitle', branchSales:'reportBranchSalesTitle', paymentMethods:'reportPaymentMethodsTitle',
+  expenses:'reportExpensesTitle', profit:'reportProfitTitle', rents:'reportRentsDetailTitle', housingRent:'reportHousingRentDetailTitle',
+  purchases:'reportPurchasesDetailTitle', other:'reportOtherDetailTitle', suppliers:'suppliersTitle',
+};
+const COSTS_ORDER_LABELS = {
+  salaries:'subtabSalaries', rents:'subtabRents', purchases:'subtabPurchases', other:'subtabOther', housingRent:'subtabHousingRent',
+};
+function renderOrderSettingsList(containerId, list, labelsMap, moveFnName){
+  document.getElementById(containerId).innerHTML = list.map((key, i) => `
+    <li>
+      <span>${t(labelsMap[key] || key)}</span>
+      <div class="order-btns">
+        <button onclick="${moveFnName}('${key}',-1)" ${i===0?'disabled':''}>▲</button>
+        <button onclick="${moveFnName}('${key}',1)" ${i===list.length-1?'disabled':''}>▼</button>
+      </div>
+    </li>`).join('');
+}
+function renderReportOrderSettings(){
+  renderOrderSettingsList('report-order-list', state.settings.reportOrder, REPORT_ORDER_LABELS, 'moveReportOrderItem');
+}
+function moveReportOrderItem(key, dir){
+  const list = state.settings.reportOrder;
+  const i = list.indexOf(key), j = i + dir;
+  if(i < 0 || j < 0 || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  saveState();
+  renderReportOrderSettings();
+}
+function renderCostsOrderSettings(){
+  renderOrderSettingsList('costs-order-list', state.settings.costsOrder, COSTS_ORDER_LABELS, 'moveCostsOrderItem');
+}
+function moveCostsOrderItem(key, dir){
+  const list = state.settings.costsOrder;
+  const i = list.indexOf(key), j = i + dir;
+  if(i < 0 || j < 0 || j >= list.length) return;
+  [list[i], list[j]] = [list[j], list[i]];
+  saveState();
+  renderCostsOrderSettings();
+}
+
+/* =========================================================
    المزيد من الميزات (بحث شامل، نسخ احتياطي، تصدير CSV، إعادة تعيين)
 ========================================================= */
 function renderMore(){
@@ -3270,6 +3378,8 @@ function renderMore(){
   renderReportLogo();
   renderThemeColorInputs();
   renderCloudBackupsList();
+  renderReportOrderSettings();
+  renderCostsOrderSettings();
 }
 
 /* =========================================================
