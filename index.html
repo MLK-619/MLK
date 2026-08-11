@@ -693,14 +693,16 @@
             <div class="table-scroll">
             <table>
               <thead><tr>
-                <th style="width:30%" data-i18n="thAmount">المبلغ</th>
-                <th style="width:20%" data-i18n="thDate">التاريخ</th>
-                <th style="width:40%" data-i18n="thNote">ملاحظة</th>
+                <th style="width:20%" data-i18n="thAmount">المبلغ</th>
+                <th style="width:20%" data-i18n="thBranch">الفرع</th>
+                <th style="width:18%" data-i18n="thDate">التاريخ</th>
+                <th style="width:32%" data-i18n="thNote">ملاحظة</th>
                 <th style="width:10%"></th>
               </tr></thead>
               <tbody id="capital-body"></tbody>
             </table>
             </div>
+            <div class="add-branch-picker" id="capital-branch-picker"></div>
             <button class="add-btn" id="add-capital-btn" onclick="addCapital()" data-i18n="btnAddCapital">+ إضافة مبلغ</button>
             <div class="section-total"><span data-i18n="totalCapital">إجمالي رأس المال:</span> <b id="capital-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
@@ -714,14 +716,16 @@
             <div class="table-scroll">
             <table>
               <thead><tr>
-                <th style="width:38%" data-i18n="thMaterialName">اسم المادة</th>
-                <th style="width:24%" data-i18n="thQuantity">الكمية المتوفرة</th>
-                <th style="width:24%" data-i18n="thDate">التاريخ</th>
+                <th style="width:28%" data-i18n="thMaterialName">اسم المادة</th>
+                <th style="width:22%" data-i18n="thBranch">الفرع</th>
+                <th style="width:18%" data-i18n="thQuantity">الكمية المتوفرة</th>
+                <th style="width:18%" data-i18n="thDate">التاريخ</th>
                 <th style="width:14%"></th>
               </tr></thead>
               <tbody id="stock-body"></tbody>
             </table>
             </div>
+            <div class="add-branch-picker" id="stock-branch-picker"></div>
             <button class="add-btn" id="stock-add-btn" onclick="addStockItem()" data-i18n="btnAddMaterial">+ إضافة مادة خام</button>
           </div>
         </section>
@@ -753,6 +757,19 @@
             <button class="add-btn" onclick="addSale()" data-i18n="btnAddSale">+ إضافة مبيعات الشهر</button>
             <div class="section-total"><span data-i18n="totalSales">المبيعات حسب النظام:</span> <b id="sales-total">0.000</b> <span class="cur-suffix"></span></div>
             <div class="section-total"><span data-i18n="totalSalesAfterCut">المبيعات بعد الخصم:</span> <b id="sales-total-after-cut">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+          <div class="section">
+            <h2><span class="icon">🏬</span> <span data-i18n="sectionSalesByBranchSummary">المبيعات حسب النظام وبعد الخصم لكل فرع</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thSalesInSystem">المبيعات بنظام</th>
+                <th data-i18n="thSalesAfterCut">المبيعات بعد الخصم</th>
+              </tr></thead>
+              <tbody id="sales-branch-summary"></tbody>
+            </table>
+            </div>
           </div>
           <div class="section">
             <h2><span class="icon">💳</span> <span data-i18n="sectionPaymentMethods">المبيعات حسب طريقة الدفع</span></h2>
@@ -1205,6 +1222,7 @@ const I18N = {
     thMonth:'الشهر', thSaleDate:'التاريخ', thEntryType:'نوع الإدخال', optionMonthly:'شهري', optionDaily:'يومي',
     thCash:'كاش', thVisa:'فيزا/بطاقة', thTalabat:'طلبات', thZad:'زادكم', thSnoonu:'سنونو', thTmdone:'تم دن', thOther:'أخرى',
     btnAddSale:'+ إضافة مبيعات الشهر', totalSales:'المبيعات حسب النظام:', totalSalesAfterCut:'المبيعات بعد الخصم:', sectionPaymentMethods:'المبيعات حسب طريقة الدفع',
+    sectionSalesByBranchSummary:'المبيعات حسب النظام وبعد الخصم لكل فرع', thSalesInSystem:'المبيعات بنظام', thSalesAfterCut:'المبيعات بعد الخصم',
     pm_cash:'كاش', pm_visa:'فيزا/بطاقة', pm_talabat:'طلبات', pm_zad:'زادكم', pm_snoonu:'سنونو', pm_tmdone:'تم دن', pm_other:'أخرى',
     snoonuPctLabel:'نسبة عمولة سنونو (%)', tmdonePctLabel:'نسبة عمولة تم دن (%)',
     profitTitle:'حساب الأرباح', profitSubtitle:'صافي الربح = (فيزا + طلبات + زادكم + أخرى) - إجمالي المصروفات - العمولات - الخصومات — ملاحظة: الكاش لا يُحتسب ضمن إجمالي الأرباح',
@@ -1359,6 +1377,7 @@ const I18N = {
     thMonth:'Month', thSaleDate:'Date', thEntryType:'Entry Type', optionMonthly:'Monthly', optionDaily:'Daily',
     thCash:'Cash', thVisa:'Visa/Card', thTalabat:'Talabat', thZad:'Zadkom', thSnoonu:'Snoonu', thTmdone:'Tmdone', thOther:'Other',
     btnAddSale:'+ Add Monthly Sales', totalSales:'Sales in System:', totalSalesAfterCut:'Sales After Commission Cut:', sectionPaymentMethods:'Sales by Payment Method',
+    sectionSalesByBranchSummary:'Sales in System vs After Commission Cut — by Branch', thSalesInSystem:'Sales in System', thSalesAfterCut:'Sales After Cut',
     pm_cash:'Cash', pm_visa:'Visa/Card', pm_talabat:'Talabat', pm_zad:'Zadkom', pm_snoonu:'Snoonu', pm_tmdone:'Tmdone', pm_other:'Other',
     snoonuPctLabel:'Snoonu Commission Rate (%)', tmdonePctLabel:'Tmdone Commission Rate (%)',
     profitTitle:'Profit Calculation', profitSubtitle:'Net Profit = (Visa + Talabat + Zadkom + Other) − Total Expenses − Commissions − Discounts — note: cash is not counted toward total profit',
@@ -2416,7 +2435,8 @@ function renderCashPurchasesTotals(){
 /* --- رأس المال --- */
 function addCapital(){
   if(!confirm(t('confirmAddCapital'))) return;
-  state.capital.push({id:uid(), amount:0, date:todayStr(), note:''});
+  const branchId = activeBranchId() || pickedAddBranch('capital') || '';
+  state.capital.push({id:uid(), amount:0, branchId, date:todayStr(), note:''});
   logAction('logAddCapital');
   renderCapital();
 }
@@ -2432,17 +2452,23 @@ function removeCapital(id){
   renderCapital();
 }
 function renderCapital(){
-  document.getElementById('capital-body').innerHTML = state.capital.map(c => `
+  const scope = activeBranchId();
+  const rows = scope ? state.capital.filter(c=>c.branchId===scope) : state.capital;
+  document.getElementById('capital-body').innerHTML = rows.map(c => `
     <tr data-id="${c.id}">
       <td><input type="number" min="0" step="any" value="${c.amount}" oninput="updateCapital('${c.id}','amount',this.value); renderCapitalTotal();"></td>
+      <td><select onchange="updateCapital('${c.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(c.branchId)}</select></td>
       <td><input type="date" value="${c.date||''}" onchange="updateCapital('${c.id}','date',this.value)"></td>
       <td><input type="text" value="${escapeHtml(c.note)}" placeholder="${t('thNote')}" oninput="updateCapital('${c.id}','note',this.value)"></td>
       <td><button class="del-btn" onclick="removeCapital('${c.id}')">✕</button></td>
-    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noData')}</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
   renderCapitalTotal();
+  renderAddBranchPicker('capital-branch-picker', 'capital');
 }
 function renderCapitalTotal(){
-  const total = state.capital.reduce((a,c)=>a+num(c.amount),0);
+  const scope = activeBranchId();
+  const rows = scope ? state.capital.filter(c=>c.branchId===scope) : state.capital;
+  const total = rows.reduce((a,c)=>a+num(c.amount),0);
   document.getElementById('capital-total').textContent = formatNum(total);
 }
 
@@ -2501,7 +2527,8 @@ function addStockItem(){
   const perms = PERMS[session.role];
   if(!perms.manageStockNames) return;
   if(!confirm(t('confirmAddStock'))) return;
-  state.stock.push({id:uid(), name:'', quantity:0, date:todayStr(), brand:BRAND});
+  const branchId = activeBranchId() || pickedAddBranch('stock') || '';
+  state.stock.push({id:uid(), name:'', quantity:0, date:todayStr(), brand:BRAND, branchId});
   logAction('logAddStock');
   renderStock();
 }
@@ -2525,14 +2552,17 @@ function renderStock(){
   document.getElementById('stock-subtitle').textContent = t(perms.manageStockNames ? 'stockSubtitleOwner' : 'stockSubtitleStaff');
   document.getElementById('stock-add-btn').style.display = perms.manageStockNames ? 'inline-block' : 'none';
 
-  const rows = state.stock.filter(i => (i.brand || 'aventus') === BRAND);
+  const scope = activeBranchId();
+  const rows = state.stock.filter(i => (i.brand || 'aventus') === BRAND).filter(i => !scope || i.branchId===scope);
   document.getElementById('stock-body').innerHTML = rows.map(i => `
     <tr data-id="${i.id}">
       <td><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateStockItem('${i.id}','name',this.value)" ${perms.manageStockNames?'':'readonly'}></td>
+      <td><select onchange="updateStockItem('${i.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(i.branchId)}</select></td>
       <td><input type="number" min="0" step="any" value="${i.quantity}" oninput="updateStockItem('${i.id}','quantity',this.value)"></td>
       <td><input type="date" value="${i.date}" onchange="updateStockItem('${i.id}','date',this.value)"></td>
       <td><button class="del-btn" ${perms.manageStockNames?'':'disabled'} onclick="removeStockItem('${i.id}')">✕</button></td>
-    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noData')}</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  renderAddBranchPicker('stock-branch-picker', 'stock');
 }
 
 /* =========================================================
@@ -2614,6 +2644,13 @@ function renderSalesTotals(){
   const totals = paymentMethodsWithTotals(rows);
   const max = Math.max(1, ...totals.map(t=>t.total));
   document.getElementById('sales-payment-bars').innerHTML = totals.map(m => barRow(m.label, m.total, max, m.color)).join('');
+
+  const summaryBranches = scope ? state.branches.filter(b=>b.id===scope) : state.branches;
+  document.getElementById('sales-branch-summary').innerHTML = summaryBranches.map(b => {
+    const bGross = totalSales(b.id, 'all');
+    const bNet = bGross - commissionsTotal('all', b.id);
+    return `<tr><td><bdi>${escapeHtml(b.name)}</bdi></td><td>${formatCurrency(bGross)}</td><td class="row-total">${formatCurrency(bNet)}</td></tr>`;
+  }).join('') || `<tr><td colspan="3" style="color:var(--muted);">${t('noBranches')}</td></tr>`;
 }
 
 /* =========================================================
@@ -3142,16 +3179,16 @@ function csvEscape(v){
 const CSV_CONFIGS = {
   sales: { rows: () => state.sales, headers: ['thMonth','thBranch','thCash','thVisa','thTalabat','thZad','thSnoonu','thTmdone','thOther','thTotal'],
     row: s => [s.date, branchNameById(s.branchId), num(s.cash), num(s.visa), num(s.talabat), num(s.zad), num(s.snoonu), num(s.tmdone), num(s.other), saleTotal(s)] },
-  stock: { rows: () => state.stock, headers: ['thMaterialName','thQuantity','thDate'],
-    row: i => [i.name, num(i.quantity), i.date] },
+  stock: { rows: () => state.stock, headers: ['thMaterialName','thBranch','thQuantity','thDate'],
+    row: i => [i.name, branchNameById(i.branchId), num(i.quantity), i.date] },
   suppliers: { rows: () => state.suppliers, headers: ['thCompanyName','thContact','thMaterialType','thBranch','thInvoiceValue','thPaid','thRemaining','thDueDate'],
     row: s => [s.company, s.contact, s.materialType, branchNameById(s.branchId), num(s.invoiceValue), num(s.paid), num(s.invoiceValue)-num(s.paid), s.dueDate] },
   purchases: { rows: () => state.purchases, headers: ['thItemName','thBranch','thCompanyName','thUnitPrice','thQty','thTotal'],
     row: p => [p.item, branchNameById(p.branchId), p.company, num(p.price), num(p.qty), purchaseTotal(p)] },
   cashPurchases: { rows: () => state.cashPurchases, headers: ['thItemName','thBranch','thDate','thUnitPrice','thQty','thTotal'],
     row: p => [p.item, branchNameById(p.branchId), p.date, num(p.price), num(p.qty), purchaseTotal(p)] },
-  capital: { rows: () => state.capital, headers: ['thAmount','thDate','thNote'],
-    row: c => [num(c.amount), c.date, c.note] },
+  capital: { rows: () => state.capital, headers: ['thAmount','thBranch','thDate','thNote'],
+    row: c => [num(c.amount), branchNameById(c.branchId), c.date, c.note] },
   branches: { rows: () => state.branches, headers: ['thBranchName','thLocation','thEmployees','thMonthlyRent','thStatus'],
     row: b => [b.name, b.location, num(b.employees), num(b.rent), statusLabel(b.status)] },
   operatingCosts: {
