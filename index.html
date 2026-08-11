@@ -663,10 +663,11 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:20%" data-i18n="thAmount">المبلغ</th>
-                  <th style="width:20%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:18%" data-i18n="thDate">التاريخ</th>
-                  <th style="width:32%" data-i18n="thNote">ملاحظة</th>
+                  <th style="width:18%" data-i18n="thCategory">البند</th>
+                  <th style="width:16%" data-i18n="thAmount">المبلغ</th>
+                  <th style="width:16%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:15%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:25%" data-i18n="thNote">ملاحظة</th>
                   <th style="width:10%"></th>
                 </tr></thead>
                 <tbody id="housing-rent-body"></tbody>
@@ -809,11 +810,18 @@
             <div class="table-scroll">
             <table>
               <thead><tr>
-                <th style="width:20%" data-i18n="thAmount">المبلغ</th>
-                <th style="width:20%" data-i18n="thBranch">الفرع</th>
-                <th style="width:18%" data-i18n="thDate">التاريخ</th>
-                <th style="width:32%" data-i18n="thNote">ملاحظة</th>
-                <th style="width:10%"></th>
+                <th style="width:10%" data-i18n="thBranch">الفرع</th>
+                <th style="width:9%" data-i18n="thDate">التاريخ</th>
+                <th style="width:8%" data-i18n="thCash">كاش</th>
+                <th style="width:9%" data-i18n="thVisa">فيزا/بطاقة</th>
+                <th style="width:8%" data-i18n="thTalabat">طلبات</th>
+                <th style="width:8%" data-i18n="thZad">زادكم</th>
+                <th style="width:8%" data-i18n="thSnoonu">سنونو</th>
+                <th style="width:8%" data-i18n="thTmdone">تم دن</th>
+                <th style="width:7%" data-i18n="thOther">أخرى</th>
+                <th style="width:10%" data-i18n="thTotal">الإجمالي</th>
+                <th style="width:10%" data-i18n="thNote">ملاحظة</th>
+                <th style="width:5%"></th>
               </tr></thead>
               <tbody id="system-sales-body"></tbody>
             </table>
@@ -954,6 +962,11 @@
           </div>
 
           <div class="section">
+            <h2><span class="icon">💳</span> <span data-i18n="reportPaymentMethodsTitle">تقرير الكاش والفيزا والتطبيقات</span></h2>
+            <div id="report-payment-methods"></div>
+          </div>
+
+          <div class="section">
             <h2><span class="icon">💸</span> <span data-i18n="reportExpensesTitle">تقرير المصروفات (حسب البند)</span></h2>
             <div id="report-expenses"></div>
           </div>
@@ -977,6 +990,23 @@
             </table>
             </div>
             <div class="section-total"><span data-i18n="totalRents">إجمالي الإيجارات:</span> <b id="report-rents-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+
+          <div class="section">
+            <h2><span class="icon">🏠</span> <span data-i18n="reportHousingRentDetailTitle">تفاصيل إيجار السكن لكل فرع</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thCategory">البند</th>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thAmount">المبلغ</th>
+                <th data-i18n="thDate">التاريخ</th>
+                <th data-i18n="thNote">ملاحظة</th>
+              </tr></thead>
+              <tbody id="report-housing-rent-detail"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalHousingRent">إجمالي إيجار السكن:</span> <b id="report-housing-rent-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
 
           <div class="section">
@@ -1013,27 +1043,6 @@
             </table>
             </div>
             <div class="section-total"><span data-i18n="totalOther">إجمالي المصاريف الأخرى:</span> <b id="report-other-total">0.000</b> <span class="cur-suffix"></span></div>
-          </div>
-
-          <div class="section">
-            <h2><span class="icon">🏠</span> <span data-i18n="reportHousingRentDetailTitle">تفاصيل إيجار السكن لكل فرع</span></h2>
-            <div class="table-scroll">
-            <table>
-              <thead><tr>
-                <th data-i18n="thBranch">الفرع</th>
-                <th data-i18n="thAmount">المبلغ</th>
-                <th data-i18n="thDate">التاريخ</th>
-                <th data-i18n="thNote">ملاحظة</th>
-              </tr></thead>
-              <tbody id="report-housing-rent-detail"></tbody>
-            </table>
-            </div>
-            <div class="section-total"><span data-i18n="totalHousingRent">إجمالي إيجار السكن:</span> <b id="report-housing-rent-total">0.000</b> <span class="cur-suffix"></span></div>
-          </div>
-
-          <div class="section">
-            <h2><span class="icon">💳</span> <span data-i18n="reportPaymentMethodsTitle">تقرير الكاش والفيزا والتطبيقات</span></h2>
-            <div id="report-payment-methods"></div>
           </div>
 
           <div class="section">
@@ -1277,6 +1286,8 @@ const I18N = {
     confirmAddCapital:'هل تريدين إضافة مبلغ جديد لرأس المال؟',
     logAddCapital:'إضافة مبلغ لرأس المال', logDeleteCapital:'حذف مبلغ من رأس المال',
     subtabHousingRent:'إيجار السكن', btnAddHousingRent:'+ إضافة إيجار سكن', totalHousingRent:'إجمالي إيجار السكن:',
+    hrcat_housingRent:'إيجار السكن', hrcat_wifi:'واي فاي', hrcat_percentage:'نسبة',
+    hrcat_companyAlKhalil:'شركة الحي الخليل', hrcat_companyMount:'شركة ماونت', hrcat_companyKingdom:'شركة كنج دوم', hrcat_companyGlobal:'شركة جلوبل',
     confirmAddHousingRent:'هل تريدين إضافة إيجار سكن جديد؟',
     logAddHousingRent:'إضافة إيجار سكن', logDeleteHousingRent:'حذف إيجار سكن',
     subtabSalaries:'الرواتب', subtabRents:'الإيجارات', subtabPurchases:'المشتريات', subtabOther:'مصاريف أخرى',
@@ -1443,6 +1454,8 @@ const I18N = {
     confirmAddCapital:'Add a new capital amount?',
     logAddCapital:'Added capital amount', logDeleteCapital:'Deleted capital amount',
     subtabHousingRent:'Housing Rent', btnAddHousingRent:'+ Add Housing Rent', totalHousingRent:'Total Housing Rent:',
+    hrcat_housingRent:'Housing Rent', hrcat_wifi:'WiFi', hrcat_percentage:'Percentage',
+    hrcat_companyAlKhalil:'Al Hai Al Khalil Co.', hrcat_companyMount:'Mount Co.', hrcat_companyKingdom:'Kingdom Co.', hrcat_companyGlobal:'Global Co.',
     confirmAddHousingRent:'Add a new housing rent entry?',
     logAddHousingRent:'Added housing rent', logDeleteHousingRent:'Deleted housing rent',
     subtabSalaries:'Salaries', subtabRents:'Rents', subtabPurchases:'Purchases', subtabOther:'Other Expenses',
@@ -1665,6 +1678,7 @@ const STORAGE_SESSION_KEY = 'aventus_erp_session_v1';
 
 const CAT_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--cat-7)','var(--cat-8)'];
 const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','franchise','other'];
+const HOUSING_RENT_CATEGORIES = ['housingRent','wifi','percentage','companyAlKhalil','companyMount','companyKingdom','companyGlobal'];
 const BRANCH_STATUS_KEYS = ['active','stopped','preparing'];
 const PAYMENT_METHODS = ['cash','visa','talabat','zad','snoonu','tmdone','other'];
 
@@ -2582,10 +2596,11 @@ function renderCapitalTotal(){
 /* =========================================================
    مبيعات النظام (مرجعي) — رقم مرجعي فقط، لا يؤثر على أي حسابات
 ========================================================= */
+function systemSaleTotal(s){ return num(s.cash)+num(s.visa)+num(s.talabat)+num(s.zad)+num(s.snoonu)+num(s.tmdone)+num(s.other); }
 function addSystemSales(){
   if(!confirm(t('confirmAddSystemSales'))) return;
   const branchId = activeBranchId() || pickedAddBranch('systemSales') || '';
-  state.systemSales.push({id:uid(), amount:0, branchId, date:todayStr(), note:''});
+  state.systemSales.push({id:uid(), branchId, date:todayStr(), cash:0, visa:0, talabat:0, zad:0, snoonu:0, tmdone:0, other:0, note:''});
   logAction('logAddSystemSales');
   renderSystemSales();
 }
@@ -2605,19 +2620,31 @@ function renderSystemSales(){
   const rows = scope ? state.systemSales.filter(s=>s.branchId===scope) : state.systemSales;
   document.getElementById('system-sales-body').innerHTML = rows.map(s => `
     <tr data-id="${s.id}">
-      <td><input type="number" min="0" step="any" value="${s.amount}" oninput="updateSystemSales('${s.id}','amount',this.value); renderSystemSalesTotal();"></td>
       <td><select onchange="updateSystemSales('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
       <td><input type="date" value="${s.date||''}" onchange="updateSystemSales('${s.id}','date',this.value)"></td>
+      <td><input type="number" min="0" step="any" value="${s.cash}" oninput="updateSystemSales('${s.id}','cash',this.value); renderSystemSalesTotal();"></td>
+      <td><input type="number" min="0" step="any" value="${s.visa}" oninput="updateSystemSales('${s.id}','visa',this.value); renderSystemSalesTotal();"></td>
+      <td><input type="number" min="0" step="any" value="${s.talabat}" oninput="updateSystemSales('${s.id}','talabat',this.value); renderSystemSalesTotal();"></td>
+      <td><input type="number" min="0" step="any" value="${s.zad}" oninput="updateSystemSales('${s.id}','zad',this.value); renderSystemSalesTotal();"></td>
+      <td><input type="number" min="0" step="any" value="${s.snoonu}" oninput="updateSystemSales('${s.id}','snoonu',this.value); renderSystemSalesTotal();"></td>
+      <td><input type="number" min="0" step="any" value="${s.tmdone}" oninput="updateSystemSales('${s.id}','tmdone',this.value); renderSystemSalesTotal();"></td>
+      <td><input type="number" min="0" step="any" value="${s.other}" oninput="updateSystemSales('${s.id}','other',this.value); renderSystemSalesTotal();"></td>
+      <td class="row-total">${formatCurrency(systemSaleTotal(s))}</td>
       <td><input type="text" value="${escapeHtml(s.note)}" placeholder="${t('thNote')}" oninput="updateSystemSales('${s.id}','note',this.value)"></td>
       <td><button class="del-btn" onclick="removeSystemSales('${s.id}')">✕</button></td>
-    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="12" style="color:var(--muted);">${t('noData')}</td></tr>`;
   renderSystemSalesTotal();
   renderAddBranchPicker('systemSales-branch-picker', 'systemSales');
 }
 function renderSystemSalesTotal(){
   const scope = activeBranchId();
   const rows = scope ? state.systemSales.filter(s=>s.branchId===scope) : state.systemSales;
-  document.getElementById('system-sales-total').textContent = formatNum(rows.reduce((a,s)=>a+num(s.amount),0));
+  document.querySelectorAll('#system-sales-body tr').forEach(tr => {
+    const s = state.systemSales.find(x => x.id === tr.dataset.id);
+    if(!s) return;
+    tr.querySelector('.row-total').textContent = formatCurrency(systemSaleTotal(s));
+  });
+  document.getElementById('system-sales-total').textContent = formatNum(rows.reduce((a,s)=>a+systemSaleTotal(s),0));
 }
 
 /* --- مصاريف أخرى --- */
@@ -2672,10 +2699,11 @@ function renderOtherTotals(){
 function totalHousingRent(branchId){
   return state.housingRent.filter(h => !branchId || h.branchId===branchId).reduce((a,h)=>a+num(h.amount),0);
 }
+function housingRentCategoryLabel(key){ return t('hrcat_' + (key || 'housingRent')); }
 function addHousingRent(){
   if(!confirm(t('confirmAddHousingRent'))) return;
   const branchId = activeBranchId() || pickedAddBranch('housingRent') || '';
-  state.housingRent.push({id:uid(), amount:0, branchId, date:todayStr(), note:''});
+  state.housingRent.push({id:uid(), category:HOUSING_RENT_CATEGORIES[0], amount:0, branchId, date:todayStr(), note:''});
   logAction('logAddHousingRent');
   renderHousingRent();
 }
@@ -2695,12 +2723,13 @@ function renderHousingRent(){
   const rows = scope ? state.housingRent.filter(h=>h.branchId===scope) : state.housingRent;
   document.getElementById('housing-rent-body').innerHTML = rows.map(h => `
     <tr data-id="${h.id}">
+      <td><select onchange="updateHousingRent('${h.id}','category',this.value)">${HOUSING_RENT_CATEGORIES.map(c=>`<option value="${c}" ${(h.category||'housingRent')===c?'selected':''}>${housingRentCategoryLabel(c)}</option>`).join('')}</select></td>
       <td><input type="number" min="0" step="any" value="${h.amount}" oninput="updateHousingRent('${h.id}','amount',this.value); renderHousingRentTotals();"></td>
       <td><select onchange="updateHousingRent('${h.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(h.branchId)}</select></td>
       <td><input type="date" value="${h.date||''}" onchange="updateHousingRent('${h.id}','date',this.value)"></td>
       <td><input type="text" value="${escapeHtml(h.note)}" placeholder="${t('thNote')}" oninput="updateHousingRent('${h.id}','note',this.value)"></td>
       <td><button class="del-btn" onclick="removeHousingRent('${h.id}')">✕</button></td>
-    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
   renderHousingRentTotals();
   renderAddBranchPicker('housingRent-branch-picker', 'housingRent');
 }
@@ -3089,11 +3118,12 @@ function renderReports(){
     .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
   document.getElementById('report-housing-rent-detail').innerHTML = reportHousingRent.map(h => `
     <tr>
+      <td><bdi>${escapeHtml(housingRentCategoryLabel(h.category))}</bdi></td>
       <td><bdi>${escapeHtml(branchNameById(h.branchId))}</bdi></td>
       <td class="row-total">${formatCurrency(num(h.amount))}</td>
       <td>${escapeHtml(h.date) || '—'}</td>
       <td><bdi>${escapeHtml(h.note)}</bdi></td>
-    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noData')}</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
   document.getElementById('report-housing-rent-total').textContent = formatNum(reportHousingRent.reduce((a,h)=>a+num(h.amount),0));
 
   const paymentRows = filterSalesByPeriod(period).filter(s => !reportScope || s.branchId===reportScope);
@@ -3127,11 +3157,11 @@ function renderReports(){
   document.getElementById('report-system-sales-detail').innerHTML = reportSystemSales.map(s => `
     <tr>
       <td><bdi>${escapeHtml(branchNameById(s.branchId))}</bdi></td>
-      <td class="row-total">${formatCurrency(num(s.amount))}</td>
+      <td class="row-total">${formatCurrency(systemSaleTotal(s))}</td>
       <td>${escapeHtml(s.date) || '—'}</td>
       <td><bdi>${escapeHtml(s.note)}</bdi></td>
     </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noData')}</td></tr>`;
-  document.getElementById('report-system-sales-total').textContent = formatNum(reportSystemSales.reduce((a,s)=>a+num(s.amount),0));
+  document.getElementById('report-system-sales-total').textContent = formatNum(reportSystemSales.reduce((a,s)=>a+systemSaleTotal(s),0));
 
   lastReportSummary = [
     `${t('reportsTitle')} — ${branchNameById(reportScope) || t('allBranches')}`,
@@ -3401,8 +3431,8 @@ const CSV_CONFIGS = {
     row: p => [p.item, branchNameById(p.branchId), p.date, num(p.price), num(p.qty), purchaseTotal(p)] },
   capital: { rows: () => state.capital, headers: ['thAmount','thBranch','thDate','thNote'],
     row: c => [num(c.amount), branchNameById(c.branchId), c.date, c.note] },
-  systemSales: { rows: () => state.systemSales, headers: ['thAmount','thBranch','thDate','thNote'],
-    row: s => [num(s.amount), branchNameById(s.branchId), s.date, s.note] },
+  systemSales: { rows: () => state.systemSales, headers: ['thBranch','thDate','thCash','thVisa','thTalabat','thZad','thSnoonu','thTmdone','thOther','thTotal','thNote'],
+    row: s => [branchNameById(s.branchId), s.date, num(s.cash), num(s.visa), num(s.talabat), num(s.zad), num(s.snoonu), num(s.tmdone), num(s.other), systemSaleTotal(s), s.note] },
   branches: { rows: () => state.branches, headers: ['thBranchName','thLocation','thEmployees','thMonthlyRent','thStatus'],
     row: b => [b.name, b.location, num(b.employees), num(b.rent), statusLabel(b.status)] },
   operatingCosts: {
@@ -3411,7 +3441,7 @@ const CSV_CONFIGS = {
       ...state.branches.filter(b=>num(b.rent)>0).map(b => ({type:t('subtabRents'), branchId:b.id, date:'', desc:b.name, amount:num(b.rent)})),
       ...state.purchases.map(p => ({type:t('subtabPurchases'), branchId:p.branchId, date:p.date, desc:p.item, amount:purchaseTotal(p)})),
       ...state.otherExpenses.map(o => ({type:t('subtabOther'), branchId:o.branchId, date:o.date, desc:categoryLabel(o.category), amount:otherExpenseTotal(o)})),
-      ...state.housingRent.map(h => ({type:t('subtabHousingRent'), branchId:h.branchId, date:h.date, desc:h.note, amount:num(h.amount)})),
+      ...state.housingRent.map(h => ({type:housingRentCategoryLabel(h.category), branchId:h.branchId, date:h.date, desc:h.note, amount:num(h.amount)})),
     ],
     headers: ['thCategory','thBranch','thDate','thItemName','thTotal'],
     row: r => [r.type, branchNameById(r.branchId), r.date, r.desc, r.amount],
