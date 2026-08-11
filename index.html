@@ -442,6 +442,7 @@
           <li class="nav-item" data-view="capital" data-perm="capital"><span class="nav-icon">🏦</span> <span data-i18n="navCapital">رأس المال</span></li>
           <li class="nav-item" data-view="stock" data-perm="stock"><span class="nav-icon">📦</span> <span data-i18n="navStock">المخزون</span></li>
           <li class="nav-item" data-view="sales" data-perm="sales"><span class="nav-icon">🧾</span> <span data-i18n="navSales">المبيعات</span></li>
+          <li class="nav-item" data-view="systemSales" data-perm="systemSales"><span class="nav-icon">🖥️</span> <span data-i18n="navSystemSales">مبيعات النظام (مرجعي)</span></li>
           <li class="nav-item" data-view="profit" data-perm="profit"><span class="nav-icon">📈</span> <span data-i18n="navProfit">حساب الأرباح</span></li>
           <li class="nav-item" data-view="suppliers" data-perm="suppliers"><span class="nav-icon">🚚</span> <span data-i18n="navSuppliers">الفواتير المتأخرة</span></li>
           <li class="nav-item" data-view="reports" data-perm="reports"><span class="nav-icon">📊</span> <span data-i18n="navReports">التقارير</span></li>
@@ -559,6 +560,7 @@
             <button class="subtab-btn" data-sub="rents" onclick="switchCostSub('rents')">🏢 <span data-i18n="subtabRents">الإيجارات</span></button>
             <button class="subtab-btn" data-sub="purchases" onclick="switchCostSub('purchases')">🛒 <span data-i18n="subtabPurchases">المشتريات</span></button>
             <button class="subtab-btn" data-sub="other" onclick="switchCostSub('other')">🔌 <span data-i18n="subtabOther">مصاريف أخرى</span></button>
+            <button class="subtab-btn" data-sub="housingRent" onclick="switchCostSub('housingRent')">🏠 <span data-i18n="subtabHousingRent">إيجار السكن</span></button>
           </div>
 
           <!-- الرواتب -->
@@ -651,6 +653,28 @@
               <div class="add-branch-picker" id="other-branch-picker"></div>
               <button class="add-btn" onclick="addOtherExpense()" data-i18n="btnAddOtherExpense">+ إضافة مصروف</button>
               <div class="section-total"><span data-i18n="totalOther">إجمالي المصاريف الأخرى:</span> <b id="other-total">0.000</b> <span class="cur-suffix"></span></div>
+            </div>
+          </div>
+
+          <!-- إيجار السكن -->
+          <div class="cost-sub" id="cost-sub-housingRent">
+            <div class="section">
+              <h2><span class="icon">🏠</span> <span data-i18n="subtabHousingRent">إيجار السكن</span> <span class="badge">Housing Rent</span></h2>
+              <div class="table-scroll">
+              <table>
+                <thead><tr>
+                  <th style="width:20%" data-i18n="thAmount">المبلغ</th>
+                  <th style="width:20%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:18%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:32%" data-i18n="thNote">ملاحظة</th>
+                  <th style="width:10%"></th>
+                </tr></thead>
+                <tbody id="housing-rent-body"></tbody>
+              </table>
+              </div>
+              <div class="add-branch-picker" id="housingRent-branch-picker"></div>
+              <button class="add-btn" onclick="addHousingRent()" data-i18n="btnAddHousingRent">+ إضافة إيجار سكن</button>
+              <div class="section-total"><span data-i18n="totalHousingRent">إجمالي إيجار السكن:</span> <b id="housing-rent-total">0.000</b> <span class="cur-suffix"></span></div>
             </div>
           </div>
 
@@ -774,6 +798,29 @@
           <div class="section">
             <h2><span class="icon">💳</span> <span data-i18n="sectionPaymentMethods">المبيعات حسب طريقة الدفع</span></h2>
             <div id="sales-payment-bars"></div>
+          </div>
+        </section>
+
+        <!-- ============ مبيعات النظام (مرجعي) ============ -->
+        <section class="view" id="view-systemSales">
+          <h1 class="page-title" data-i18n="systemSalesTitle">مبيعات النظام (مرجعي)</h1>
+          <p class="subtitle" data-i18n="systemSalesSubtitle">رقم مرجعي يُدخل يدوياً من نظام الكاشير/الجهاز لكل فرع، لأغراض المقارنة في التقرير فقط — لا يُحتسب ضمن التكاليف أو المبيعات الفعلية ولا يؤثر على أي حسابات.</p>
+          <div class="section">
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th style="width:20%" data-i18n="thAmount">المبلغ</th>
+                <th style="width:20%" data-i18n="thBranch">الفرع</th>
+                <th style="width:18%" data-i18n="thDate">التاريخ</th>
+                <th style="width:32%" data-i18n="thNote">ملاحظة</th>
+                <th style="width:10%"></th>
+              </tr></thead>
+              <tbody id="system-sales-body"></tbody>
+            </table>
+            </div>
+            <div class="add-branch-picker" id="systemSales-branch-picker"></div>
+            <button class="add-btn" id="add-system-sales-btn" onclick="addSystemSales()" data-i18n="btnAddSystemSales">+ إضافة مبلغ مرجعي</button>
+            <div class="section-total"><span data-i18n="totalSystemSales">إجمالي مبيعات النظام (مرجعي):</span> <b id="system-sales-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
         </section>
 
@@ -969,6 +1016,22 @@
           </div>
 
           <div class="section">
+            <h2><span class="icon">🏠</span> <span data-i18n="reportHousingRentDetailTitle">تفاصيل إيجار السكن لكل فرع</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thAmount">المبلغ</th>
+                <th data-i18n="thDate">التاريخ</th>
+                <th data-i18n="thNote">ملاحظة</th>
+              </tr></thead>
+              <tbody id="report-housing-rent-detail"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalHousingRent">إجمالي إيجار السكن:</span> <b id="report-housing-rent-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+
+          <div class="section">
             <h2><span class="icon">💳</span> <span data-i18n="reportPaymentMethodsTitle">تقرير الكاش والفيزا والتطبيقات</span></h2>
             <div id="report-payment-methods"></div>
           </div>
@@ -990,6 +1053,22 @@
             </table>
             </div>
             <div class="section-total"><span data-i18n="totalRemaining">إجمالي المتبقي:</span> <b id="report-suppliers-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+
+          <div class="section">
+            <h2><span class="icon">🖥️</span> <span data-i18n="reportSystemSalesDetailTitle">مبيعات النظام (مرجعي) لكل فرع — للمقارنة فقط</span></h2>
+            <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th data-i18n="thBranch">الفرع</th>
+                <th data-i18n="thAmount">المبلغ</th>
+                <th data-i18n="thDate">التاريخ</th>
+                <th data-i18n="thNote">ملاحظة</th>
+              </tr></thead>
+              <tbody id="report-system-sales-detail"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalSystemSales">إجمالي مبيعات النظام (مرجعي):</span> <b id="report-system-sales-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
         </section>
 
@@ -1197,6 +1276,9 @@ const I18N = {
     thAmount:'المبلغ', thNote:'ملاحظة', btnAddCapital:'+ إضافة مبلغ', totalCapital:'إجمالي رأس المال:',
     confirmAddCapital:'هل تريدين إضافة مبلغ جديد لرأس المال؟',
     logAddCapital:'إضافة مبلغ لرأس المال', logDeleteCapital:'حذف مبلغ من رأس المال',
+    subtabHousingRent:'إيجار السكن', btnAddHousingRent:'+ إضافة إيجار سكن', totalHousingRent:'إجمالي إيجار السكن:',
+    confirmAddHousingRent:'هل تريدين إضافة إيجار سكن جديد؟',
+    logAddHousingRent:'إضافة إيجار سكن', logDeleteHousingRent:'حذف إيجار سكن',
     subtabSalaries:'الرواتب', subtabRents:'الإيجارات', subtabPurchases:'المشتريات', subtabOther:'مصاريف أخرى',
     thEmployee:'الموظف', thBranch:'الفرع', thBaseSalary:'الراتب الأساسي', thAllowances:'البدلات',
     thAdvances:'السلف', thTotal:'الإجمالي', btnAddSalary:'+ إضافة راتب', totalSalaries:'إجمالي الرواتب:',
@@ -1223,6 +1305,13 @@ const I18N = {
     thCash:'كاش', thVisa:'فيزا/بطاقة', thTalabat:'طلبات', thZad:'زادكم', thSnoonu:'سنونو', thTmdone:'تم دن', thOther:'أخرى',
     btnAddSale:'+ إضافة مبيعات الشهر', totalSales:'المبيعات حسب النظام:', totalSalesAfterCut:'المبيعات بعد الخصم:', sectionPaymentMethods:'المبيعات حسب طريقة الدفع',
     sectionSalesByBranchSummary:'المبيعات حسب النظام وبعد الخصم لكل فرع', thSalesInSystem:'المبيعات بنظام', thSalesAfterCut:'المبيعات بعد الخصم',
+    navSystemSales:'مبيعات النظام (مرجعي)',
+    systemSalesTitle:'مبيعات النظام (مرجعي)',
+    systemSalesSubtitle:'رقم مرجعي يُدخل يدوياً من نظام الكاشير/الجهاز لكل فرع، لأغراض المقارنة في التقرير فقط — لا يُحتسب ضمن التكاليف أو المبيعات الفعلية ولا يؤثر على أي حسابات.',
+    btnAddSystemSales:'+ إضافة مبلغ مرجعي', totalSystemSales:'إجمالي مبيعات النظام (مرجعي):',
+    confirmAddSystemSales:'هل تريدين إضافة مبلغ مرجعي جديد؟',
+    logAddSystemSales:'إضافة مبيعات نظام مرجعية', logDeleteSystemSales:'حذف مبيعات نظام مرجعية',
+    reportSystemSalesDetailTitle:'مبيعات النظام (مرجعي) لكل فرع — للمقارنة فقط',
     pm_cash:'كاش', pm_visa:'فيزا/بطاقة', pm_talabat:'طلبات', pm_zad:'زادكم', pm_snoonu:'سنونو', pm_tmdone:'تم دن', pm_other:'أخرى',
     snoonuPctLabel:'نسبة عمولة سنونو (%)', tmdonePctLabel:'نسبة عمولة تم دن (%)',
     profitTitle:'حساب الأرباح', profitSubtitle:'صافي الربح = (فيزا + طلبات + زادكم + أخرى) - إجمالي المصروفات - العمولات - الخصومات — ملاحظة: الكاش لا يُحتسب ضمن إجمالي الأرباح',
@@ -1253,6 +1342,7 @@ const I18N = {
     paymentReportSubtitle:'توزيع المبيعات حسب طريقة الدفع لكل فرع وفترة',
     reportPurchasesDetailTitle:'تفاصيل جميع المشتريات لكل فرع',
     reportRentsDetailTitle:'تفاصيل الإيجارات لكل فرع', reportOtherDetailTitle:'تفاصيل المصاريف الأخرى لكل فرع',
+    reportHousingRentDetailTitle:'تفاصيل إيجار السكن لكل فرع',
     reportAllProfitsTitle:'إجمالي الأرباح لكل الفروع (للمالك فقط)', thNetProfit:'صافي الربح', totalNetProfitAll:'إجمالي صافي الربح لكل الفروع:',
     noData:'لا توجد بيانات', noBranches:'لا توجد فروع', noSuppliers:'لا يوجد موردون',
     auditTitle:'سجل التدقيق', auditSubtitle:'سجل لكل عملية إضافة أو تعديل أو حذف (متاح للمالك فقط)',
@@ -1352,6 +1442,9 @@ const I18N = {
     thAmount:'Amount', thNote:'Note', btnAddCapital:'+ Add Amount', totalCapital:'Total Capital:',
     confirmAddCapital:'Add a new capital amount?',
     logAddCapital:'Added capital amount', logDeleteCapital:'Deleted capital amount',
+    subtabHousingRent:'Housing Rent', btnAddHousingRent:'+ Add Housing Rent', totalHousingRent:'Total Housing Rent:',
+    confirmAddHousingRent:'Add a new housing rent entry?',
+    logAddHousingRent:'Added housing rent', logDeleteHousingRent:'Deleted housing rent',
     subtabSalaries:'Salaries', subtabRents:'Rents', subtabPurchases:'Purchases', subtabOther:'Other Expenses',
     thEmployee:'Employee', thBranch:'Branch', thBaseSalary:'Base Salary', thAllowances:'Allowances',
     thAdvances:'Advances', thTotal:'Total', btnAddSalary:'+ Add Salary', totalSalaries:'Total Salaries:',
@@ -1378,6 +1471,13 @@ const I18N = {
     thCash:'Cash', thVisa:'Visa/Card', thTalabat:'Talabat', thZad:'Zadkom', thSnoonu:'Snoonu', thTmdone:'Tmdone', thOther:'Other',
     btnAddSale:'+ Add Monthly Sales', totalSales:'Sales in System:', totalSalesAfterCut:'Sales After Commission Cut:', sectionPaymentMethods:'Sales by Payment Method',
     sectionSalesByBranchSummary:'Sales in System vs After Commission Cut — by Branch', thSalesInSystem:'Sales in System', thSalesAfterCut:'Sales After Cut',
+    navSystemSales:'System Sales (Reference)',
+    systemSalesTitle:'System Sales (Reference)',
+    systemSalesSubtitle:'A manually entered reference figure from the POS/system per branch, for comparison in the report only — not counted toward costs or actual sales, and does not affect any calculations.',
+    btnAddSystemSales:'+ Add Reference Amount', totalSystemSales:'Total System Sales (Reference):',
+    confirmAddSystemSales:'Add a new reference amount?',
+    logAddSystemSales:'Added reference system sales', logDeleteSystemSales:'Deleted reference system sales',
+    reportSystemSalesDetailTitle:'System Sales (Reference) by Branch — comparison only',
     pm_cash:'Cash', pm_visa:'Visa/Card', pm_talabat:'Talabat', pm_zad:'Zadkom', pm_snoonu:'Snoonu', pm_tmdone:'Tmdone', pm_other:'Other',
     snoonuPctLabel:'Snoonu Commission Rate (%)', tmdonePctLabel:'Tmdone Commission Rate (%)',
     profitTitle:'Profit Calculation', profitSubtitle:'Net Profit = (Visa + Talabat + Zadkom + Other) − Total Expenses − Commissions − Discounts — note: cash is not counted toward total profit',
@@ -1408,6 +1508,7 @@ const I18N = {
     paymentReportSubtitle:'Sales breakdown by payment method, per branch and period',
     reportPurchasesDetailTitle:'All Purchases Detail by Branch',
     reportRentsDetailTitle:'Rents Detail by Branch', reportOtherDetailTitle:'Other Expenses Detail by Branch',
+    reportHousingRentDetailTitle:'Housing Rent Detail by Branch',
     reportAllProfitsTitle:'Total Profits — All Branches (Owner Only)', thNetProfit:'Net Profit', totalNetProfitAll:'Total Net Profit — All Branches:',
     noData:'No data available', noBranches:'No branches', noSuppliers:'No suppliers',
     auditTitle:'Audit Log', auditSubtitle:'Log of every add, edit, or delete operation (owner only)',
@@ -1563,7 +1664,7 @@ const STORAGE_STATE_KEY = 'aventus_erp_state_v1';
 const STORAGE_SESSION_KEY = 'aventus_erp_session_v1';
 
 const CAT_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--cat-7)','var(--cat-8)'];
-const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','franchise','housingRent','other'];
+const EXPENSE_CATEGORIES = ['electricity','water','wifi','maintenance','marketing','delivery','packaging','franchise','other'];
 const BRANCH_STATUS_KEYS = ['active','stopped','preparing'];
 const PAYMENT_METHODS = ['cash','visa','talabat','zad','snoonu','tmdone','other'];
 
@@ -1573,11 +1674,11 @@ function categoryLabel(key){ return t('cat_' + key); }
 function paymentLabel(key){ return t('pm_' + key); }
 
 const PERMS = {
-  owner:      {nav:['dashboard','branches','costs','cashPurchases','capital','stock','sales','profit','suppliers','reports','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
-  manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:true},
-  accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false},
+  owner:      {nav:['dashboard','branches','costs','cashPurchases','capital','stock','sales','systemSales','profit','suppliers','reports','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
+  manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:true},
+  accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:false},
   staff:      {nav:['sales','cashPurchases','stock'],                                                                                  costSubtabs:[],                                       deleteInvoice:false, editBranches:false, manageStockNames:false},
-  viewer:     {nav:['dashboard','branches','costs','cashPurchases','stock','sales','profit','suppliers','reports'],   costSubtabs:['salaries','rents','purchases','other'], deleteInvoice:false, editBranches:false, manageStockNames:false, readOnly:true},
+  viewer:     {nav:['dashboard','branches','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],   costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:false, readOnly:true},
 };
 function activeBranchId(){ return (session && session.branchId) || null; }
 
@@ -1648,6 +1749,8 @@ function defaultState(){
     cashPurchases: [],
     capital: [],
     otherExpenses: [],
+    housingRent: [],
+    systemSales: [],
     suppliers: [],
     stock: [],
     sales: [],
@@ -1920,7 +2023,7 @@ function startApp(){
 ========================================================= */
 const VIEW_TITLE_KEYS = {
   dashboard:'navDashboard', branches:'navBranches', costs:'navCosts', cashPurchases:'navCashPurchases', capital:'navCapital', stock:'navStock',
-  sales:'navSales', profit:'navProfit', suppliers:'navSuppliers',
+  sales:'navSales', systemSales:'navSystemSales', profit:'navProfit', suppliers:'navSuppliers',
   reports:'navReports', auditlog:'navAuditlog', users:'navUsers', more:'navMore',
 };
 
@@ -1948,6 +2051,7 @@ function switchView(view){
   if(view === 'capital') renderCapital();
   if(view === 'stock') renderStock();
   if(view === 'sales') renderSales();
+  if(view === 'systemSales') renderSystemSales();
   if(view === 'profit') renderProfit();
   if(view === 'suppliers') renderSuppliers();
   if(view === 'reports') renderReports();
@@ -1992,7 +2096,7 @@ function totalSuppliers(branchId){
   return state.suppliers.filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+num(s.invoiceValue),0);
 }
 function totalExpenses(branchId){
-  return totalSalaries(branchId) + totalRents(branchId) + totalPurchases(branchId) + totalOther(branchId);
+  return totalSalaries(branchId) + totalRents(branchId) + totalPurchases(branchId) + totalOther(branchId) + totalHousingRent(branchId);
 }
 function totalSales(branchId, period){
   return filterSalesByPeriod(period).filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+saleTotal(s),0);
@@ -2110,6 +2214,7 @@ function renderDashboard(){
     {label:t('subtabRents'), total: totalRents(scope), color:CAT_COLORS[1]},
     {label:t('subtabPurchases'), total: totalPurchases(scope), color:CAT_COLORS[2]},
     {label:t('subtabOther'), total: totalOther(scope), color:CAT_COLORS[3]},
+    {label:t('subtabHousingRent'), total: totalHousingRent(scope), color:CAT_COLORS[4]},
   ];
   const maxExpCat = Math.max(1, ...expenseCats.map(e=>e.total));
   const expCatTotal = expenseCats.reduce((a,e)=>a+e.total,0);
@@ -2252,12 +2357,14 @@ function renderCosts(){
   renderRents();
   renderPurchases();
   renderOtherExpenses();
+  renderHousingRent();
   const scope = activeBranchId();
   document.getElementById('costs-summary').innerHTML = [
     kpiCard(t('totalSalaries').replace(':',''), formatCurrency(totalSalaries(scope))),
     kpiCard(t('totalRents').replace(':',''), formatCurrency(totalRents(scope))),
     kpiCard(t('totalPurchases').replace(':',''), formatCurrency(totalPurchases(scope))),
     kpiCard(t('totalOther').replace(':',''), formatCurrency(totalOther(scope))),
+    kpiCard(t('totalHousingRent').replace(':',''), formatCurrency(totalHousingRent(scope))),
     kpiCard(t('grandTotal'), formatCurrency(totalExpenses(scope)), null, true),
   ].join('');
 }
@@ -2472,6 +2579,47 @@ function renderCapitalTotal(){
   document.getElementById('capital-total').textContent = formatNum(total);
 }
 
+/* =========================================================
+   مبيعات النظام (مرجعي) — رقم مرجعي فقط، لا يؤثر على أي حسابات
+========================================================= */
+function addSystemSales(){
+  if(!confirm(t('confirmAddSystemSales'))) return;
+  const branchId = activeBranchId() || pickedAddBranch('systemSales') || '';
+  state.systemSales.push({id:uid(), amount:0, branchId, date:todayStr(), note:''});
+  logAction('logAddSystemSales');
+  renderSystemSales();
+}
+function updateSystemSales(id, field, value){
+  const s = state.systemSales.find(x=>x.id===id);
+  if(!s) return;
+  s[field] = value;
+  saveState();
+}
+function removeSystemSales(id){
+  state.systemSales = state.systemSales.filter(s=>s.id!==id);
+  logAction('logDeleteSystemSales');
+  renderSystemSales();
+}
+function renderSystemSales(){
+  const scope = activeBranchId();
+  const rows = scope ? state.systemSales.filter(s=>s.branchId===scope) : state.systemSales;
+  document.getElementById('system-sales-body').innerHTML = rows.map(s => `
+    <tr data-id="${s.id}">
+      <td><input type="number" min="0" step="any" value="${s.amount}" oninput="updateSystemSales('${s.id}','amount',this.value); renderSystemSalesTotal();"></td>
+      <td><select onchange="updateSystemSales('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
+      <td><input type="date" value="${s.date||''}" onchange="updateSystemSales('${s.id}','date',this.value)"></td>
+      <td><input type="text" value="${escapeHtml(s.note)}" placeholder="${t('thNote')}" oninput="updateSystemSales('${s.id}','note',this.value)"></td>
+      <td><button class="del-btn" onclick="removeSystemSales('${s.id}')">✕</button></td>
+    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  renderSystemSalesTotal();
+  renderAddBranchPicker('systemSales-branch-picker', 'systemSales');
+}
+function renderSystemSalesTotal(){
+  const scope = activeBranchId();
+  const rows = scope ? state.systemSales.filter(s=>s.branchId===scope) : state.systemSales;
+  document.getElementById('system-sales-total').textContent = formatNum(rows.reduce((a,s)=>a+num(s.amount),0));
+}
+
 /* --- مصاريف أخرى --- */
 function addOtherExpense(){
   if(!confirm(t('confirmAddOther'))) return;
@@ -2518,6 +2666,47 @@ function renderOtherTotals(){
     total += rowTotal;
   });
   document.getElementById('other-total').textContent = formatNum(total);
+}
+
+/* --- إيجار السكن --- */
+function totalHousingRent(branchId){
+  return state.housingRent.filter(h => !branchId || h.branchId===branchId).reduce((a,h)=>a+num(h.amount),0);
+}
+function addHousingRent(){
+  if(!confirm(t('confirmAddHousingRent'))) return;
+  const branchId = activeBranchId() || pickedAddBranch('housingRent') || '';
+  state.housingRent.push({id:uid(), amount:0, branchId, date:todayStr(), note:''});
+  logAction('logAddHousingRent');
+  renderHousingRent();
+}
+function updateHousingRent(id, field, value){
+  const h = state.housingRent.find(x=>x.id===id);
+  if(!h) return;
+  h[field] = value;
+  saveState();
+}
+function removeHousingRent(id){
+  state.housingRent = state.housingRent.filter(h=>h.id!==id);
+  logAction('logDeleteHousingRent');
+  renderHousingRent();
+}
+function renderHousingRent(){
+  const scope = activeBranchId();
+  const rows = scope ? state.housingRent.filter(h=>h.branchId===scope) : state.housingRent;
+  document.getElementById('housing-rent-body').innerHTML = rows.map(h => `
+    <tr data-id="${h.id}">
+      <td><input type="number" min="0" step="any" value="${h.amount}" oninput="updateHousingRent('${h.id}','amount',this.value); renderHousingRentTotals();"></td>
+      <td><select onchange="updateHousingRent('${h.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(h.branchId)}</select></td>
+      <td><input type="date" value="${h.date||''}" onchange="updateHousingRent('${h.id}','date',this.value)"></td>
+      <td><input type="text" value="${escapeHtml(h.note)}" placeholder="${t('thNote')}" oninput="updateHousingRent('${h.id}','note',this.value)"></td>
+      <td><button class="del-btn" onclick="removeHousingRent('${h.id}')">✕</button></td>
+    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  renderHousingRentTotals();
+  renderAddBranchPicker('housingRent-branch-picker', 'housingRent');
+}
+function renderHousingRentTotals(){
+  const scope = activeBranchId();
+  document.getElementById('housing-rent-total').textContent = formatNum(totalHousingRent(scope));
 }
 
 /* =========================================================
@@ -2831,6 +3020,7 @@ function renderReports(){
     {label:t('subtabRents'), total: totalRents(reportScope), color:CAT_COLORS[1]},
     {label:t('subtabPurchases'), total: totalPurchases(reportScope), color:CAT_COLORS[2]},
     {label:t('subtabOther'), total: totalOther(reportScope), color:CAT_COLORS[3]},
+    {label:t('subtabHousingRent'), total: totalHousingRent(reportScope), color:CAT_COLORS[4]},
   ];
   const maxExp = Math.max(1, ...expenseCats.map(e=>e.total));
   const expTotal = expenseCats.reduce((a,e)=>a+e.total,0);
@@ -2895,6 +3085,17 @@ function renderReports(){
     </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
   document.getElementById('report-other-total').textContent = formatNum(reportOther.reduce((a,o)=>a+otherExpenseTotal(o),0));
 
+  const reportHousingRent = (reportScope ? state.housingRent.filter(h=>h.branchId===reportScope) : state.housingRent)
+    .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
+  document.getElementById('report-housing-rent-detail').innerHTML = reportHousingRent.map(h => `
+    <tr>
+      <td><bdi>${escapeHtml(branchNameById(h.branchId))}</bdi></td>
+      <td class="row-total">${formatCurrency(num(h.amount))}</td>
+      <td>${escapeHtml(h.date) || '—'}</td>
+      <td><bdi>${escapeHtml(h.note)}</bdi></td>
+    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  document.getElementById('report-housing-rent-total').textContent = formatNum(reportHousingRent.reduce((a,h)=>a+num(h.amount),0));
+
   const paymentRows = filterSalesByPeriod(period).filter(s => !reportScope || s.branchId===reportScope);
   const paymentMethods = paymentMethodsWithTotals(paymentRows);
   const maxPM = Math.max(1, ...paymentMethods.map(m=>m.total));
@@ -2920,6 +3121,17 @@ function renderReports(){
     </tr>`;
   }).join('') || `<tr><td colspan="7" style="color:var(--muted);">${t('noSuppliers')}</td></tr>`;
   document.getElementById('report-suppliers-total').textContent = formatNum(reportSuppliers.reduce((a,s)=>a+(num(s.invoiceValue)-num(s.paid)),0));
+
+  const reportSystemSales = (reportScope ? state.systemSales.filter(s=>s.branchId===reportScope) : state.systemSales)
+    .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
+  document.getElementById('report-system-sales-detail').innerHTML = reportSystemSales.map(s => `
+    <tr>
+      <td><bdi>${escapeHtml(branchNameById(s.branchId))}</bdi></td>
+      <td class="row-total">${formatCurrency(num(s.amount))}</td>
+      <td>${escapeHtml(s.date) || '—'}</td>
+      <td><bdi>${escapeHtml(s.note)}</bdi></td>
+    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noData')}</td></tr>`;
+  document.getElementById('report-system-sales-total').textContent = formatNum(reportSystemSales.reduce((a,s)=>a+num(s.amount),0));
 
   lastReportSummary = [
     `${t('reportsTitle')} — ${branchNameById(reportScope) || t('allBranches')}`,
@@ -3189,6 +3401,8 @@ const CSV_CONFIGS = {
     row: p => [p.item, branchNameById(p.branchId), p.date, num(p.price), num(p.qty), purchaseTotal(p)] },
   capital: { rows: () => state.capital, headers: ['thAmount','thBranch','thDate','thNote'],
     row: c => [num(c.amount), branchNameById(c.branchId), c.date, c.note] },
+  systemSales: { rows: () => state.systemSales, headers: ['thAmount','thBranch','thDate','thNote'],
+    row: s => [num(s.amount), branchNameById(s.branchId), s.date, s.note] },
   branches: { rows: () => state.branches, headers: ['thBranchName','thLocation','thEmployees','thMonthlyRent','thStatus'],
     row: b => [b.name, b.location, num(b.employees), num(b.rent), statusLabel(b.status)] },
   operatingCosts: {
@@ -3197,6 +3411,7 @@ const CSV_CONFIGS = {
       ...state.branches.filter(b=>num(b.rent)>0).map(b => ({type:t('subtabRents'), branchId:b.id, date:'', desc:b.name, amount:num(b.rent)})),
       ...state.purchases.map(p => ({type:t('subtabPurchases'), branchId:p.branchId, date:p.date, desc:p.item, amount:purchaseTotal(p)})),
       ...state.otherExpenses.map(o => ({type:t('subtabOther'), branchId:o.branchId, date:o.date, desc:categoryLabel(o.category), amount:otherExpenseTotal(o)})),
+      ...state.housingRent.map(h => ({type:t('subtabHousingRent'), branchId:h.branchId, date:h.date, desc:h.note, amount:num(h.amount)})),
     ],
     headers: ['thCategory','thBranch','thDate','thItemName','thTotal'],
     row: r => [r.type, branchNameById(r.branchId), r.date, r.desc, r.amount],
