@@ -205,6 +205,11 @@
   :is(body.cloud-offline, body.role-readonly) #add-user-btn,
   :is(body.cloud-offline, body.role-readonly) #stock-add-btn,
   :is(body.cloud-offline, body.role-readonly) .order-settings-list button,
+  :is(body.cloud-offline, body.role-readonly) #custom-expense-cat-input,
+  :is(body.cloud-offline, body.role-readonly) #custom-housing-cat-input,
+  :is(body.cloud-offline, body.role-readonly) #add-expense-cat-btn,
+  :is(body.cloud-offline, body.role-readonly) #add-housing-cat-btn,
+  :is(body.cloud-offline, body.role-readonly) #report-notes-input,
   :is(body.cloud-offline, body.role-readonly) #create-backup-btn{
     pointer-events:none;opacity:.5;
   }
@@ -1090,6 +1095,11 @@
             </div>
             <div class="section-total"><span data-i18n="totalRemaining">إجمالي المتبقي:</span> <b id="report-suppliers-total">0.000</b> <span class="cur-suffix"></span></div>
           </div>
+
+          <div class="section" data-report-key="notes">
+            <h2><span class="icon">📝</span> <span data-i18n="reportNotesTitle">ملاحظات التقرير</span></h2>
+            <textarea id="report-notes-input" data-i18n-ph="reportNotesPh" placeholder="اكتبي أي ملاحظات تريدين إضافتها لهذا التقرير..." style="width:100%;min-height:110px;background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:.88rem;resize:vertical;"></textarea>
+          </div>
           </div>
         </section>
 
@@ -1187,6 +1197,29 @@
               <div style="flex:1;min-width:240px;">
                 <h3 style="font-size:.85rem;margin:0 0 10px;color:var(--muted);" data-i18n="moreCostsOrderLabel">ترتيب تبويبات التكاليف التشغيلية</h3>
                 <ul class="order-settings-list" id="costs-order-list"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2><span class="icon">➕</span> <span data-i18n="moreCustomCatTitle">إضافة بنود جديدة للتكاليف التشغيلية</span></h2>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreCustomCatDesc">أضيفي بنوداً جديدة تظهر كخيارات إضافية عند إدخال "مصاريف أخرى" أو "إيجار السكن" (متاح للمالك فقط).</p>
+            <div style="display:flex;gap:24px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:260px;">
+                <h3 style="font-size:.85rem;margin:0 0 10px;color:var(--muted);" data-i18n="moreCustomCatOtherLabel">بنود مصاريف أخرى</h3>
+                <div style="display:flex;gap:8px;margin-bottom:10px;">
+                  <input type="text" id="custom-expense-cat-input" data-i18n-ph="moreCustomCatPh" placeholder="اسم البند الجديد...">
+                  <button id="add-expense-cat-btn" onclick="addCustomExpenseCategory()" data-i18n="btnAddCategory">+ إضافة</button>
+                </div>
+                <ul class="order-settings-list" id="custom-expense-cat-list"></ul>
+              </div>
+              <div style="flex:1;min-width:260px;">
+                <h3 style="font-size:.85rem;margin:0 0 10px;color:var(--muted);" data-i18n="moreCustomCatHousingLabel">بنود إيجار السكن</h3>
+                <div style="display:flex;gap:8px;margin-bottom:10px;">
+                  <input type="text" id="custom-housing-cat-input" data-i18n-ph="moreCustomCatPh" placeholder="اسم البند الجديد...">
+                  <button id="add-housing-cat-btn" onclick="addCustomHousingRentCategory()" data-i18n="btnAddCategory">+ إضافة</button>
+                </div>
+                <ul class="order-settings-list" id="custom-housing-cat-list"></ul>
               </div>
             </div>
           </div>
@@ -1405,6 +1438,12 @@ const I18N = {
     moreOrderTitle:'ترتيب أقسام التقرير والتكاليف التشغيلية',
     moreOrderDesc:'تحكمي بترتيب ظهور الأقسام في صفحة التقارير وترتيب تبويبات التكاليف التشغيلية (متاح للمالك فقط).',
     moreReportOrderLabel:'ترتيب أقسام التقرير', moreCostsOrderLabel:'ترتيب تبويبات التكاليف التشغيلية',
+    moreCustomCatTitle:'إضافة بنود جديدة للتكاليف التشغيلية',
+    moreCustomCatDesc:'أضيفي بنوداً جديدة تظهر كخيارات إضافية عند إدخال "مصاريف أخرى" أو "إيجار السكن" (متاح للمالك فقط).',
+    moreCustomCatOtherLabel:'بنود مصاريف أخرى', moreCustomCatHousingLabel:'بنود إيجار السكن',
+    moreCustomCatPh:'اسم البند الجديد...', btnAddCategory:'+ إضافة',
+    reportNotesTitle:'ملاحظات التقرير', reportNotesPh:'اكتبي أي ملاحظات تريدين إضافتها لهذا التقرير...',
+    errCategoryExists:'هذا البند موجود مسبقاً', errCategoryEmpty:'اكتبي اسم البند أولاً',
     labelAccentColor:'اللون الأساسي', labelAccentLightColor:'لون التدرج الفاتح', btnResetTheme:'↩️ استعادة الألوان الافتراضية',
     moreBackupTitle:'النسخ الاحتياطي واستعادة البيانات',
     moreBackupDesc:'نزّلي نسخة من كل بيانات النظام كملف JSON، أو استعيديها لاحقاً على أي جهاز.',
@@ -1576,6 +1615,12 @@ const I18N = {
     moreOrderTitle:'Report & Operating Costs Section Order',
     moreOrderDesc:'Control the order sections appear in the Reports page and the order of the Operating Costs tabs (owner only).',
     moreReportOrderLabel:'Report Section Order', moreCostsOrderLabel:'Operating Costs Tab Order',
+    moreCustomCatTitle:'Add New Operating Cost Items',
+    moreCustomCatDesc:'Add new items that appear as extra options when entering "Other Expenses" or "Housing Rent" (owner only).',
+    moreCustomCatOtherLabel:'Other Expenses Items', moreCustomCatHousingLabel:'Housing Rent Items',
+    moreCustomCatPh:'New item name...', btnAddCategory:'+ Add',
+    reportNotesTitle:'Report Notes', reportNotesPh:'Write any notes you want to add to this report...',
+    errCategoryExists:'This item already exists', errCategoryEmpty:'Type an item name first',
     labelAccentColor:'Accent Color', labelAccentLightColor:'Gradient Light Color', btnResetTheme:'↩️ Restore Default Colors',
     moreBackupTitle:'Backup & Restore',
     moreBackupDesc:'Download all system data as a JSON file, or restore it later on any device.',
@@ -1717,7 +1762,7 @@ const PAYMENT_METHODS = ['cash','visa','talabat','zad','snoonu','tmdone','other'
 
 function roleLabel(role){ return t('role' + role.charAt(0).toUpperCase() + role.slice(1)); }
 function statusLabel(key){ return t('status' + key.charAt(0).toUpperCase() + key.slice(1)); }
-function categoryLabel(key){ return t('cat_' + key); }
+function categoryLabel(key){ return EXPENSE_CATEGORIES.includes(key) ? t('cat_' + key) : (key || ''); }
 function paymentLabel(key){ return t('pm_' + key); }
 
 const PERMS = {
@@ -1804,8 +1849,11 @@ function defaultState(){
     settings: {
       visaPct: 1.5, talabatPct: 20, zadPct: 15, snoonuPct: 0, tmdonePct: 0, discounts: 0,
       customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} },
-      reportOrder: ['systemSales','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers'],
+      reportOrder: ['systemSales','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers','notes'],
       costsOrder: ['salaries','rents','purchases','other','housingRent'],
+      customExpenseCategories: [],
+      customHousingRentCategories: [],
+      reportNotes: '',
     },
     auditLog: [],
     notes: [],
@@ -1824,8 +1872,11 @@ function normalizeSettings(settings){
   settings.customTheme = settings.customTheme || {};
   settings.customTheme.aventus = settings.customTheme.aventus || {};
   settings.customTheme.chickenville = settings.customTheme.chickenville || {};
-  settings.reportOrder = normalizeOrderList(settings.reportOrder, ['systemSales','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers']);
+  settings.reportOrder = normalizeOrderList(settings.reportOrder, ['systemSales','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers','notes']);
   settings.costsOrder = normalizeOrderList(settings.costsOrder, ['salaries','rents','purchases','other','housingRent']);
+  settings.customExpenseCategories = Array.isArray(settings.customExpenseCategories) ? settings.customExpenseCategories : [];
+  settings.customHousingRentCategories = Array.isArray(settings.customHousingRentCategories) ? settings.customHousingRentCategories : [];
+  settings.reportNotes = settings.reportNotes || '';
   return settings;
 }
 function mergeWithDefaults(parsed){
@@ -2718,7 +2769,7 @@ function renderOtherExpenses(){
   const rows = scope ? state.otherExpenses.filter(o=>o.branchId===scope) : state.otherExpenses;
   document.getElementById('other-body').innerHTML = rows.map(o => `
     <tr data-id="${o.id}">
-      <td><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.map(c=>`<option value="${c}" ${o.category===c?'selected':''}>${categoryLabel(c)}</option>`).join('')}</select></td>
+      <td><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.concat(state.settings.customExpenseCategories).map(c=>`<option value="${escapeHtml(c)}" ${o.category===c?'selected':''}>${escapeHtml(categoryLabel(c))}</option>`).join('')}</select></td>
       <td><select onchange="updateOtherExpense('${o.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(o.branchId)}</select></td>
       <td><input type="date" value="${o.date||''}" onchange="updateOtherExpense('${o.id}','date',this.value)"></td>
       <td><input type="number" min="0" step="any" value="${o.qty ?? 1}" oninput="updateOtherExpense('${o.id}','qty',this.value); renderOtherTotals();"></td>
@@ -2745,7 +2796,7 @@ function renderOtherTotals(){
 function totalHousingRent(branchId){
   return state.housingRent.filter(h => !branchId || h.branchId===branchId).reduce((a,h)=>a+num(h.amount),0);
 }
-function housingRentCategoryLabel(key){ return t('hrcat_' + (key || 'housingRent')); }
+function housingRentCategoryLabel(key){ return HOUSING_RENT_CATEGORIES.includes(key) ? t('hrcat_' + key) : (key || t('hrcat_housingRent')); }
 function addHousingRent(){
   if(!confirm(t('confirmAddHousingRent'))) return;
   const branchId = activeBranchId() || pickedAddBranch('housingRent') || '';
@@ -2769,7 +2820,7 @@ function renderHousingRent(){
   const rows = scope ? state.housingRent.filter(h=>h.branchId===scope) : state.housingRent;
   document.getElementById('housing-rent-body').innerHTML = rows.map(h => `
     <tr data-id="${h.id}">
-      <td><select onchange="updateHousingRent('${h.id}','category',this.value)">${HOUSING_RENT_CATEGORIES.map(c=>`<option value="${c}" ${(h.category||'housingRent')===c?'selected':''}>${housingRentCategoryLabel(c)}</option>`).join('')}</select></td>
+      <td><select onchange="updateHousingRent('${h.id}','category',this.value)">${HOUSING_RENT_CATEGORIES.concat(state.settings.customHousingRentCategories).map(c=>`<option value="${escapeHtml(c)}" ${(h.category||'housingRent')===c?'selected':''}>${escapeHtml(housingRentCategoryLabel(c))}</option>`).join('')}</select></td>
       <td><input type="number" min="0" step="any" value="${h.amount}" oninput="updateHousingRent('${h.id}','amount',this.value); renderHousingRentTotals();"></td>
       <td><select onchange="updateHousingRent('${h.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(h.branchId)}</select></td>
       <td><input type="date" value="${h.date||''}" onchange="updateHousingRent('${h.id}','date',this.value)"></td>
@@ -2938,6 +2989,9 @@ document.getElementById('settings-tmdone').addEventListener('input', function(){
 document.getElementById('settings-discounts').addEventListener('input', function(){
   state.settings.discounts = this.value; saveState(); renderProfit();
 });
+document.getElementById('report-notes-input').addEventListener('input', function(){
+  state.settings.reportNotes = this.value; saveState();
+});
 
 function renderProfit(){
   document.getElementById('settings-visa').value = state.settings.visaPct;
@@ -3096,6 +3150,7 @@ function applyCostsOrder(){
 function renderReports(){
   renderReportLogo();
   populateReportBranchSelect();
+  document.getElementById('report-notes-input').value = state.settings.reportNotes || '';
   const period = document.getElementById('report-period').value;
   const reportScope = activeBranchId() || document.getElementById('report-branch').value || null;
   const reportBranches = reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches;
@@ -3331,7 +3386,7 @@ function renderUsers(){
 const REPORT_ORDER_LABELS = {
   systemSales:'reportSystemSalesDetailTitle', branchSales:'reportBranchSalesTitle', paymentMethods:'reportPaymentMethodsTitle',
   expenses:'reportExpensesTitle', profit:'reportProfitTitle', rents:'reportRentsDetailTitle', housingRent:'reportHousingRentDetailTitle',
-  purchases:'reportPurchasesDetailTitle', other:'reportOtherDetailTitle', suppliers:'suppliersTitle',
+  purchases:'reportPurchasesDetailTitle', other:'reportOtherDetailTitle', suppliers:'suppliersTitle', notes:'reportNotesTitle',
 };
 const COSTS_ORDER_LABELS = {
   salaries:'subtabSalaries', rents:'subtabRents', purchases:'subtabPurchases', other:'subtabOther', housingRent:'subtabHousingRent',
@@ -3369,6 +3424,53 @@ function moveCostsOrderItem(key, dir){
   renderCostsOrderSettings();
 }
 
+/* --- بنود مخصصة للتكاليف التشغيلية --- */
+function renderCustomCategoryList(containerId, list, removeFnName){
+  document.getElementById(containerId).innerHTML = list.map((c, i) => `
+    <li>
+      <span><bdi>${escapeHtml(c)}</bdi></span>
+      <div class="order-btns"><button onclick="${removeFnName}(${i})">✕</button></div>
+    </li>`).join('') || `<li style="color:var(--muted);">${t('noData')}</li>`;
+}
+function renderCustomExpenseCategories(){
+  renderCustomCategoryList('custom-expense-cat-list', state.settings.customExpenseCategories, 'removeCustomExpenseCategory');
+}
+function addCustomExpenseCategory(){
+  const input = document.getElementById('custom-expense-cat-input');
+  const val = input.value.trim();
+  if(!val){ alert(t('errCategoryEmpty')); return; }
+  const exists = EXPENSE_CATEGORIES.some(c => categoryLabel(c) === val) || state.settings.customExpenseCategories.includes(val);
+  if(exists){ alert(t('errCategoryExists')); return; }
+  state.settings.customExpenseCategories.push(val);
+  saveState();
+  input.value = '';
+  renderCustomExpenseCategories();
+}
+function removeCustomExpenseCategory(index){
+  state.settings.customExpenseCategories.splice(index, 1);
+  saveState();
+  renderCustomExpenseCategories();
+}
+function renderCustomHousingRentCategories(){
+  renderCustomCategoryList('custom-housing-cat-list', state.settings.customHousingRentCategories, 'removeCustomHousingRentCategory');
+}
+function addCustomHousingRentCategory(){
+  const input = document.getElementById('custom-housing-cat-input');
+  const val = input.value.trim();
+  if(!val){ alert(t('errCategoryEmpty')); return; }
+  const exists = HOUSING_RENT_CATEGORIES.some(c => housingRentCategoryLabel(c) === val) || state.settings.customHousingRentCategories.includes(val);
+  if(exists){ alert(t('errCategoryExists')); return; }
+  state.settings.customHousingRentCategories.push(val);
+  saveState();
+  input.value = '';
+  renderCustomHousingRentCategories();
+}
+function removeCustomHousingRentCategory(index){
+  state.settings.customHousingRentCategories.splice(index, 1);
+  saveState();
+  renderCustomHousingRentCategories();
+}
+
 /* =========================================================
    المزيد من الميزات (بحث شامل، نسخ احتياطي، تصدير CSV، إعادة تعيين)
 ========================================================= */
@@ -3380,6 +3482,8 @@ function renderMore(){
   renderCloudBackupsList();
   renderReportOrderSettings();
   renderCostsOrderSettings();
+  renderCustomExpenseCategories();
+  renderCustomHousingRentCategories();
 }
 
 /* =========================================================
