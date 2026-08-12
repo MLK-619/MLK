@@ -90,7 +90,8 @@
     display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
     background:var(--card);border:1px solid var(--border);font-size:.78rem;color:var(--muted);
   }
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);animation:pulseDot 2s infinite;}
+  @keyframes pulseDot{0%{box-shadow:0 0 0 0 rgba(74,222,128,.55);}70%{box-shadow:0 0 0 9px rgba(74,222,128,0);}100%{box-shadow:0 0 0 0 rgba(74,222,128,0);}}
   .burger{display:none;}
   @media (max-width:860px){
     .navlinks{display:none;}
@@ -193,6 +194,23 @@
   }
   .error-box{color:var(--danger);}
   .load-more{display:flex;justify-content:center;margin-top:24px;}
+  .live-meta{font-size:.76rem;color:var(--muted);margin:-8px 0 18px;display:flex;gap:14px;flex-wrap:wrap;}
+  .live-meta b{color:var(--accent);font-weight:700;}
+
+  /* ===== Toasts ===== */
+  .toast-wrap{
+    position:fixed;bottom:20px;left:20px;z-index:200;
+    display:flex;flex-direction:column;gap:10px;max-width:340px;
+  }
+  @media (max-width:480px){.toast-wrap{left:10px;right:10px;max-width:none;}}
+  .toast{
+    background:var(--card);border:1px solid var(--accent);border-radius:12px;
+    padding:12px 14px;box-shadow:var(--shadow);display:flex;gap:10px;align-items:flex-start;
+    text-decoration:none;color:var(--text);transition:opacity .3s,transform .3s;
+  }
+  .toast .dotnew{width:8px;height:8px;border-radius:50%;background:var(--accent2);margin-top:6px;flex-shrink:0;box-shadow:0 0 8px var(--accent2);}
+  .toast b{display:block;font-size:.8rem;margin-bottom:3px;color:var(--accent);}
+  .toast span{font-size:.76rem;color:var(--text);line-height:1.5;}
 
   /* ===== Tweets ===== */
   .tweets-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;}
@@ -260,6 +278,7 @@
     </nav>
     <div class="navtools">
       <span class="status-pill" id="statusPill"><span class="dot"></span> مباشر</span>
+      <button class="icon-btn" id="soundBtn" title="تنبيه صوتي عند وجود خبر جديد" aria-label="تفعيل التنبيه الصوتي">🔔</button>
       <button class="icon-btn" id="themeBtn" title="تبديل المظهر" aria-label="تبديل المظهر">🌙</button>
       <button class="icon-btn burger" id="burgerBtn" aria-label="القائمة">☰</button>
     </div>
@@ -291,6 +310,11 @@
       </button>
     </div>
 
+    <div class="live-meta">
+      <span>آخر تحديث: <b id="lastUpdateTxt">—</b></span>
+      <span id="nextUpdateTxt">يتم التحديث التلقائي كل دقيقتين</span>
+    </div>
+
     <div class="controls">
       <div class="search">
         🔎 <input type="text" id="searchInput" placeholder="ابحث في عناوين الأخبار...">
@@ -317,8 +341,9 @@
     <div class="section-head">
       <div>
         <h2>🐦 آخر تغريدات حسابات الأمن السيبراني</h2>
-        <p>أهم الحسابات والخبراء المتخصصين في أخبار وتحليلات الأمن السيبراني</p>
+        <p>أهم الحسابات والخبراء المتخصصين في أخبار وتحليلات الأمن السيبراني — تُحدَّث تلقائياً</p>
       </div>
+      <button class="btn" id="tweetsRefreshBtn">⟳ تحديث التغريدات</button>
     </div>
     <div class="tweets-grid" id="tweetsGrid"></div>
   </div>
@@ -357,6 +382,8 @@
   </div>
 </footer>
 
+<div class="toast-wrap" id="toastWrap"></div>
+
 <script>
 (function(){
   "use strict";
@@ -374,6 +401,65 @@
   themeBtn.addEventListener('click', function(){
     applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
   });
+
+  /* ---------- Sound alert ---------- */
+  var soundBtn = document.getElementById('soundBtn');
+  var soundMuted = true;
+  try{ soundMuted = localStorage.getItem('sec_sound_muted') === '1'; }catch(e){}
+  var audioCtx = null;
+  function updateSoundBtn(){
+    soundBtn.textContent = soundMuted ? '🔕' : '🔔';
+    soundBtn.title = soundMuted ? 'تفعيل التنبيه الصوتي عند وجود خبر جديد' : 'إيقاف التنبيه الصوتي';
+  }
+  updateSoundBtn();
+  soundBtn.addEventListener('click', function(){
+    soundMuted = !soundMuted;
+    try{ localStorage.setItem('sec_sound_muted', soundMuted ? '1' : '0'); }catch(e){}
+    updateSoundBtn();
+    if(!soundMuted){
+      try{
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+        playChime();
+      }catch(e){}
+    }
+  });
+  function playChime(){
+    if(soundMuted) return;
+    try{
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      var now = audioCtx.currentTime;
+      [880, 1320].forEach(function(freq, i){
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        var t = now + i * 0.15;
+        gain.gain.setValueAtTime(0.0001, t);
+        gain.gain.exponentialRampToValueAtTime(0.2, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+        osc.connect(gain).connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.32);
+      });
+    }catch(e){}
+  }
+  function showToast(items){
+    var wrap = document.getElementById('toastWrap');
+    items.forEach(function(it){
+      var el = document.createElement('a');
+      el.className = 'toast';
+      el.href = it.link; el.target = '_blank'; el.rel = 'noopener noreferrer';
+      el.innerHTML = '<span class="dotnew"></span><div><b>خبر جديد · ' + escapeHtml(it.sourceName) + '</b><span>' + escapeHtml(it.title) + '</span></div>';
+      wrap.appendChild(el);
+      setTimeout(function(){
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(10px)';
+        setTimeout(function(){ el.remove(); }, 300);
+      }, 8000);
+    });
+  }
 
   /* ---------- Mobile nav ---------- */
   var burger = document.getElementById('burgerBtn');
@@ -405,6 +491,7 @@
   var activeSource = 'all';
   var searchTerm = '';
   var visibleCount = PAGE_SIZE;
+  var seenLinks = null; // null until a baseline set of already-seen articles is established
 
   document.getElementById('statSources').textContent = SOURCES.length;
 
@@ -497,8 +584,23 @@
 
   function updateStats(){
     document.getElementById('statArticles').textContent = allItems.length;
-    document.getElementById('statUpdated').textContent = new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+    var now = new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('statUpdated').textContent = now;
+    var lu = document.getElementById('lastUpdateTxt');
+    if(lu) lu.textContent = now;
   }
+
+  var REFRESH_MS = 2 * 60 * 1000;
+  var nextUpdateAt = Date.now() + REFRESH_MS;
+  function tickCountdown(){
+    var el = document.getElementById('nextUpdateTxt');
+    if(!el) return;
+    var remain = Math.max(0, Math.round((nextUpdateAt - Date.now()) / 1000));
+    var m = Math.floor(remain / 60), s = remain % 60;
+    el.textContent = 'التحديث التالي خلال ' + (m > 0 ? m + ' د ' : '') + s + ' ث';
+  }
+  setInterval(tickCountdown, 1000);
+  tickCountdown();
 
   function setRefreshing(on){
     var btn = document.getElementById('refreshBtn');
@@ -512,6 +614,8 @@
 
   function loadAllNews(){
     setRefreshing(true);
+    nextUpdateAt = Date.now() + REFRESH_MS;
+    tickCountdown();
     var results = [];
     var pending = SOURCES.length;
 
@@ -549,6 +653,16 @@
     if(finished && results.length === 0 && allItems.length > 0) { setRefreshing(false); return; }
     finished = true;
     results.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+
+    var newOnes = [];
+    if(results.length){
+      if(seenLinks){
+        newOnes = results.filter(function(it){ return !seenLinks.has(it.link); });
+      }
+      seenLinks = new Set(results.map(function(it){ return it.link; }));
+      try{ localStorage.setItem('sec_seen_links', JSON.stringify(Array.from(seenLinks).slice(0, 400))); }catch(e){}
+    }
+
     allItems = results;
     visibleCount = PAGE_SIZE;
     if(!allItems.length){
@@ -559,6 +673,10 @@
       renderNews();
     }
     updateStats();
+    if(newOnes.length){
+      playChime();
+      showToast(newOnes.slice(0, 3));
+    }
     setRefreshing(false);
     try{
       localStorage.setItem('sec_news_cache', JSON.stringify({ items: allItems, ts: Date.now() }));
@@ -570,6 +688,7 @@
     var cached = JSON.parse(localStorage.getItem('sec_news_cache') || 'null');
     if(cached && Array.isArray(cached.items) && cached.items.length){
       allItems = cached.items;
+      seenLinks = new Set(cached.items.map(function(it){ return it.link; }));
       renderChips();
       renderNews();
       updateStats();
@@ -588,7 +707,7 @@
   });
 
   loadAllNews();
-  setInterval(loadAllNews, 15 * 60 * 1000); // auto-refresh every 15 minutes
+  setInterval(loadAllNews, REFRESH_MS); // auto-refresh every 2 minutes for a near-live feed
 
   /* ---------- Twitter / X accounts ---------- */
   var ACCOUNTS = [
@@ -626,6 +745,12 @@
   tw.src = 'https://platform.twitter.com/widgets.js';
   tw.async = true;
   document.body.appendChild(tw);
+
+  function refreshTweets(){
+    if(window.twttr && twttr.widgets && twttr.widgets.load){ twttr.widgets.load(); }
+  }
+  document.getElementById('tweetsRefreshBtn').addEventListener('click', refreshTweets);
+  setInterval(refreshTweets, 5 * 60 * 1000); // periodic refresh so new tweets surface without reloading the page
 
   /* ---------- About sources ---------- */
   document.getElementById('aboutSources').innerHTML = SOURCES.map(function(s){
