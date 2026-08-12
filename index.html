@@ -301,6 +301,8 @@
   .kpi-label{font-size:.74rem;color:var(--muted);margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
   .kpi-value{font-size:1.35rem;font-weight:800;font-variant-numeric:tabular-nums;}
   .kpi-card.grand .kpi-value{color:var(--accent);font-size:1.55rem;}
+  .kpi-card.loss{border-color:var(--danger);background:rgba(220,38,38,.06);}
+  .kpi-card.loss .kpi-value{color:var(--danger);}
   .kpi-sub{font-size:.76rem;color:var(--muted);margin-top:4px;}
 
   /* أشرطة المقارنة */
@@ -516,6 +518,8 @@
             </table>
             </div>
             <div class="section-total"><span data-i18n="totalNetProfitAll">إجمالي صافي الربح لكل الفروع:</span> <b id="dashboard-all-profits-total">0.000</b> <span class="cur-suffix"></span></div>
+            <div class="section-total"><span data-i18n="totalBranchProfits">إجمالي أرباح الفروع الرابحة:</span> <b id="dashboard-total-profits" style="color:var(--accent);">0.000</b> <span class="cur-suffix"></span></div>
+            <div class="section-total"><span data-i18n="totalBranchLosses">إجمالي خسائر الفروع الخاسرة:</span> <b id="dashboard-total-losses" style="color:var(--danger);">0.000</b> <span class="cur-suffix"></span></div>
           </div>
           <div class="section">
             <h2><span class="icon">📊</span> <span data-i18n="sectionExpenseBreakdown">توزيع المصروفات</span></h2>
@@ -756,10 +760,12 @@
             <div class="table-scroll">
             <table>
               <thead><tr>
-                <th style="width:28%" data-i18n="thMaterialName">اسم المادة</th>
-                <th style="width:22%" data-i18n="thBranch">الفرع</th>
-                <th style="width:18%" data-i18n="thQuantity">الكمية المتوفرة</th>
-                <th style="width:18%" data-i18n="thDate">التاريخ</th>
+                <th style="width:18%" data-i18n="thMaterialName">اسم المادة</th>
+                <th style="width:14%" data-i18n="thBranch">الفرع</th>
+                <th style="width:11%" data-i18n="thQuantity">الكمية المتوفرة</th>
+                <th style="width:16%" data-i18n="thDispense">صرف كمية</th>
+                <th style="width:11%" data-i18n="thDate">تاريخ الإضافة</th>
+                <th style="width:16%" data-i18n="thLastUpdated">آخر تحديث</th>
                 <th style="width:14%"></th>
               </tr></thead>
               <tbody id="stock-body"></tbody>
@@ -851,13 +857,14 @@
         <section class="view" id="view-profit">
           <h1 class="page-title" data-i18n="profitTitle">حساب الأرباح</h1>
           <p class="subtitle" data-i18n="profitSubtitle">صافي الربح = إجمالي المبيعات - إجمالي المصروفات - عمولات التطبيقات - الخصومات</p>
-          <div class="toolbar"><div>
+          <div class="toolbar"><div style="display:flex;align-items:center;gap:10px;">
             <select id="profit-period" onchange="renderProfit()">
               <option value="day" data-i18n="periodToday">اليوم</option>
               <option value="month" selected data-i18n="periodMonth">هذا الشهر</option>
               <option value="year" data-i18n="periodYear">هذه السنة</option>
               <option value="all" data-i18n="periodAll">كل الفترات</option>
             </select>
+            <b id="profit-period-label" style="color:var(--accent);font-size:.9rem;"></b>
           </div><div></div></div>
           <div class="section">
             <h2><span class="icon">⚙️</span> <span data-i18n="settingsTitle">إعدادات الحساب</span></h2>
@@ -947,7 +954,7 @@
             </div>
           </div>
           <div class="toolbar">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
               <select id="report-period" onchange="renderReports()">
                 <option value="day" data-i18n="periodToday">اليوم</option>
                 <option value="month" selected data-i18n="periodMonth">هذا الشهر</option>
@@ -955,6 +962,7 @@
                 <option value="all" data-i18n="periodAll">كل الفترات</option>
               </select>
               <select id="report-branch" onchange="renderReports()"></select>
+              <b id="report-period-label" style="color:var(--accent);font-size:.9rem;"></b>
             </div>
             <div class="toolbar-right">
               <button onclick="shareReport()" data-i18n="btnShareReport">📤 مشاركة التقرير</button>
@@ -1370,6 +1378,8 @@ const I18N = {
     stockSubtitleOwner:'اسم المادة يحدده المالك فقط؛ يمكن لأي مستخدم تحديث الكمية والتاريخ',
     stockSubtitleStaff:'يمكنك تحديث الكمية والتاريخ فقط؛ أسماء المواد يحددها المالك',
     thMaterialName:'اسم المادة', thQuantity:'الكمية المتوفرة', thDate:'التاريخ',
+    thDispense:'صرف كمية', thLastUpdated:'آخر تحديث', btnDispense:'صرف', noLastUpdate:'لم يُحدَّث بعد',
+    errDispenseInvalid:'أدخلي كمية صحيحة للصرف', errDispenseExceeds:'الكمية المطلوب صرفها أكبر من المتوفر',
     btnAddMaterial:'+ إضافة مادة خام', placeholderMaterialName:'اسم المادة الخام',
     salesTitle:'المبيعات', salesSubtitle:'إدخال المبيعات الشهرية حسب طريقة الدفع لكل فرع',
     thMonth:'الشهر', thSaleDate:'التاريخ', thEntryType:'نوع الإدخال', optionMonthly:'شهري', optionDaily:'يومي',
@@ -1415,6 +1425,7 @@ const I18N = {
     reportRentsDetailTitle:'تفاصيل الإيجارات لكل فرع', reportOtherDetailTitle:'تفاصيل المصاريف الأخرى لكل فرع',
     reportHousingRentDetailTitle:'تفاصيل إيجار السكن لكل فرع',
     reportAllProfitsTitle:'إجمالي الأرباح لكل الفروع (للمالك فقط)', thNetProfit:'صافي الربح', totalNetProfitAll:'إجمالي صافي الربح لكل الفروع:',
+    totalBranchProfits:'إجمالي أرباح الفروع الرابحة:', totalBranchLosses:'إجمالي خسائر الفروع الخاسرة:',
     noData:'لا توجد بيانات', noBranches:'لا توجد فروع', noSuppliers:'لا يوجد موردون',
     auditTitle:'سجل التدقيق', auditSubtitle:'سجل لكل عملية إضافة أو تعديل أو حذف (متاح للمالك فقط)',
     btnClearLog:'🗑 مسح السجل', thTime:'الوقت', thUser:'المستخدم', thRoleCol:'الدور', thOperation:'العملية',
@@ -1423,7 +1434,7 @@ const I18N = {
     logAddSalary:'إضافة سجل راتب', logDeleteSalary:'حذف سجل راتب',
     logAddPurchase:'إضافة مشترى', logDeletePurchase:'حذف مشترى',
     logAddOther:'إضافة مصروف آخر', logDeleteOther:'حذف مصروف آخر',
-    logAddStock:'إضافة مادة خام للمخزون', logDeleteStock:'حذف مادة من المخزون',
+    logAddStock:'إضافة مادة خام للمخزون', logDeleteStock:'حذف مادة من المخزون', logDispenseStock:'صرف كمية من المخزون',
     logAddNote:'إضافة ملاحظة/تذكير', logChangeLogo:'تغيير شعار التقرير', logChangeTheme:'تغيير ألوان الثيم',
     logAddSale:'إضافة يومية مبيعات', logDeleteSale:'حذف يومية مبيعات',
     logAddSupplier:'إضافة مورد', logDeleteSupplier:'حذف فاتورة مورد',
@@ -1547,6 +1558,8 @@ const I18N = {
     stockSubtitleOwner:'Only the owner can set material names; anyone can update quantity and date',
     stockSubtitleStaff:'You can update quantity and date only; material names are set by the owner',
     thMaterialName:'Material Name', thQuantity:'Quantity on Hand', thDate:'Date',
+    thDispense:'Dispense Quantity', thLastUpdated:'Last Updated', btnDispense:'Dispense', noLastUpdate:'Not updated yet',
+    errDispenseInvalid:'Enter a valid quantity to dispense', errDispenseExceeds:'The amount to dispense exceeds what is on hand',
     btnAddMaterial:'+ Add Raw Material', placeholderMaterialName:'Raw material name',
     salesTitle:'Sales', salesSubtitle:'Enter monthly sales by payment method for each branch',
     thMonth:'Month', thSaleDate:'Date', thEntryType:'Entry Type', optionMonthly:'Monthly', optionDaily:'Daily',
@@ -1592,6 +1605,7 @@ const I18N = {
     reportRentsDetailTitle:'Rents Detail by Branch', reportOtherDetailTitle:'Other Expenses Detail by Branch',
     reportHousingRentDetailTitle:'Housing Rent Detail by Branch',
     reportAllProfitsTitle:'Total Profits — All Branches (Owner Only)', thNetProfit:'Net Profit', totalNetProfitAll:'Total Net Profit — All Branches:',
+    totalBranchProfits:'Total Profits (Profitable Branches):', totalBranchLosses:'Total Losses (Losing Branches):',
     noData:'No data available', noBranches:'No branches', noSuppliers:'No suppliers',
     auditTitle:'Audit Log', auditSubtitle:'Log of every add, edit, or delete operation (owner only)',
     btnClearLog:'🗑 Clear Log', thTime:'Time', thUser:'User', thRoleCol:'Role', thOperation:'Operation',
@@ -1600,7 +1614,7 @@ const I18N = {
     logAddSalary:'Added salary record', logDeleteSalary:'Deleted salary record',
     logAddPurchase:'Added purchase', logDeletePurchase:'Deleted purchase',
     logAddOther:'Added other expense', logDeleteOther:'Deleted other expense',
-    logAddStock:'Added raw material to inventory', logDeleteStock:'Removed material from inventory',
+    logAddStock:'Added raw material to inventory', logDeleteStock:'Removed material from inventory', logDispenseStock:'Dispensed quantity from inventory',
     logAddNote:'Added note/reminder', logChangeLogo:'Changed report logo', logChangeTheme:'Changed theme colors',
     logAddSale:'Added daily sales entry', logDeleteSale:'Deleted daily sales entry',
     logAddSupplier:'Added supplier', logDeleteSupplier:'Deleted supplier invoice',
@@ -1811,6 +1825,18 @@ function formatNum(n){
 }
 function formatCurrency(n){ return `${formatNum(n)} ${t('currencySuffix')}`; }
 function todayStr(){ return new Date().toISOString().slice(0,10); }
+const MONTH_NAMES = {
+  ar: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+  en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+};
+function periodLabel(period){
+  const today = new Date();
+  const months = MONTH_NAMES[LANG] || MONTH_NAMES.ar;
+  if(period === 'day') return todayStr();
+  if(period === 'month') return months[today.getMonth()] + ' ' + today.getFullYear();
+  if(period === 'year') return String(today.getFullYear());
+  return t('periodAll');
+}
 function num(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
 
 /* =========================================================
@@ -2247,8 +2273,8 @@ function barRow(label, value, max, color, extra){
   </div>`;
 }
 function badge(text, type){ return `<span class="badge-pill badge-${type}">${escapeHtml(text)}</span>`; }
-function kpiCard(label, value, sub, grand){
-  return `<div class="kpi-card ${grand?'grand':''}"><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div>${sub?`<div class="kpi-sub">${sub}</div>`:''}</div>`;
+function kpiCard(label, value, sub, grand, loss){
+  return `<div class="kpi-card ${grand?'grand':''} ${loss?'loss':''}"><div class="kpi-label">${label}</div><div class="kpi-value">${value}</div>${sub?`<div class="kpi-sub">${sub}</div>`:''}</div>`;
 }
 function paymentMethodsWithTotals(rows){
   return PAYMENT_METHODS.map((key, i) => ({
@@ -2286,7 +2312,7 @@ function renderDashboard(){
   document.getElementById('dashboard-kpis').innerHTML = [
     kpiCard(t('kpiSalesMonth'), formatCurrency(salesMonth)),
     kpiCard(t('kpiExpensesMonth'), formatCurrency(expensesMonth)),
-    kpiCard(t('kpiNetProfit'), formatCurrency(netProfit), null, true),
+    kpiCard(t('kpiNetProfit'), formatCurrency(netProfit), null, true, netProfit < 0),
     kpiCard(t('kpiTopBranch'), escapeHtml(topBranch.name), formatCurrency(topBranch.total)),
     kpiCard(t('kpiTopSupplier'), escapeHtml(topSupplier.company), formatCurrency(topSupplier.total)),
   ].join('');
@@ -2315,6 +2341,8 @@ function renderDashboard(){
         <td style="color:${b.net>=0?'var(--accent)':'var(--danger)'}">${formatCurrency(b.net)}</td>
       </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noBranches')}</td></tr>`;
     document.getElementById('dashboard-all-profits-total').textContent = formatNum(branchProfits.reduce((a,b)=>a+b.net,0) - num(state.settings.discounts));
+    document.getElementById('dashboard-total-profits').textContent = formatNum(branchProfits.filter(b=>b.net>0).reduce((a,b)=>a+b.net,0));
+    document.getElementById('dashboard-total-losses').textContent = formatNum(Math.abs(branchProfits.filter(b=>b.net<0).reduce((a,b)=>a+b.net,0)));
   }else{
     allProfitsSection.style.display = 'none';
   }
@@ -2853,7 +2881,25 @@ function updateStockItem(id, field, value){
   const perms = PERMS[session.role];
   if(field === 'name' && !perms.manageStockNames) return;
   i[field] = value;
+  if(field === 'quantity'){
+    i.lastUpdated = new Date().toISOString();
+    const cell = document.querySelector(`#stock-body tr[data-id="${id}"] td:nth-child(6)`);
+    if(cell) cell.textContent = new Date(i.lastUpdated).toLocaleString(LANG === 'ar' ? 'ar-OM' : 'en-GB');
+  }
   saveState();
+}
+function dispenseStockItem(id){
+  const i = state.stock.find(x=>x.id===id);
+  if(!i) return;
+  const input = document.querySelector(`#stock-body tr[data-id="${id}"] .stock-dispense-input`);
+  const amount = num(input.value);
+  if(!amount || amount <= 0){ alert(t('errDispenseInvalid')); return; }
+  if(amount > num(i.quantity)){ alert(t('errDispenseExceeds')); return; }
+  i.quantity = num(i.quantity) - amount;
+  i.lastUpdated = new Date().toISOString();
+  logAction('logDispenseStock');
+  saveState();
+  renderStock();
 }
 function removeStockItem(id){
   const perms = PERMS[session.role];
@@ -2874,9 +2920,14 @@ function renderStock(){
       <td><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateStockItem('${i.id}','name',this.value)" ${perms.manageStockNames?'':'readonly'}></td>
       <td><select onchange="updateStockItem('${i.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(i.branchId)}</select></td>
       <td><input type="number" min="0" step="any" value="${i.quantity}" oninput="updateStockItem('${i.id}','quantity',this.value)"></td>
+      <td style="display:flex;gap:6px;">
+        <input type="number" class="stock-dispense-input" min="0" step="any" placeholder="0" style="min-width:70px;">
+        <button onclick="dispenseStockItem('${i.id}')">${t('btnDispense')}</button>
+      </td>
       <td><input type="date" value="${i.date}" onchange="updateStockItem('${i.id}','date',this.value)"></td>
+      <td>${i.lastUpdated ? escapeHtml(new Date(i.lastUpdated).toLocaleString(LANG === 'ar' ? 'ar-OM' : 'en-GB')) : t('noLastUpdate')}</td>
       <td><button class="del-btn" ${perms.manageStockNames?'':'disabled'} onclick="removeStockItem('${i.id}')">✕</button></td>
-    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted);">${t('noData')}</td></tr>`;
   renderAddBranchPicker('stock-branch-picker', 'stock');
 }
 
@@ -3003,6 +3054,7 @@ function renderProfit(){
 
   const scope = activeBranchId();
   const period = document.getElementById('profit-period').value;
+  document.getElementById('profit-period-label').textContent = periodLabel(period);
   const monthlySales = totalSales(scope, period);
   const sales = salesForProfit(scope, period);
   const expenses = totalExpenses(scope);
@@ -3152,6 +3204,7 @@ function renderReports(){
   populateReportBranchSelect();
   document.getElementById('report-notes-input').value = state.settings.reportNotes || '';
   const period = document.getElementById('report-period').value;
+  document.getElementById('report-period-label').textContent = periodLabel(period);
   const reportScope = activeBranchId() || document.getElementById('report-branch').value || null;
   const reportBranches = reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches;
 
@@ -3188,8 +3241,14 @@ function renderReports(){
     kpiCard(t('salesAfterCommissionRow'), formatCurrency(salesAfterCommission)),
     kpiCard(t('totalExpensesRow'), formatCurrency(expenses)),
     kpiCard(t('discountsRow'), formatCurrency(discounts)),
-    kpiCard(t('netProfitRow'), formatCurrency(net), null, true),
-  ].join('');
+    kpiCard(t('netProfitRow'), formatCurrency(net), null, true, net < 0),
+  ].join('') + (session && session.role === 'owner' ? (() => {
+    const branchNets = state.branches.map(b => salesForProfit(b.id, period) - totalExpenses(b.id) - commissionsTotal(period, b.id));
+    const totalProfits = branchNets.filter(n=>n>0).reduce((a,n)=>a+n,0);
+    const totalLosses = Math.abs(branchNets.filter(n=>n<0).reduce((a,n)=>a+n,0));
+    return kpiCard(t('totalBranchProfits').replace(':',''), formatCurrency(totalProfits))
+      + kpiCard(t('totalBranchLosses').replace(':',''), formatCurrency(totalLosses), null, false, totalLosses > 0);
+  })() : '');
 
   const reportRentBranches = (reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches)
     .slice().sort((a,b) => a.name.localeCompare(b.name));
