@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قسم أمن تقنية المعلومات | آخر أخبار الأمن السيبراني</title>
+<meta name="description" content="بوابة قسم أمن تقنية المعلومات: آخر أخبار الأمن السيبراني من عدة مصادر عالمية، وآخر تغريدات أهم الحسابات المتخصصة في الأمن السيبراني.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16;
+    --bg2:#0d131f;
+    --card:#111927;
+    --card-hover:#151f30;
+    --border:#1f2b3d;
+    --text:#e7edf5;
+    --muted:#8b9bb0;
+    --accent:#22d3ee;
+    --accent2:#4ade80;
+    --accent-dim:rgba(34,211,238,.12);
+    --danger:#f87171;
+    --warn:#fbbf24;
+    --radius:14px;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  html[data-theme="light"]{
+    --bg:#f3f6fb;
+    --bg2:#ffffff;
+    --card:#ffffff;
+    --card-hover:#eef4fb;
+    --border:#dde6f2;
+    --text:#101827;
+    --muted:#5b6b81;
+    --accent:#0891a8;
+    --accent2:#0f9d58;
+    --accent-dim:rgba(8,145,168,.1);
+    --shadow:0 10px 24px rgba(20,40,70,.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+    background:
+      radial-gradient(circle at 15% 0%, var(--accent-dim), transparent 45%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
+    color:var(--text);
+    min-height:100vh;
+    transition:background .2s ease,color .2s ease;
+  }
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 20px;}
+
+  /* ===== Header ===== */
+  header.site{
+    position:sticky;top:0;z-index:50;
+    background:color-mix(in srgb, var(--bg2) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 0;gap:16px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem;}
+  .brand .logo{
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .brand .logo svg{width:20px;height:20px;stroke:#06131a;}
+  .brand small{display:block;font-weight:500;color:var(--muted);font-size:.72rem;}
+  .navlinks{display:flex;gap:4px;align-items:center;}
+  .navlinks a{
+    padding:9px 14px;border-radius:9px;font-weight:600;font-size:.88rem;
+    text-decoration:none;color:var(--muted);transition:.15s;
+  }
+  .navlinks a:hover,.navlinks a.active{background:var(--accent-dim);color:var(--accent);}
+  .navtools{display:flex;align-items:center;gap:8px;}
+  .icon-btn{
+    width:38px;height:38px;border-radius:9px;border:1px solid var(--border);
+    background:var(--card);color:var(--text);cursor:pointer;
+    display:flex;align-items:center;justify-content:center;font-size:1rem;
+    transition:.15s;
+  }
+  .icon-btn:hover{background:var(--card-hover);border-color:var(--accent);}
+  .status-pill{
+    display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
+    background:var(--card);border:1px solid var(--border);font-size:.78rem;color:var(--muted);
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--accent2);box-shadow:0 0 8px var(--accent2);}
+  .burger{display:none;}
+  @media (max-width:860px){
+    .navlinks{display:none;}
+    .burger{display:flex;}
+    .navlinks.open{
+      display:flex;flex-direction:column;position:absolute;top:64px;inset-inline:0;
+      background:var(--bg2);border-bottom:1px solid var(--border);padding:10px;gap:2px;
+    }
+  }
+
+  /* ===== Hero ===== */
+  .hero{padding:52px 0 30px;text-align:center;}
+  .hero h1{font-size:2rem;margin:0 0 10px;font-weight:800;}
+  .hero h1 span{
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{color:var(--muted);max-width:640px;margin:0 auto;font-size:.98rem;line-height:1.9;}
+  .stats{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:28px;}
+  .stat{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:14px 22px;min-width:130px;box-shadow:var(--shadow);
+  }
+  .stat b{display:block;font-size:1.35rem;color:var(--accent);}
+  .stat span{font-size:.78rem;color:var(--muted);}
+
+  /* ===== Section shell ===== */
+  section{padding:46px 0;}
+  .section-head{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+    margin-bottom:22px;flex-wrap:wrap;
+  }
+  .section-head h2{font-size:1.4rem;margin:0 0 4px;font-weight:800;}
+  .section-head p{margin:0;color:var(--muted);font-size:.86rem;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);
+    background:var(--card);color:var(--text);padding:9px 16px;border-radius:10px;
+    cursor:pointer;font-family:inherit;font-weight:700;font-size:.85rem;transition:.15s;
+  }
+  .btn:hover{border-color:var(--accent);color:var(--accent);}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#06131a;border:none;}
+  .btn.primary:hover{filter:brightness(1.08);color:#06131a;}
+  .btn[disabled]{opacity:.55;cursor:default;}
+  .spin{animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ===== News controls ===== */
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:20px;}
+  .search{
+    flex:1;min-width:200px;display:flex;align-items:center;gap:8px;
+    background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px 14px;
+  }
+  .search input{
+    border:none;background:transparent;outline:none;color:var(--text);font-family:inherit;
+    font-size:.88rem;width:100%;
+  }
+  .search input::placeholder{color:var(--muted);}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+  .chip{
+    padding:7px 14px;border-radius:999px;border:1px solid var(--border);background:var(--card);
+    font-size:.8rem;font-weight:700;cursor:pointer;color:var(--muted);transition:.15s;
+    display:flex;align-items:center;gap:6px;
+  }
+  .chip .n{opacity:.7;font-weight:600;}
+  .chip:hover{border-color:var(--accent);}
+  .chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+
+  /* ===== News grid ===== */
+  .news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+  .card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;transition:.15s;text-decoration:none;
+  }
+  .card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--shadow);}
+  .card .thumb{width:100%;height:150px;object-fit:cover;background:var(--card-hover);}
+  .card .thumb.placeholder{
+    display:flex;align-items:center;justify-content:center;color:var(--border);font-size:2rem;
+  }
+  .card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+  .card .meta{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .badge{
+    font-size:.7rem;font-weight:800;padding:3px 10px;border-radius:999px;
+    background:var(--accent-dim);color:var(--accent);white-space:nowrap;
+  }
+  .time{font-size:.72rem;color:var(--muted);white-space:nowrap;}
+  .card h3{font-size:.96rem;line-height:1.55;margin:0;font-weight:700;color:var(--text);}
+  .card p.desc{font-size:.8rem;color:var(--muted);line-height:1.7;margin:0;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+
+  .skeleton{
+    background:linear-gradient(90deg,var(--card) 25%,var(--card-hover) 37%,var(--card) 63%);
+    background-size:400% 100%;animation:sk 1.4s ease infinite;border-radius:var(--radius);
+    height:260px;border:1px solid var(--border);
+  }
+  @keyframes sk{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+  .empty,.error-box{
+    text-align:center;padding:50px 20px;color:var(--muted);border:1px dashed var(--border);
+    border-radius:var(--radius);
+  }
+  .error-box{color:var(--danger);}
+  .load-more{display:flex;justify-content:center;margin-top:24px;}
+
+  /* ===== Tweets ===== */
+  .tweets-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;}
+  .tweet-col{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;min-height:420px;
+  }
+  .tweet-col .head{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:12px 14px;border-bottom:1px solid var(--border);
+  }
+  .tweet-col .head .who{display:flex;align-items:center;gap:9px;}
+  .tweet-col .head .avatar{
+    width:32px;height:32px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:#06131a;font-size:.82rem;
+  }
+  .tweet-col .head b{font-size:.85rem;display:block;}
+  .tweet-col .head span{font-size:.72rem;color:var(--muted);}
+  .tweet-col .head a{font-size:.72rem;color:var(--accent);text-decoration:none;font-weight:700;}
+  .tweet-embed{padding:6px;flex:1;overflow:auto;}
+
+  /* ===== About ===== */
+  .about-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;}
+  @media (max-width:800px){.about-grid{grid-template-columns:1fr;}}
+  .about-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:24px;box-shadow:var(--shadow);
+  }
+  .about-card h3{margin:0 0 10px;font-size:1.05rem;}
+  .about-card p{color:var(--muted);line-height:1.9;font-size:.9rem;margin:0 0 10px;}
+  .about-card ul{margin:0;padding-inline-start:20px;color:var(--muted);font-size:.88rem;line-height:2;}
+  .sources-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+  .src-tag{
+    font-size:.76rem;padding:5px 11px;border-radius:8px;background:var(--accent-dim);
+    color:var(--accent);font-weight:700;
+  }
+
+  footer{border-top:1px solid var(--border);padding:26px 0;text-align:center;color:var(--muted);font-size:.8rem;}
+  footer a{color:var(--accent);text-decoration:none;}
+
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap nav">
+    <div class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2 4 5v6c0 5 3.4 9 8 11 4.6-2 8-6 8-11V5l-8-3Z"></path>
+          <path d="m9.5 12 1.8 1.8L15 10"></path>
+        </svg>
+      </div>
+      <div>
+        قسم أمن تقنية المعلومات
+        <small>مركز رصد الأمن السيبراني</small>
+      </div>
+    </div>
+    <nav class="navlinks" id="navlinks">
+      <a href="#news" class="active">آخر الأخبار</a>
+      <a href="#tweets">التغريدات</a>
+      <a href="#about">عن القسم</a>
+    </nav>
+    <div class="navtools">
+      <span class="status-pill" id="statusPill"><span class="dot"></span> مباشر</span>
+      <button class="icon-btn" id="themeBtn" title="تبديل المظهر" aria-label="تبديل المظهر">🌙</button>
+      <button class="icon-btn burger" id="burgerBtn" aria-label="القائمة">☰</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>آخر <span>أخبار الأمن السيبراني</span> في مكان واحد</h1>
+    <p>تجميع لحظي لآخر الأخبار من أبرز المصادر الأمنية العالمية، إلى جانب آخر تغريدات الحسابات المتخصصة في الأمن السيبراني — كل ذلك في بوابة قسم أمن تقنية المعلومات.</p>
+    <div class="stats">
+      <div class="stat"><b id="statArticles">0</b><span>خبر محمّل</span></div>
+      <div class="stat"><b id="statSources">0</b><span>مصدر إخباري</span></div>
+      <div class="stat"><b id="statAccounts">0</b><span>حساب تغريد</span></div>
+      <div class="stat"><b id="statUpdated">—</b><span>آخر تحديث</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="news">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>📰 آخر أخبار الأمن السيبراني</h2>
+        <p>مجمّعة تلقائياً من عدة مصادر عالمية موثوقة، مرتبة حسب الأحدث</p>
+      </div>
+      <button class="btn primary" id="refreshBtn">
+        <span id="refreshIcon">⟳</span> تحديث الآن
+      </button>
+    </div>
+
+    <div class="controls">
+      <div class="search">
+        🔎 <input type="text" id="searchInput" placeholder="ابحث في عناوين الأخبار...">
+      </div>
+    </div>
+
+    <div class="chips" id="sourceChips"></div>
+
+    <div id="newsArea">
+      <div class="news-grid" id="newsSkeleton">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+    </div>
+
+    <div class="load-more" id="loadMoreWrap" style="display:none;">
+      <button class="btn" id="loadMoreBtn">عرض المزيد</button>
+    </div>
+  </div>
+</section>
+
+<section id="tweets">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>🐦 آخر تغريدات حسابات الأمن السيبراني</h2>
+        <p>أهم الحسابات والخبراء المتخصصين في أخبار وتحليلات الأمن السيبراني</p>
+      </div>
+    </div>
+    <div class="tweets-grid" id="tweetsGrid"></div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-head">
+      <div>
+        <h2>🛡️ عن القسم</h2>
+        <p>مهمة قسم أمن تقنية المعلومات ومصادر الرصد المعتمدة</p>
+      </div>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <h3>مهمتنا</h3>
+        <p>يتولى قسم أمن تقنية المعلومات مراقبة المشهد السيبراني العالمي أولاً بأول، من خلال رصد آخر الأخبار والثغرات والتهديدات المنشورة عبر أبرز المصادر الأمنية المتخصصة، وتوفيرها في مكان واحد لدعم الوعي والاستجابة السريعة.</p>
+        <ul>
+          <li>رصد آخر أخبار الثغرات والهجمات السيبرانية فور نشرها</li>
+          <li>متابعة تحليلات وتغريدات خبراء ومؤسسات الأمن السيبراني</li>
+          <li>تسهيل الاطلاع على المستجدات من مصدر موحّد وموثوق</li>
+        </ul>
+      </div>
+      <div class="about-card">
+        <h3>المصادر الإخبارية المعتمدة</h3>
+        <div class="sources-list" id="aboutSources"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    قسم أمن تقنية المعلومات — بيانات الأخبار مجمّعة تلقائياً من مصادرها الأصلية، والتغريدات مضمّنة مباشرة عبر منصة X.
+    <br>يُرجى الرجوع إلى المصدر الأصلي للتحقق قبل اتخاذ أي إجراء.
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Theme ---------- */
+  var themeBtn = document.getElementById('themeBtn');
+  function applyTheme(t){
+    document.documentElement.setAttribute('data-theme', t);
+    themeBtn.textContent = t === 'light' ? '☀️' : '🌙';
+    try{ localStorage.setItem('sec_theme', t); }catch(e){}
+  }
+  var savedTheme = 'dark';
+  try{ savedTheme = localStorage.getItem('sec_theme') || 'dark'; }catch(e){}
+  applyTheme(savedTheme);
+  themeBtn.addEventListener('click', function(){
+    applyTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+  });
+
+  /* ---------- Mobile nav ---------- */
+  var burger = document.getElementById('burgerBtn');
+  var navlinks = document.getElementById('navlinks');
+  burger.addEventListener('click', function(){ navlinks.classList.toggle('open'); });
+  navlinks.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      navlinks.classList.remove('open');
+      navlinks.querySelectorAll('a').forEach(function(x){ x.classList.remove('active'); });
+      a.classList.add('active');
+    });
+  });
+
+  /* ---------- News sources (RSS feeds) ---------- */
+  var SOURCES = [
+    { id:'hackernews',   name:'The Hacker News',    feed:'https://feeds.feedburner.com/TheHackersNews' },
+    { id:'bleeping',     name:'BleepingComputer',    feed:'https://www.bleepingcomputer.com/feed/' },
+    { id:'krebs',        name:'Krebs on Security',   feed:'https://krebsonsecurity.com/feed/' },
+    { id:'darkreading',  name:'Dark Reading',        feed:'https://www.darkreading.com/rss.xml' },
+    { id:'securityweek', name:'SecurityWeek',        feed:'https://feeds.feedburner.com/Securityweek' },
+    { id:'welivesecurity',name:'WeLiveSecurity',     feed:'https://www.welivesecurity.com/feed/' },
+    { id:'csoonline',    name:'CSO Online',          feed:'https://www.csoonline.com/feed/' },
+    { id:'sansisc',      name:'SANS ISC',            feed:'https://isc.sans.edu/rssfeed.xml' }
+  ];
+
+  var RSS2JSON = 'https://api.rss2json.com/v1/api.json?count=15&rss_url=';
+  var PAGE_SIZE = 12;
+  var allItems = [];
+  var activeSource = 'all';
+  var searchTerm = '';
+  var visibleCount = PAGE_SIZE;
+
+  document.getElementById('statSources').textContent = SOURCES.length;
+
+  function escapeHtml(s){
+    return String(s || '').replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+  function stripHtml(s){
+    var d = document.createElement('div');
+    d.innerHTML = s || '';
+    return (d.textContent || d.innerText || '').replace(/\s+/g,' ').trim();
+  }
+  function relativeTime(dateStr){
+    var d = new Date(dateStr);
+    if(isNaN(d.getTime())) return '';
+    var diff = Math.floor((Date.now() - d.getTime())/1000);
+    if(diff < 60) return 'الآن';
+    if(diff < 3600) return 'منذ ' + Math.floor(diff/60) + ' دقيقة';
+    if(diff < 86400) return 'منذ ' + Math.floor(diff/3600) + ' ساعة';
+    if(diff < 604800) return 'منذ ' + Math.floor(diff/86400) + ' يوم';
+    return d.toLocaleDateString('ar-EG', { day:'numeric', month:'short', year:'numeric' });
+  }
+  function findThumb(item){
+    if(item.thumbnail) return item.thumbnail;
+    var m = (item.description || item.content || '').match(/<img[^>]+src="([^">]+)"/);
+    return m ? m[1] : '';
+  }
+
+  function renderChips(){
+    var wrap = document.getElementById('sourceChips');
+    var counts = {};
+    allItems.forEach(function(it){ counts[it.sourceId] = (counts[it.sourceId]||0) + 1; });
+    var html = '<div class="chip' + (activeSource==='all'?' active':'') + '" data-src="all">الكل <span class="n">(' + allItems.length + ')</span></div>';
+    SOURCES.forEach(function(s){
+      var n = counts[s.id] || 0;
+      html += '<div class="chip' + (activeSource===s.id?' active':'') + '" data-src="' + s.id + '">' + escapeHtml(s.name) + ' <span class="n">(' + n + ')</span></div>';
+    });
+    wrap.innerHTML = html;
+    wrap.querySelectorAll('.chip').forEach(function(c){
+      c.addEventListener('click', function(){
+        activeSource = c.getAttribute('data-src');
+        visibleCount = PAGE_SIZE;
+        renderChips();
+        renderNews();
+      });
+    });
+  }
+
+  function renderNews(){
+    var area = document.getElementById('newsArea');
+    var filtered = allItems.filter(function(it){
+      if(activeSource !== 'all' && it.sourceId !== activeSource) return false;
+      if(searchTerm && it.title.toLowerCase().indexOf(searchTerm) === -1 && it.desc.toLowerCase().indexOf(searchTerm) === -1) return false;
+      return true;
+    });
+
+    if(!allItems.length){
+      area.innerHTML = '<div class="news-grid" id="newsSkeleton">' +
+        Array(6).fill('<div class="skeleton"></div>').join('') + '</div>';
+      document.getElementById('loadMoreWrap').style.display = 'none';
+      return;
+    }
+
+    if(!filtered.length){
+      area.innerHTML = '<div class="empty">لا توجد نتائج مطابقة لبحثك</div>';
+      document.getElementById('loadMoreWrap').style.display = 'none';
+      return;
+    }
+
+    var shown = filtered.slice(0, visibleCount);
+    var html = '<div class="news-grid">' + shown.map(function(it){
+      var thumb = it.thumb
+        ? '<img class="thumb" src="' + escapeHtml(it.thumb) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+        : '<div class="thumb placeholder">🛡️</div>';
+      return '<a class="card" href="' + escapeHtml(it.link) + '" target="_blank" rel="noopener noreferrer">' +
+        thumb +
+        '<div class="body">' +
+          '<div class="meta"><span class="badge">' + escapeHtml(it.sourceName) + '</span><span class="time">' + relativeTime(it.date) + '</span></div>' +
+          '<h3>' + escapeHtml(it.title) + '</h3>' +
+          '<p class="desc">' + escapeHtml(it.desc) + '</p>' +
+        '</div>' +
+      '</a>';
+    }).join('') + '</div>';
+    area.innerHTML = html;
+
+    var lm = document.getElementById('loadMoreWrap');
+    lm.style.display = (filtered.length > visibleCount) ? 'flex' : 'none';
+  }
+
+  function updateStats(){
+    document.getElementById('statArticles').textContent = allItems.length;
+    document.getElementById('statUpdated').textContent = new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  function setRefreshing(on){
+    var btn = document.getElementById('refreshBtn');
+    var icon = document.getElementById('refreshIcon');
+    btn.disabled = on;
+    icon.className = on ? 'spin' : '';
+    document.getElementById('statusPill').innerHTML = on
+      ? '<span class="dot" style="background:var(--warn)"></span> يتم التحديث...'
+      : '<span class="dot"></span> مباشر';
+  }
+
+  function loadAllNews(){
+    setRefreshing(true);
+    var results = [];
+    var pending = SOURCES.length;
+
+    SOURCES.forEach(function(src){
+      fetch(RSS2JSON + encodeURIComponent(src.feed))
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(data && data.status === 'ok' && Array.isArray(data.items)){
+            data.items.forEach(function(item){
+              results.push({
+                sourceId: src.id,
+                sourceName: src.name,
+                title: item.title || '',
+                link: item.link || '#',
+                date: item.pubDate || '',
+                desc: stripHtml(item.description || item.content || '').slice(0, 220),
+                thumb: findThumb(item)
+              });
+            });
+          }
+        })
+        .catch(function(){ /* skip failed source, others still render */ })
+        .finally(function(){
+          pending--;
+          if(pending === 0) finishLoad(results);
+        });
+    });
+
+    // safety timeout in case a request hangs
+    setTimeout(function(){ if(pending > 0){ pending = 0; finishLoad(results); } }, 20000);
+  }
+
+  var finished = false;
+  function finishLoad(results){
+    if(finished && results.length === 0 && allItems.length > 0) { setRefreshing(false); return; }
+    finished = true;
+    results.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+    allItems = results;
+    visibleCount = PAGE_SIZE;
+    if(!allItems.length){
+      document.getElementById('newsArea').innerHTML =
+        '<div class="error-box">تعذّر تحميل الأخبار حالياً. تحقق من الاتصال بالإنترنت ثم أعد المحاولة.</div>';
+    } else {
+      renderChips();
+      renderNews();
+    }
+    updateStats();
+    setRefreshing(false);
+    try{
+      localStorage.setItem('sec_news_cache', JSON.stringify({ items: allItems, ts: Date.now() }));
+    }catch(e){}
+  }
+
+  // show cached news instantly, then refresh in background
+  try{
+    var cached = JSON.parse(localStorage.getItem('sec_news_cache') || 'null');
+    if(cached && Array.isArray(cached.items) && cached.items.length){
+      allItems = cached.items;
+      renderChips();
+      renderNews();
+      updateStats();
+    }
+  }catch(e){}
+
+  document.getElementById('refreshBtn').addEventListener('click', loadAllNews);
+  document.getElementById('loadMoreBtn').addEventListener('click', function(){
+    visibleCount += PAGE_SIZE;
+    renderNews();
+  });
+  document.getElementById('searchInput').addEventListener('input', function(e){
+    searchTerm = e.target.value.trim().toLowerCase();
+    visibleCount = PAGE_SIZE;
+    renderNews();
+  });
+
+  loadAllNews();
+  setInterval(loadAllNews, 15 * 60 * 1000); // auto-refresh every 15 minutes
+
+  /* ---------- Twitter / X accounts ---------- */
+  var ACCOUNTS = [
+    { handle:'TheHackersNews',  label:'The Hacker News' },
+    { handle:'BleepinComputer', label:'BleepingComputer' },
+    { handle:'briankrebs',      label:'Brian Krebs' },
+    { handle:'DarkReading',     label:'Dark Reading' },
+    { handle:'SecurityWeek',    label:'SecurityWeek' },
+    { handle:'CISAgov',         label:'CISA' },
+    { handle:'NCSC',            label:'NCSC UK' },
+    { handle:'SANSInstitute',   label:'SANS Institute' }
+  ];
+  document.getElementById('statAccounts').textContent = ACCOUNTS.length;
+
+  var tweetsGrid = document.getElementById('tweetsGrid');
+  tweetsGrid.innerHTML = ACCOUNTS.map(function(acc){
+    var initial = acc.label.charAt(0);
+    return '<div class="tweet-col">' +
+      '<div class="head">' +
+        '<div class="who">' +
+          '<div class="avatar">' + escapeHtml(initial) + '</div>' +
+          '<div><b>' + escapeHtml(acc.label) + '</b><span>@' + escapeHtml(acc.handle) + '</span></div>' +
+        '</div>' +
+        '<a href="https://twitter.com/' + acc.handle + '" target="_blank" rel="noopener noreferrer">فتح الحساب ↗</a>' +
+      '</div>' +
+      '<div class="tweet-embed">' +
+        '<a class="twitter-timeline" data-height="480" data-theme="' +
+          (document.documentElement.getAttribute('data-theme')==='light' ? 'light' : 'dark') +
+          '" href="https://twitter.com/' + acc.handle + '?ref_src=twsrc%5Etfw">تغريدات @' + acc.handle + '</a>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  var tw = document.createElement('script');
+  tw.src = 'https://platform.twitter.com/widgets.js';
+  tw.async = true;
+  document.body.appendChild(tw);
+
+  /* ---------- About sources ---------- */
+  document.getElementById('aboutSources').innerHTML = SOURCES.map(function(s){
+    return '<span class="src-tag">' + escapeHtml(s.name) + '</span>';
+  }).join('');
+
+})();
+</script>
+</body>
+</html>
