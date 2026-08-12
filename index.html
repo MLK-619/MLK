@@ -278,6 +278,11 @@
   .order-settings-list li button{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:.85rem;}
   .order-settings-list li button:hover{border-color:var(--accent);}
   .order-settings-list li button:disabled{opacity:.3;cursor:not-allowed;}
+  .month-nav{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:6px 10px;margin-bottom:16px;font-size:.85rem;}
+  .month-nav b{min-width:120px;text-align:center;color:var(--accent);}
+  .month-nav button{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:5px 12px;cursor:pointer;font-size:.85rem;font-family:inherit;}
+  .month-nav button:hover{border-color:var(--accent);}
+  .month-nav .clear-btn{margin-inline-start:auto;font-size:.78rem;}
 
   /* تبويبات فرعية */
   .subtabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
@@ -499,6 +504,7 @@
               <select id="dashboard-branch" onchange="renderDashboard()"></select>
             </div>
           </div>
+          <div id="dashboard-month-nav"></div>
           <div class="kpi-grid" id="dashboard-kpis"></div>
           <div class="section">
             <h2><span class="icon">🏆</span> <span data-i18n="sectionBranchSales">المبيعات حسب الفرع</span></h2>
@@ -573,6 +579,7 @@
         <section class="view" id="view-costs">
           <h1 class="page-title" data-i18n="costsTitle">التكاليف التشغيلية</h1>
           <p class="subtitle" data-i18n="costsSubtitle">الرواتب، الإيجارات، المشتريات، والمصاريف الأخرى لكل فرع</p>
+          <div id="costs-month-nav"></div>
 
           <div class="subtabs" id="cost-subtabs">
             <button class="subtab-btn active" data-sub="salaries" onclick="switchCostSub('salaries')">👥 <span data-i18n="subtabSalaries">الرواتب</span></button>
@@ -780,6 +787,7 @@
         <section class="view" id="view-sales">
           <h1 class="page-title" data-i18n="salesTitle">المبيعات</h1>
           <p class="subtitle" data-i18n="salesSubtitle">إدخال المبيعات الشهرية حسب طريقة الدفع لكل فرع</p>
+          <div id="sales-month-nav"></div>
           <div class="section">
             <div class="table-scroll">
             <table>
@@ -864,8 +872,8 @@
               <option value="year" data-i18n="periodYear">هذه السنة</option>
               <option value="all" data-i18n="periodAll">كل الفترات</option>
             </select>
-            <b id="profit-period-label" style="color:var(--accent);font-size:.9rem;"></b>
           </div><div></div></div>
+          <div id="profit-month-nav"></div>
           <div class="section">
             <h2><span class="icon">⚙️</span> <span data-i18n="settingsTitle">إعدادات الحساب</span></h2>
             <div class="table-scroll">
@@ -962,7 +970,6 @@
                 <option value="all" data-i18n="periodAll">كل الفترات</option>
               </select>
               <select id="report-branch" onchange="renderReports()"></select>
-              <b id="report-period-label" style="color:var(--accent);font-size:.9rem;"></b>
             </div>
             <div class="toolbar-right">
               <button onclick="shareReport()" data-i18n="btnShareReport">📤 مشاركة التقرير</button>
@@ -970,6 +977,7 @@
               <button onclick="window.print()" data-i18n="btnPrintReport">🖨 طباعة التقرير</button>
             </div>
           </div>
+          <div id="report-month-nav"></div>
           <div class="toolbar">
             <div></div>
             <div class="toolbar-right">
@@ -1410,6 +1418,7 @@ const I18N = {
     confirmDeleteInvoice:'هل تريدين حذف هذه الفاتورة؟', titleOwnerOnly:'متاح للمالك فقط',
     reportsTitle:'التقارير', reportsSubtitle:'تقارير شهرية وسنوية',
     periodToday:'اليوم', periodMonth:'هذا الشهر', periodYear:'هذه السنة', periodAll:'كل الفترات',
+    prevMonth:'الشهر السابق', nextMonth:'الشهر التالي', backToCurrentMonth:'↩️ العودة للشهر الحالي',
     btnPrintReport:'🖨 طباعة التقرير', btnShareReport:'📤 مشاركة التقرير', btnShareReportPdf:'📄 مشاركة كـ PDF',
     btnExportSalesExcel:'📊 تصدير المبيعات (Excel)', btnExportCostsExcel:'📊 تصدير التكاليف التشغيلية (Excel)', btnExportAllExcel:'📊 تصدير كل البيانات (Excel)',
     shareCopiedMsg:'تم نسخ ملخص التقرير — يمكنك لصقه في أي مكان', shareUnavailableMsg:'المشاركة غير مدعومة في هذا المتصفح',
@@ -1590,6 +1599,7 @@ const I18N = {
     confirmDeleteInvoice:'Delete this invoice?', titleOwnerOnly:'Owner only',
     reportsTitle:'Reports', reportsSubtitle:'Monthly and yearly reports',
     periodToday:'Today', periodMonth:'This Month', periodYear:'This Year', periodAll:'All Time',
+    prevMonth:'Previous Month', nextMonth:'Next Month', backToCurrentMonth:'↩️ Back to Current Month',
     btnPrintReport:'🖨 Print Report', btnShareReport:'📤 Share Report', btnShareReportPdf:'📄 Share as PDF',
     btnExportSalesExcel:'📊 Export Sales (Excel)', btnExportCostsExcel:'📊 Export Operating Costs (Excel)', btnExportAllExcel:'📊 Export All Data (Excel)',
     shareCopiedMsg:'Report summary copied — you can paste it anywhere', shareUnavailableMsg:'Sharing is not supported in this browser',
@@ -1825,16 +1835,49 @@ function formatNum(n){
 }
 function formatCurrency(n){ return `${formatNum(n)} ${t('currencySuffix')}`; }
 function todayStr(){ return new Date().toISOString().slice(0,10); }
+let selectedMonth = todayStr().slice(0,7);
+function matchesPeriod(dateStr, period){
+  const d = dateStr || '';
+  if(period === 'day') return d === todayStr();
+  if(period === 'month') return d.slice(0,7) === selectedMonth;
+  if(period === 'year') return d.slice(0,4) === selectedMonth.slice(0,4);
+  return true;
+}
+function shiftMonth(delta){
+  const [y, m] = selectedMonth.split('-').map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  selectedMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  switchView(currentView);
+}
+function resetToCurrentMonth(){
+  selectedMonth = todayStr().slice(0,7);
+  switchView(currentView);
+}
+function entryDateForSelectedMonth(){
+  return selectedMonth === todayStr().slice(0,7) ? todayStr() : selectedMonth + '-01';
+}
+function monthNavHtml(){
+  const isCurrent = selectedMonth === todayStr().slice(0,7);
+  return `<div class="month-nav">
+    <button onclick="shiftMonth(-1)" title="${t('prevMonth')}">◀</button>
+    <b>${monthLabelFull(selectedMonth)}</b>
+    <button onclick="shiftMonth(1)" title="${t('nextMonth')}">▶</button>
+    ${!isCurrent ? `<button class="clear-btn" onclick="resetToCurrentMonth()">${t('backToCurrentMonth')}</button>` : ''}
+  </div>`;
+}
+function monthLabelFull(ym){
+  const [y, m] = ym.split('-').map(Number);
+  const months = MONTH_NAMES[LANG] || MONTH_NAMES.ar;
+  return months[m-1] + ' ' + y;
+}
 const MONTH_NAMES = {
   ar: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
   en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
 };
 function periodLabel(period){
-  const today = new Date();
-  const months = MONTH_NAMES[LANG] || MONTH_NAMES.ar;
   if(period === 'day') return todayStr();
-  if(period === 'month') return months[today.getMonth()] + ' ' + today.getFullYear();
-  if(period === 'year') return String(today.getFullYear());
+  if(period === 'month') return monthLabelFull(selectedMonth);
+  if(period === 'year') return selectedMonth.slice(0,4);
   return t('periodAll');
 }
 function num(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
@@ -2215,24 +2258,24 @@ function otherExpenseTotal(o){
 }
 function saleTotal(s){ return num(s.cash)+num(s.visa)+num(s.talabat)+num(s.zad)+num(s.snoonu)+num(s.tmdone)+num(s.other); }
 
-function totalSalaries(branchId){
-  return state.salaries.filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+salaryTotal(s),0);
+function totalSalaries(branchId, period){
+  return state.salaries.filter(s => (!branchId || s.branchId===branchId) && (!period || matchesPeriod(s.date, period))).reduce((a,s)=>a+salaryTotal(s),0);
 }
 function totalRents(branchId){
   return state.branches.filter(b => !branchId || b.id===branchId).reduce((a,b)=>a+num(b.rent),0);
 }
-function totalPurchases(branchId){
-  return state.purchases.filter(p => !branchId || p.branchId===branchId).reduce((a,p)=>a+purchaseTotal(p),0);
+function totalPurchases(branchId, period){
+  return state.purchases.filter(p => (!branchId || p.branchId===branchId) && (!period || matchesPeriod(p.date, period))).reduce((a,p)=>a+purchaseTotal(p),0);
 }
-function totalOther(branchId){
-  return state.otherExpenses.filter(o => !branchId || o.branchId===branchId).reduce((a,o)=>a+otherExpenseTotal(o),0);
+function totalOther(branchId, period){
+  return state.otherExpenses.filter(o => (!branchId || o.branchId===branchId) && (!period || matchesPeriod(o.date, period))).reduce((a,o)=>a+otherExpenseTotal(o),0);
 }
 /* ملاحظة: فواتير الموردين لم تعد تُحتسب ضمن التكاليف التشغيلية بناءً على طلب العميل — أصبحت تُتابع فقط كفواتير متأخرة */
 function totalSuppliers(branchId){
   return state.suppliers.filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+num(s.invoiceValue),0);
 }
-function totalExpenses(branchId){
-  return totalSalaries(branchId) + totalRents(branchId) + totalPurchases(branchId) + totalOther(branchId) + totalHousingRent(branchId);
+function totalExpenses(branchId, period){
+  return totalSalaries(branchId, period) + totalRents(branchId) + totalPurchases(branchId, period) + totalOther(branchId, period) + totalHousingRent(branchId, period);
 }
 function totalSales(branchId, period){
   return filterSalesByPeriod(period).filter(s => !branchId || s.branchId===branchId).reduce((a,s)=>a+saleTotal(s),0);
@@ -2243,15 +2286,7 @@ function salesForProfit(branchId, period){
     .reduce((a,s)=>a + num(s.visa)+num(s.talabat)+num(s.zad)+num(s.snoonu)+num(s.tmdone)+num(s.other), 0);
 }
 function filterSalesByPeriod(period){
-  const today = todayStr();
-  const month = today.slice(0,7);
-  const year = today.slice(0,4);
-  return state.sales.filter(s => {
-    if(period==='day') return (s.date||'').length === 10 && s.date === today;
-    if(period==='month') return (s.date||'').slice(0,7) === month;
-    if(period==='year') return (s.date||'').slice(0,4) === year;
-    return true;
-  });
+  return state.sales.filter(s => matchesPeriod(s.date, period));
 }
 function commissionsTotal(period, branchId){
   const rows = filterSalesByPeriod(period).filter(s => !branchId || s.branchId===branchId);
@@ -2287,13 +2322,14 @@ function paymentMethodsWithTotals(rows){
    لوحة التحكم
 ========================================================= */
 function renderDashboard(){
+  document.getElementById('dashboard-month-nav').innerHTML = monthNavHtml();
   populateReportBranchSelect('dashboard-branch');
   const scope = activeBranchId() || document.getElementById('dashboard-branch').value || null;
   const dashBranches = scope ? state.branches.filter(b=>b.id===scope) : state.branches;
   const dashSuppliers = scope ? state.suppliers.filter(s=>s.branchId===scope) : state.suppliers;
 
   const salesMonth = totalSales(scope, 'month');
-  const expensesMonth = totalExpenses(scope);
+  const expensesMonth = totalExpenses(scope, 'month');
   const commissions = commissionsTotal('month', scope);
   const netProfit = salesForProfit(scope, 'month') - expensesMonth - commissions - num(state.settings.discounts);
 
@@ -2328,7 +2364,7 @@ function renderDashboard(){
     allProfitsSection.style.display = '';
     const branchProfits = state.branches.map(b => {
       const bs = salesForProfit(b.id, 'month');
-      const be = totalExpenses(b.id);
+      const be = totalExpenses(b.id, 'month');
       const bc = commissionsTotal('month', b.id);
       const bn = bs - be - bc;
       return {name:b.name, sales:bs, expenses:be, net:bn};
@@ -2485,6 +2521,7 @@ function switchCostSub(sub){
 }
 function renderCosts(){
   const perms = PERMS[session.role];
+  document.getElementById('costs-month-nav').innerHTML = monthNavHtml();
   document.querySelectorAll('#cost-subtabs .subtab-btn').forEach(btn => {
     btn.style.display = perms.costSubtabs.includes(btn.dataset.sub) ? 'inline-flex' : 'none';
   });
@@ -2499,12 +2536,12 @@ function renderCosts(){
   renderHousingRent();
   const scope = activeBranchId();
   document.getElementById('costs-summary').innerHTML = [
-    kpiCard(t('totalSalaries').replace(':',''), formatCurrency(totalSalaries(scope))),
+    kpiCard(t('totalSalaries').replace(':',''), formatCurrency(totalSalaries(scope, 'month'))),
     kpiCard(t('totalRents').replace(':',''), formatCurrency(totalRents(scope))),
-    kpiCard(t('totalPurchases').replace(':',''), formatCurrency(totalPurchases(scope))),
-    kpiCard(t('totalOther').replace(':',''), formatCurrency(totalOther(scope))),
-    kpiCard(t('totalHousingRent').replace(':',''), formatCurrency(totalHousingRent(scope))),
-    kpiCard(t('grandTotal'), formatCurrency(totalExpenses(scope)), null, true),
+    kpiCard(t('totalPurchases').replace(':',''), formatCurrency(totalPurchases(scope, 'month'))),
+    kpiCard(t('totalOther').replace(':',''), formatCurrency(totalOther(scope, 'month'))),
+    kpiCard(t('totalHousingRent').replace(':',''), formatCurrency(totalHousingRent(scope, 'month'))),
+    kpiCard(t('grandTotal'), formatCurrency(totalExpenses(scope, 'month')), null, true),
   ].join('');
 }
 
@@ -2512,7 +2549,7 @@ function renderCosts(){
 function addSalary(){
   if(!confirm(t('confirmAddSalary'))) return;
   const branchId = activeBranchId() || pickedAddBranch('salaries') || '';
-  state.salaries.push({id:uid(), employee:'', branchId, date:todayStr(), base:0, allowance:0, advance:0});
+  state.salaries.push({id:uid(), employee:'', branchId, date:entryDateForSelectedMonth(), base:0, allowance:0, advance:0});
   logAction('logAddSalary');
   renderSalaries();
 }
@@ -2530,7 +2567,7 @@ function removeSalary(id){
 }
 function renderSalaries(){
   const scope = activeBranchId();
-  const rows = scope ? state.salaries.filter(s=>s.branchId===scope) : state.salaries;
+  const rows = (scope ? state.salaries.filter(s=>s.branchId===scope) : state.salaries).filter(s=>matchesPeriod(s.date,'month'));
   document.getElementById('salaries-body').innerHTML = rows.map(s => `
     <tr data-id="${s.id}">
       <td><input type="text" value="${escapeHtml(s.employee)}" placeholder="${t('thEmployee')}" oninput="updateSalary('${s.id}','employee',this.value)"></td>
@@ -2585,7 +2622,7 @@ function renderRents(){
 function addPurchase(){
   if(!confirm(t('confirmAddPurchase'))) return;
   const branchId = activeBranchId() || pickedAddBranch('purchases') || '';
-  state.purchases.push({id:uid(), item:'', branchId, date:todayStr(), company:'', price:0, qty:1});
+  state.purchases.push({id:uid(), item:'', branchId, date:entryDateForSelectedMonth(), company:'', price:0, qty:1});
   logAction('logAddPurchase');
   renderPurchases();
 }
@@ -2603,7 +2640,7 @@ function removePurchase(id){
 }
 function renderPurchases(){
   const scope = activeBranchId();
-  const rows = scope ? state.purchases.filter(p=>p.branchId===scope) : state.purchases;
+  const rows = (scope ? state.purchases.filter(p=>p.branchId===scope) : state.purchases).filter(p=>matchesPeriod(p.date,'month'));
   document.getElementById('purchases-body').innerHTML = rows.map(p => `
     <tr data-id="${p.id}">
       <td><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updatePurchase('${p.id}','item',this.value)"></td>
@@ -2776,7 +2813,7 @@ function renderSystemSalesTotal(){
 function addOtherExpense(){
   if(!confirm(t('confirmAddOther'))) return;
   const branchId = activeBranchId() || pickedAddBranch('other') || '';
-  state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, date:todayStr(), qty:1, unitPrice:0});
+  state.otherExpenses.push({id:uid(), category:EXPENSE_CATEGORIES[0], branchId, date:entryDateForSelectedMonth(), qty:1, unitPrice:0});
   logAction('logAddOther');
   renderOtherExpenses();
 }
@@ -2794,7 +2831,7 @@ function removeOtherExpense(id){
 }
 function renderOtherExpenses(){
   const scope = activeBranchId();
-  const rows = scope ? state.otherExpenses.filter(o=>o.branchId===scope) : state.otherExpenses;
+  const rows = (scope ? state.otherExpenses.filter(o=>o.branchId===scope) : state.otherExpenses).filter(o=>matchesPeriod(o.date,'month'));
   document.getElementById('other-body').innerHTML = rows.map(o => `
     <tr data-id="${o.id}">
       <td><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.concat(state.settings.customExpenseCategories).map(c=>`<option value="${escapeHtml(c)}" ${o.category===c?'selected':''}>${escapeHtml(categoryLabel(c))}</option>`).join('')}</select></td>
@@ -2821,14 +2858,14 @@ function renderOtherTotals(){
 }
 
 /* --- إيجار السكن --- */
-function totalHousingRent(branchId){
-  return state.housingRent.filter(h => !branchId || h.branchId===branchId).reduce((a,h)=>a+num(h.amount),0);
+function totalHousingRent(branchId, period){
+  return state.housingRent.filter(h => (!branchId || h.branchId===branchId) && (!period || matchesPeriod(h.date, period))).reduce((a,h)=>a+num(h.amount),0);
 }
 function housingRentCategoryLabel(key){ return HOUSING_RENT_CATEGORIES.includes(key) ? t('hrcat_' + key) : (key || t('hrcat_housingRent')); }
 function addHousingRent(){
   if(!confirm(t('confirmAddHousingRent'))) return;
   const branchId = activeBranchId() || pickedAddBranch('housingRent') || '';
-  state.housingRent.push({id:uid(), category:HOUSING_RENT_CATEGORIES[0], amount:0, branchId, date:todayStr(), note:''});
+  state.housingRent.push({id:uid(), category:HOUSING_RENT_CATEGORIES[0], amount:0, branchId, date:entryDateForSelectedMonth(), note:''});
   logAction('logAddHousingRent');
   renderHousingRent();
 }
@@ -2845,7 +2882,7 @@ function removeHousingRent(id){
 }
 function renderHousingRent(){
   const scope = activeBranchId();
-  const rows = scope ? state.housingRent.filter(h=>h.branchId===scope) : state.housingRent;
+  const rows = (scope ? state.housingRent.filter(h=>h.branchId===scope) : state.housingRent).filter(h=>matchesPeriod(h.date,'month'));
   document.getElementById('housing-rent-body').innerHTML = rows.map(h => `
     <tr data-id="${h.id}">
       <td><select onchange="updateHousingRent('${h.id}','category',this.value)">${HOUSING_RENT_CATEGORIES.concat(state.settings.customHousingRentCategories).map(c=>`<option value="${escapeHtml(c)}" ${(h.category||'housingRent')===c?'selected':''}>${escapeHtml(housingRentCategoryLabel(c))}</option>`).join('')}</select></td>
@@ -2860,7 +2897,7 @@ function renderHousingRent(){
 }
 function renderHousingRentTotals(){
   const scope = activeBranchId();
-  document.getElementById('housing-rent-total').textContent = formatNum(totalHousingRent(scope));
+  document.getElementById('housing-rent-total').textContent = formatNum(totalHousingRent(scope, 'month'));
 }
 
 /* =========================================================
@@ -2937,7 +2974,7 @@ function renderStock(){
 function addSale(){
   if(!confirm(t('confirmAddSale'))) return;
   const branchId = activeBranchId() || (state.branches[0]||{}).id || '';
-  state.sales.push({id:uid(), date:todayStr().slice(0,7), entryType:'monthly', branchId, cash:0, visa:0, talabat:0, zad:0, snoonu:0, tmdone:0, other:0});
+  state.sales.push({id:uid(), date:selectedMonth, entryType:'monthly', branchId, cash:0, visa:0, talabat:0, zad:0, snoonu:0, tmdone:0, other:0});
   logAction('logAddSale');
   renderSales();
 }
@@ -2967,8 +3004,9 @@ function removeSale(id){
   renderSales();
 }
 function renderSales(){
+  document.getElementById('sales-month-nav').innerHTML = monthNavHtml();
   const scope = activeBranchId();
-  const visibleSales = scope ? state.sales.filter(s=>s.branchId===scope) : state.sales;
+  const visibleSales = (scope ? state.sales.filter(s=>s.branchId===scope) : state.sales).filter(s=>matchesPeriod(s.date,'month'));
 
   document.getElementById('sales-body').innerHTML = visibleSales.map(s => {
     const entryType = s.entryType || 'monthly';
@@ -2995,7 +3033,7 @@ function renderSales(){
 }
 function renderSalesTotals(){
   const scope = activeBranchId();
-  const rows = scope ? state.sales.filter(s=>s.branchId===scope) : state.sales;
+  const rows = (scope ? state.sales.filter(s=>s.branchId===scope) : state.sales).filter(s=>matchesPeriod(s.date,'month'));
 
   document.querySelectorAll('#sales-body tr').forEach(tr => {
     const s = state.sales.find(x => x.id === tr.dataset.id);
@@ -3005,7 +3043,7 @@ function renderSalesTotals(){
 
   const grand = rows.reduce((a,s)=>a+saleTotal(s),0);
   document.getElementById('sales-total').textContent = formatNum(grand);
-  document.getElementById('sales-total-after-cut').textContent = formatNum(grand - commissionsTotal('all', scope));
+  document.getElementById('sales-total-after-cut').textContent = formatNum(grand - commissionsTotal('month', scope));
 
   const totals = paymentMethodsWithTotals(rows);
   const max = Math.max(1, ...totals.map(t=>t.total));
@@ -3013,8 +3051,8 @@ function renderSalesTotals(){
 
   const summaryBranches = scope ? state.branches.filter(b=>b.id===scope) : state.branches;
   document.getElementById('sales-branch-summary').innerHTML = summaryBranches.map(b => {
-    const bGross = totalSales(b.id, 'all');
-    const bNet = bGross - commissionsTotal('all', b.id);
+    const bGross = totalSales(b.id, 'month');
+    const bNet = bGross - commissionsTotal('month', b.id);
     return `<tr><td><bdi>${escapeHtml(b.name)}</bdi></td><td>${formatCurrency(bGross)}</td><td class="row-total">${formatCurrency(bNet)}</td></tr>`;
   }).join('') || `<tr><td colspan="3" style="color:var(--muted);">${t('noBranches')}</td></tr>`;
 }
@@ -3054,10 +3092,10 @@ function renderProfit(){
 
   const scope = activeBranchId();
   const period = document.getElementById('profit-period').value;
-  document.getElementById('profit-period-label').textContent = periodLabel(period);
+  document.getElementById('profit-month-nav').innerHTML = (period === 'month' || period === 'year') ? monthNavHtml() : '';
   const monthlySales = totalSales(scope, period);
   const sales = salesForProfit(scope, period);
-  const expenses = totalExpenses(scope);
+  const expenses = totalExpenses(scope, period);
   const commissions = commissionsTotal(period, scope);
   const discounts = num(state.settings.discounts);
   const salesAfterCommission = sales - commissions;
@@ -3204,7 +3242,7 @@ function renderReports(){
   populateReportBranchSelect();
   document.getElementById('report-notes-input').value = state.settings.reportNotes || '';
   const period = document.getElementById('report-period').value;
-  document.getElementById('report-period-label').textContent = periodLabel(period);
+  document.getElementById('report-month-nav').innerHTML = (period === 'month' || period === 'year') ? monthNavHtml() : '';
   const reportScope = activeBranchId() || document.getElementById('report-branch').value || null;
   const reportBranches = reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches;
 
@@ -3215,11 +3253,11 @@ function renderReports(){
     : `<p style="color:var(--muted);font-size:.85rem;">${t('noData')}</p>`;
 
   const expenseCats = [
-    {label:t('subtabSalaries'), total: totalSalaries(reportScope), color:CAT_COLORS[0]},
+    {label:t('subtabSalaries'), total: totalSalaries(reportScope, period), color:CAT_COLORS[0]},
     {label:t('subtabRents'), total: totalRents(reportScope), color:CAT_COLORS[1]},
-    {label:t('subtabPurchases'), total: totalPurchases(reportScope), color:CAT_COLORS[2]},
-    {label:t('subtabOther'), total: totalOther(reportScope), color:CAT_COLORS[3]},
-    {label:t('subtabHousingRent'), total: totalHousingRent(reportScope), color:CAT_COLORS[4]},
+    {label:t('subtabPurchases'), total: totalPurchases(reportScope, period), color:CAT_COLORS[2]},
+    {label:t('subtabOther'), total: totalOther(reportScope, period), color:CAT_COLORS[3]},
+    {label:t('subtabHousingRent'), total: totalHousingRent(reportScope, period), color:CAT_COLORS[4]},
   ];
   const maxExp = Math.max(1, ...expenseCats.map(e=>e.total));
   const expTotal = expenseCats.reduce((a,e)=>a+e.total,0);
@@ -3229,7 +3267,7 @@ function renderReports(){
 
   const monthlySales = totalSales(reportScope, period);
   const sales = salesForProfit(reportScope, period);
-  const expenses = totalExpenses(reportScope);
+  const expenses = totalExpenses(reportScope, period);
   const commissions = commissionsTotal(period, reportScope);
   const discounts = num(state.settings.discounts);
   const salesAfterCommission = sales - commissions;
@@ -3243,7 +3281,7 @@ function renderReports(){
     kpiCard(t('discountsRow'), formatCurrency(discounts)),
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true, net < 0),
   ].join('') + (session && session.role === 'owner' ? (() => {
-    const branchNets = state.branches.map(b => salesForProfit(b.id, period) - totalExpenses(b.id) - commissionsTotal(period, b.id));
+    const branchNets = state.branches.map(b => salesForProfit(b.id, period) - totalExpenses(b.id, period) - commissionsTotal(period, b.id));
     const totalProfits = branchNets.filter(n=>n>0).reduce((a,n)=>a+n,0);
     const totalLosses = Math.abs(branchNets.filter(n=>n<0).reduce((a,n)=>a+n,0));
     return kpiCard(t('totalBranchProfits').replace(':',''), formatCurrency(totalProfits))
