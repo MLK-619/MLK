@@ -268,6 +268,24 @@ input:checked + .slider::before{transform:translateX(-20px);}
   #receipt-print{display:block;position:absolute;top:0;inset-inline-end:0;width:80mm;padding:6px;}
 }
 
+/* ===== Kitchen display ===== */
+.kitchen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.kitchen-ticket{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.kitchen-ticket.ok{border-color:var(--success);}
+.kitchen-ticket.warn{border-color:var(--warning);}
+.kitchen-ticket.urgent{border-color:var(--danger);animation:kitchenPulse 1.4s ease-in-out infinite;}
+.kitchen-ticket.done{opacity:.55;}
+@keyframes kitchenPulse{0%,100%{box-shadow:0 0 0 0 var(--danger-tint);}50%{box-shadow:0 0 0 8px var(--danger-tint);}}
+.kitchen-ticket-head{display:flex;justify-content:space-between;align-items:center;font-weight:800;font-size:.85rem;flex-wrap:wrap;gap:6px;}
+.kitchen-ticket-order{color:var(--accent-dark);}
+.kitchen-ticket-time{color:var(--muted);font-weight:700;}
+.kitchen-ticket-items{display:flex;flex-direction:column;gap:8px;}
+.kitchen-item{display:flex;gap:8px;align-items:flex-start;}
+.kitchen-item-qty{font-weight:800;color:var(--accent-dark);min-width:28px;flex:none;}
+.kitchen-item-name{font-weight:700;font-size:.92rem;}
+.kitchen-item-mods{font-size:.75rem;color:var(--muted);}
+.kitchen-ready-btn{width:100%;margin-top:4px;}
+
 @media(max-width:1000px){
   .pos-layout{flex-direction:column;}
   .pos-cart{width:100%;}
@@ -507,6 +525,10 @@ const T = {
     global_discount_title:'خصم تلقائي على جميع الفواتير', global_discount_toggle_label:'تفعيل خصم تلقائي لجميع الزبائن',
     global_discount_note:'يُطبَّق هذا الخصم تلقائيًا على كل فاتورة جديدة دون الحاجة لإدخاله يدويًا. يمكن للكاشير استبداله بخصم مختلف لطلب معيّن من زر "إضافة خصم".',
     global_discount_reason:'خصم عام على جميع الفواتير', auto_label:'تلقائي',
+    nav_kitchen:'المطبخ', kitchen_title:'شاشة المطبخ', kitchen_pending_count:'طلبات قيد التجهيز',
+    kitchen_no_pending:'لا توجد طلبات قيد التجهيز حاليًا 🎉', kitchen_recent_done:'اكتملت مؤخرًا',
+    kitchen_done_label:'مكتمل', kitchen_min_ago:'د', kitchen_ready_btn:'جاهز',
+    needs_kitchen_label:'يظهر في شاشة المطبخ',
     reset_data_btn:'↺ إعادة ضبط البيانات التجريبية',
     branch_data_title:'بيانات الفرع', branch_name_label:'اسم الفرع',
     branch_location_label:'موقع الفرع (العنوان أو رابط خرائط)',
@@ -640,6 +662,10 @@ const T = {
     global_discount_title:'Automatic Discount on All Invoices', global_discount_toggle_label:'Enable an automatic discount for all customers',
     global_discount_note:'This discount is applied automatically to every new invoice without manual entry. The cashier can still override it for a specific order via "Add discount".',
     global_discount_reason:'General discount on all invoices', auto_label:'Auto',
+    nav_kitchen:'Kitchen', kitchen_title:'Kitchen Display', kitchen_pending_count:'Orders in progress',
+    kitchen_no_pending:'No pending orders right now 🎉', kitchen_recent_done:'Recently completed',
+    kitchen_done_label:'Done', kitchen_min_ago:'min', kitchen_ready_btn:'Ready',
+    needs_kitchen_label:'Show on kitchen display',
     reset_data_btn:'↺ Reset Demo Data',
     branch_data_title:'Branch Info', branch_name_label:'Branch name',
     branch_location_label:'Branch location (address or maps link)',
@@ -723,12 +749,12 @@ const DEFAULT_DATA = {
     {id:'s3', name:'أحمد (باريستا)', role:'cashier', pin:'2222'}
   ],
   categories:[
-    {id:'c1', name:'قهوة ساخنة', icon:'☕', color:'var(--cat-1)', mods:{size:true,milk:true,sugar:true,shot:true,syrup:true}},
-    {id:'c2', name:'قهوة باردة', icon:'🧊', color:'var(--cat-2)', mods:{size:true,milk:true,sugar:true,shot:true,syrup:true}},
-    {id:'c3', name:'مشروبات ساخنة', icon:'🍵', color:'var(--cat-3)', mods:{size:true,milk:false,sugar:true,shot:false,syrup:false}},
-    {id:'c4', name:'مشروبات باردة', icon:'🥤', color:'var(--cat-4)', mods:{size:true,milk:false,sugar:true,shot:false,syrup:false}},
-    {id:'c5', name:'حلويات ومخبوزات', icon:'🍰', color:'var(--cat-5)', mods:{size:false,milk:false,sugar:false,shot:false,syrup:false}},
-    {id:'c6', name:'سناكس', icon:'🥪', color:'var(--cat-6)', mods:{size:false,milk:false,sugar:false,shot:false,syrup:false}}
+    {id:'c1', name:'قهوة ساخنة', icon:'☕', color:'var(--cat-1)', kitchen:true, mods:{size:true,milk:true,sugar:true,shot:true,syrup:true}},
+    {id:'c2', name:'قهوة باردة', icon:'🧊', color:'var(--cat-2)', kitchen:true, mods:{size:true,milk:true,sugar:true,shot:true,syrup:true}},
+    {id:'c3', name:'مشروبات ساخنة', icon:'🍵', color:'var(--cat-3)', kitchen:true, mods:{size:true,milk:false,sugar:true,shot:false,syrup:false}},
+    {id:'c4', name:'مشروبات باردة', icon:'🥤', color:'var(--cat-4)', kitchen:true, mods:{size:true,milk:false,sugar:true,shot:false,syrup:false}},
+    {id:'c5', name:'حلويات ومخبوزات', icon:'🍰', color:'var(--cat-5)', kitchen:true, mods:{size:false,milk:false,sugar:false,shot:false,syrup:false}},
+    {id:'c6', name:'سناكس', icon:'🥪', color:'var(--cat-6)', kitchen:true, mods:{size:false,milk:false,sugar:false,shot:false,syrup:false}}
   ],
   products:[
     {id:'p1',cat:'c1',name:'إسبريسو',price:12,icon:'☕',available:true,recipe:[{m:'m1',qty:18}]},
@@ -783,6 +809,7 @@ const DEFAULT_DATA = {
   tables: Array.from({length:10},(_,i)=>({num:i+1, status:'free', heldId:null})),
   orders:[],
   heldOrders:[],
+  kitchenTickets:[],
   nextOrderNumber:1001
 };
 
@@ -793,6 +820,7 @@ function load(){
     if(raw){
       const data = JSON.parse(raw);
       data.settings = Object.assign({}, DEFAULT_DATA.settings, data.settings);
+      if(!data.kitchenTickets) data.kitchenTickets = [];
       return data;
     }
   }catch(e){}
@@ -914,6 +942,7 @@ function hasAccess(view){
    ============================================================ */
 const NAV_ITEMS = [
   {id:'pos', key:'nav_pos', icon:'🧾'},
+  {id:'kitchen', key:'nav_kitchen', icon:'🍳'},
   {id:'tables', key:'nav_tables', icon:'🍽️'},
   {id:'orders', key:'nav_orders', icon:'📋'},
   {id:'reports', key:'nav_reports', icon:'📊'},
@@ -924,9 +953,11 @@ const NAV_ITEMS = [
 ];
 function renderNav(){
   const el = document.getElementById('sidenav');
+  const pendingKitchen = state.kitchenTickets.filter(k=>k.status==='pending').length;
   el.innerHTML = NAV_ITEMS.filter(i=>hasAccess(i.id)).map(i=>`
-    <button data-view="${i.id}" class="${currentView===i.id?'active':''}">
+    <button data-view="${i.id}" class="${currentView===i.id?'active':''}" style="position:relative;">
       <span class="nav-ic">${i.icon}</span><span>${t(i.key)}</span>
+      ${i.id==='kitchen' && pendingKitchen?`<span class="badge" style="position:absolute;top:4px;inset-inline-end:10px;">${pendingKitchen}</span>`:''}
     </button>`).join('');
   el.querySelectorAll('button').forEach(b=>{
     b.addEventListener('click', ()=>{ currentView = b.dataset.view; renderAll(); });
@@ -954,6 +985,16 @@ function updateClock(){
   document.getElementById('clock').textContent = formatTime(Date.now());
 }
 setInterval(updateClock, 15000);
+setInterval(()=>{ if(currentStaff && currentView==='kitchen') renderAll(); }, 20000);
+window.addEventListener('storage', e=>{
+  if(e.key!==LS_KEY || !currentStaff) return;
+  const prevPending = state.kitchenTickets.filter(k=>k.status==='pending').length;
+  state = load();
+  const newPending = state.kitchenTickets.filter(k=>k.status==='pending').length;
+  if(newPending > prevPending) playKitchenAlert();
+  const appEl = document.getElementById('app');
+  if(appEl && !appEl.classList.contains('hidden')) renderAll();
+});
 
 function setOrderType(type){
   if(type==='dine-in' && !cart.table){
@@ -999,6 +1040,7 @@ function renderAll(){
   renderTopbar();
   const root = document.getElementById('view-root');
   if(currentView==='pos') root.innerHTML = renderPOS();
+  else if(currentView==='kitchen') root.innerHTML = renderKitchen();
   else if(currentView==='tables') root.innerHTML = renderTables();
   else if(currentView==='orders') root.innerHTML = renderOrders();
   else if(currentView==='reports') root.innerHTML = renderReports();
@@ -1515,11 +1557,104 @@ function finalizeOrder({subtotal, discount, tax, total, payment}){
   state.orders.unshift(order);
   deductInventory(order);
   if(cart.table) freeTable(cart.table);
+  const ticket = createKitchenTicket(order);
   save();
   cart = freshCart(); saveCart();
   lastOrder = order;
   renderAll();
+  if(ticket) playKitchenAlert();
   openReceiptModal(order);
+}
+
+/* ============================================================
+   KITCHEN DISPLAY
+   ============================================================ */
+function productNeedsKitchen(productId){
+  const p = state.products.find(x=>x.id===productId);
+  if(!p) return true;
+  const cat = state.categories.find(c=>c.id===p.cat);
+  return !cat || cat.kitchen!==false;
+}
+function createKitchenTicket(order){
+  const items = order.items.filter(it=>productNeedsKitchen(it.productId));
+  if(!items.length) return null;
+  const ticket = {
+    id: uid(), orderId: order.id, time: Date.now(),
+    type: order.type, table: order.table,
+    items: items.map(it=>({name:it.name, icon:it.icon, qty:it.qty, size:it.size, milk:it.milk, sugar:it.sugar, syrup:it.syrup, shots:it.shots, note:it.note})),
+    status:'pending', doneAt:null
+  };
+  state.kitchenTickets.unshift(ticket);
+  return ticket;
+}
+let _kitchenAudioCtx = null;
+function getAudioCtx(){
+  if(!_kitchenAudioCtx){
+    try{ _kitchenAudioCtx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; }
+  }
+  if(_kitchenAudioCtx.state==='suspended'){ _kitchenAudioCtx.resume(); }
+  return _kitchenAudioCtx;
+}
+document.addEventListener('click', ()=>{ getAudioCtx(); }, {once:true});
+function playKitchenAlert(){
+  const ctx = getAudioCtx();
+  if(!ctx) return;
+  const now = ctx.currentTime;
+  [0, 0.35, 0.7].forEach(offset=>{
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.0001, now+offset);
+    gain.gain.exponentialRampToValueAtTime(0.6, now+offset+0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now+offset+0.28);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(now+offset);
+    osc.stop(now+offset+0.3);
+  });
+}
+function kitchenElapsedMinutes(ts){ return Math.floor((Date.now()-ts)/60000); }
+function renderKitchen(){
+  const pending = state.kitchenTickets.filter(k=>k.status==='pending').sort((a,b)=>a.time-b.time);
+  const doneRecent = state.kitchenTickets.filter(k=>k.status==='done').sort((a,b)=>(b.doneAt||0)-(a.doneAt||0)).slice(0,6);
+  return `
+  <div class="section-head">
+    <div class="section-title">${t('kitchen_title')}</div>
+    <div style="color:var(--muted);font-size:.85rem;font-weight:700;">${t('kitchen_pending_count')}: ${pending.length}</div>
+  </div>
+  ${!pending.length?`<div class="card" style="text-align:center;padding:60px 20px;color:var(--muted);font-size:1.1rem;">${t('kitchen_no_pending')}</div>`:`
+  <div class="kitchen-grid">${pending.map(k=>renderKitchenTicket(k)).join('')}</div>`}
+  ${doneRecent.length?`
+  <div class="section-title" style="font-size:1rem;margin:22px 0 10px;">${t('kitchen_recent_done')}</div>
+  <div class="kitchen-grid">${doneRecent.map(k=>renderKitchenTicket(k,true)).join('')}</div>`:''}
+  `;
+}
+function renderKitchenTicket(k, isDone){
+  const mins = kitchenElapsedMinutes(k.time);
+  const urgency = mins>=10?'urgent':(mins>=5?'warn':'ok');
+  const typeLabel = k.type==='dine-in'?'🍽️ '+t('dinein_table')+' '+k.table : k.type==='delivery'?'🚚 '+t('order_delivery') : '🥤 '+t('order_takeaway');
+  return `
+  <div class="kitchen-ticket ${isDone?'done':urgency}">
+    <div class="kitchen-ticket-head">
+      <span class="kitchen-ticket-order">#${k.orderId}</span>
+      <span>${typeLabel}</span>
+      <span class="kitchen-ticket-time">${isDone?t('kitchen_done_label'):mins+' '+t('kitchen_min_ago')}</span>
+    </div>
+    <div class="kitchen-ticket-items">
+      ${k.items.map(it=>{
+        const mods = [L(it.size),L(it.milk),L(it.sugar),it.shots?`+${it.shots} ${t('shot_word')}`:'',(it.syrup&&it.syrup!=='بدون')?L(it.syrup):''].filter(Boolean).join(' · ');
+        return `<div class="kitchen-item">
+          <span class="kitchen-item-qty">${it.qty}×</span>
+          <div class="kitchen-item-body">
+            <div class="kitchen-item-name">${it.icon||''} ${L(it.name)}</div>
+            ${mods?`<div class="kitchen-item-mods">${mods}</div>`:''}
+            ${it.note?`<div class="kitchen-item-mods">${t('note_prefix')}: ${it.note}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    ${!isDone?`<button class="btn btn-success btn-lg kitchen-ready-btn" data-kitchen-ready="${k.id}">✅ ${t('kitchen_ready_btn')}</button>`:''}
+  </div>`;
 }
 
 /* ============================================================
@@ -1822,7 +1957,8 @@ function openProductModal(product){
 }
 function openCategoryModal(cat){
   const isNew = !cat;
-  const c = cat ? clone(cat) : {id:uid(), name:'', icon:'☕', color:'var(--cat-1)', mods:{size:true,milk:false,sugar:true,shot:false,syrup:false}};
+  const c = cat ? clone(cat) : {id:uid(), name:'', icon:'☕', color:'var(--cat-1)', kitchen:true, mods:{size:true,milk:false,sugar:true,shot:false,syrup:false}};
+  if(c.kitchen===undefined) c.kitchen = true;
   function html(){
     return `
     <div class="modal-head"><span class="modal-title">${isNew?t('category_new_title'):t('category_edit_title')}</span><button class="modal-close" id="mClose">✕</button></div>
@@ -1836,6 +1972,10 @@ function openCategoryModal(cat){
         const [k,label]=pair;
         return `<div class="toggle" style="margin-bottom:8px;"><label class="switch"><input type="checkbox" data-mod="${k}" ${c.mods[k]?'checked':''}><span class="slider"></span></label><span>${label}</span></div>`;
       }).join('')}
+      <div class="toggle" style="margin:12px 0 8px;">
+        <label class="switch"><input type="checkbox" id="cKitchen" ${c.kitchen?'checked':''}><span class="slider"></span></label>
+        <span>🍳 ${t('needs_kitchen_label')}</span>
+      </div>
       ${!isNew?`<button class="btn btn-danger btn-sm" id="delCat" style="width:100%;margin-top:10px;">${t('delete_category_btn')}</button>`:''}
     </div>
     <div class="modal-foot"><button class="btn btn-accent btn-lg" id="saveCat">${t('save')}</button></div>`;
@@ -1846,6 +1986,7 @@ function openCategoryModal(cat){
     c.name = document.getElementById('cName').value.trim()||t('default_new_category');
     c.icon = document.getElementById('cIcon').value.trim()||'☕';
     document.querySelectorAll('[data-mod]').forEach(cb=>{ c.mods[cb.dataset.mod] = cb.checked; });
+    c.kitchen = document.getElementById('cKitchen').checked;
     if(isNew) state.categories.push(c);
     else Object.assign(state.categories.find(x=>x.id===c.id), c);
     save(); closeModal(); renderAll();
@@ -2171,6 +2312,12 @@ function attachViewHandlers(){
   });
   const holdBtn = root.querySelector('#holdBtn'); if(holdBtn) holdBtn.addEventListener('click', holdCurrentOrder);
   const checkoutBtn = root.querySelector('#checkoutBtn'); if(checkoutBtn) checkoutBtn.addEventListener('click', openCheckoutModal);
+
+  // Kitchen
+  root.querySelectorAll('[data-kitchen-ready]').forEach(b=>b.addEventListener('click', ()=>{
+    const k = state.kitchenTickets.find(x=>x.id===b.dataset.kitchenReady);
+    if(k){ k.status='done'; k.doneAt=Date.now(); save(); renderAll(); }
+  }));
 
   // Tables
   root.querySelectorAll('[data-table]').forEach(b=>b.addEventListener('click', ()=>selectTable(parseInt(b.dataset.table))));
