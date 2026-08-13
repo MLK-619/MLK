@@ -327,6 +327,7 @@ input:checked + .slider::before{transform:translateX(-20px);}
     <div class="brand"><span class="logo-emoji" id="brandLogo">☕</span><span id="brandName">DAZE 360</span><span id="brandBranch" class="staff-chip" style="margin-inline-start:8px;font-size:.72rem;font-weight:700;"></span></div>
     <div class="order-type-switch" id="orderTypeSwitch"></div>
     <div class="top-right">
+      <span class="staff-chip" id="netStatus"></span>
       <span class="clock" id="clock"></span>
       <span class="staff-chip" id="staffChip"></span>
       <button id="logoutBtn"></button>
@@ -536,10 +537,28 @@ const T = {
     storage_mode_title:'طريقة حفظ البيانات', storage_local_chip:'📱 في الجهاز', storage_cloud_chip:'☁️ سحابي',
     storage_note_local_b:'في الجهاز:', storage_note_local:'جميع البيانات (المبيعات، المخزون، الطلبات) تُحفظ محليًا على هذا التابلت فقط.',
     storage_note_cloud_b:'سحابي:',
-    storage_note_cloud:'يُهيّئ النظام لمزامنة البيانات بين عدة أجهزة/فروع. تفعيل المزامنة الفعلية يتطلب ربط قاعدة بيانات سحابية (مثل Firebase) بمشروعكم الخاص — أخبرني إذا رغبت أن أجهّز هذا الربط.',
+    storage_note_cloud:'عند الاتصال بمشروع Firebase أدناه، تُحفظ البيانات في قاعدة بيانات سحابية وتتزامن تلقائيًا بين كل الأجهزة المتصلة بنفس المشروع.',
     save_settings_btn:'حفظ الإعدادات', language_title:'اللغة',
     branch_name_placeholder:'مثال: فرع العليا', currency_custom_placeholder:'مثال: ر.ي',
-    logo_alt:'شعار', branch_location_placeholder:'مثال: الرياض - حي العليا، أو رابط Google Maps'
+    logo_alt:'شعار', branch_location_placeholder:'مثال: الرياض - حي العليا، أو رابط Google Maps',
+    online_label:'متصل بالإنترنت', offline_label:'غير متصل بالإنترنت',
+    cloud_setup_title:'ربط قاعدة بيانات سحابية (Firebase)',
+    cloud_setup_note:'الصق بيانات إعداد تطبيق الويب (Firebase config) من مشروعك في الحقل أدناه، ثم اضغط اتصال. لا حاجة لأي تعديل بالكود.',
+    connect_cloud_btn:'🔌 اتصال وحفظ', disconnect_cloud_btn:'قطع الاتصال السحابي',
+    cloud_howto_title:'كيف أحصل على بيانات المشروع؟ (اضغط للتفاصيل)',
+    cloud_step1:'افتح console.firebase.google.com وأنشئ مشروعًا جديدًا (أو استخدم مشروعك الحالي).',
+    cloud_step2:'من القائمة الجانبية: Build ← Firestore Database ← Create database (اختر أقرب موقع لك).',
+    cloud_step3:'من تبويب Rules داخل Firestore، احذف المحتوى والصق القواعد الظاهرة أسفل هذه الخطوات، ثم اضغط Publish.',
+    cloud_step4:'من Build ← Authentication ← Sign-in method، فعّل خيار Anonymous.',
+    cloud_step5:'من ⚙️ Project settings ← عام ← Your apps ← أضف تطبيق ويب (</> Add app)، وانسخ كائن الإعداد (firebaseConfig) كاملاً والصقه في الحقل أعلاه.',
+    cloud_status_idle:'غير متصل بأي مشروع سحابي', cloud_status_connecting:'⏳ جاري الاتصال...',
+    cloud_status_connected:'☁️ متصل ومتزامن', cloud_status_error:'⚠️ تعذّر الاتصال — تحقق من بيانات المشروع والقواعد',
+    toast_paste_config:'الصق بيانات مشروع Firebase أولاً', toast_invalid_config:'تعذّر قراءة بيانات المشروع، تأكد من نسخها كاملة',
+    toast_cloud_disconnected:'تم قطع الاتصال السحابي، البيانات تُحفظ في الجهاز الآن',
+    backup_title:'نسخة احتياطية', backup_note:'نزّل نسخة من كل بياناتك (المبيعات، المخزون، الإعدادات) كملف، واحتفظ بها لاستعادتها لاحقًا إذا فُقدت بيانات الجهاز.',
+    download_backup_btn:'تنزيل نسخة احتياطية', restore_backup_btn:'استعادة من ملف',
+    confirm_restore_backup:'سيتم استبدال جميع البيانات الحالية بمحتوى الملف. متابعة؟',
+    toast_restore_success:'تم استعادة البيانات بنجاح', toast_restore_failed:'ملف النسخة الاحتياطية غير صالح'
   },
   en:{
     cancel:'Cancel', save:'Save', edit:'Edit', delete:'Delete', apply:'Apply', logout:'Logout',
@@ -673,10 +692,28 @@ const T = {
     storage_mode_title:'Data Storage Method', storage_local_chip:'📱 On Device', storage_cloud_chip:'☁️ Cloud',
     storage_note_local_b:'On device:', storage_note_local:'All data (sales, inventory, orders) is stored locally on this tablet only.',
     storage_note_cloud_b:'Cloud:',
-    storage_note_cloud:'Prepares the system to sync data across multiple devices/branches. Enabling real sync requires connecting a cloud database (like Firebase) to your own project — let me know if you would like this set up.',
+    storage_note_cloud:'Once connected to a Firebase project below, data is stored in a cloud database and syncs automatically across every device connected to the same project.',
     save_settings_btn:'Save Settings', language_title:'Language',
     branch_name_placeholder:'e.g. Olaya Branch', currency_custom_placeholder:'e.g. YER',
-    logo_alt:'Logo', branch_location_placeholder:'e.g. Riyadh - Olaya District, or a Google Maps link'
+    logo_alt:'Logo', branch_location_placeholder:'e.g. Riyadh - Olaya District, or a Google Maps link',
+    online_label:'Online', offline_label:'Offline',
+    cloud_setup_title:'Connect a Cloud Database (Firebase)',
+    cloud_setup_note:'Paste your Firebase web app config below, then press Connect. No code changes needed.',
+    connect_cloud_btn:'🔌 Connect & Save', disconnect_cloud_btn:'Disconnect Cloud',
+    cloud_howto_title:'How do I get my project config? (tap for details)',
+    cloud_step1:'Open console.firebase.google.com and create a new project (or use an existing one).',
+    cloud_step2:'In the sidebar: Build → Firestore Database → Create database (pick the region closest to you).',
+    cloud_step3:'In the Rules tab inside Firestore, replace the contents with the rules shown below these steps, then click Publish.',
+    cloud_step4:'In Build → Authentication → Sign-in method, enable the Anonymous provider.',
+    cloud_step5:'In ⚙️ Project settings → General → Your apps → add a Web app (</> Add app), then copy the whole firebaseConfig object and paste it in the field above.',
+    cloud_status_idle:'Not connected to any cloud project', cloud_status_connecting:'⏳ Connecting...',
+    cloud_status_connected:'☁️ Connected & syncing', cloud_status_error:'⚠️ Connection failed — check your project config and rules',
+    toast_paste_config:'Paste your Firebase project config first', toast_invalid_config:'Could not read the project config — make sure you copied it in full',
+    toast_cloud_disconnected:'Cloud sync disconnected, data now saves on this device only',
+    backup_title:'Backup', backup_note:'Download a copy of all your data (sales, inventory, settings) as a file, and keep it to restore later if this device loses its data.',
+    download_backup_btn:'Download Backup', restore_backup_btn:'Restore From File',
+    confirm_restore_backup:'This will replace all current data with the file contents. Continue?',
+    toast_restore_success:'Data restored successfully', toast_restore_failed:'Invalid backup file'
   }
 };
 function t(key){ const lang=(state&&state.settings&&state.settings.language)||'ar'; return (T[lang]&&T[lang][key]!==undefined)?T[lang][key]:(T.ar[key]||key); }
@@ -730,6 +767,7 @@ const DEFAULT_DATA = {
     discountEnabled:true,
     discountPresets:[10, 15, 20, 25, 50],
     globalDiscountEnabled:false, globalDiscountType:'percent', globalDiscountValue:0,
+    firebaseConfig:null,
     language:'ar',
     currency:'ر.س',
     taxRate:15,
@@ -826,7 +864,111 @@ function load(){
   }catch(e){}
   return clone(DEFAULT_DATA);
 }
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+function save(){
+  state._updatedAt = Date.now();
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+  if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig) pushCloud(false);
+}
+
+/* ============================================================
+   CLOUD SYNC (Firebase / Firestore) — opt-in, configured in Settings
+   ============================================================ */
+const FIREBASE_SDK_URLS = [
+  'https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js',
+  'https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js'
+];
+let fbApp = null, fbDb = null, fbAuthReady = false, cloudUnsub = null, cloudPushTimer = null;
+let cloudStatus = 'idle'; // idle | connecting | connected | error
+function loadFirebaseSDK(){
+  if(window.firebase && window.firebase.firestore) return Promise.resolve();
+  return FIREBASE_SDK_URLS.reduce((p,url)=>p.then(()=>new Promise((res,rej)=>{
+    const s = document.createElement('script');
+    s.src = url; s.onload = res; s.onerror = ()=>rej(new Error('failed to load '+url));
+    document.head.appendChild(s);
+  })), Promise.resolve());
+}
+function parseLooseFirebaseConfig(raw){
+  const match = raw.match(/\{[\s\S]*\}/);
+  if(!match) throw new Error('no config object found');
+  let body = match[0]
+    .replace(/([{,]\s*)([A-Za-z_$][A-Za-z0-9_$]*)\s*:/g, '$1"$2":')
+    .replace(/,(\s*[}\]])/g, '$1');
+  return JSON.parse(body);
+}
+function updateCloudStatusUI(){
+  const el = document.getElementById('cloudStatusLine');
+  if(!el) return;
+  const map = {
+    idle: t('cloud_status_idle'), connecting: t('cloud_status_connecting'),
+    connected: t('cloud_status_connected'), error: t('cloud_status_error')
+  };
+  el.textContent = map[cloudStatus] || '';
+  el.style.color = cloudStatus==='connected' ? 'var(--success)' : cloudStatus==='error' ? 'var(--danger)' : 'var(--muted)';
+}
+function connectFirebase(){
+  const cfg = state.settings.firebaseConfig;
+  if(!cfg) return;
+  cloudStatus = 'connecting'; updateCloudStatusUI();
+  loadFirebaseSDK().then(()=>{
+    if(!fbApp) fbApp = firebase.initializeApp(cfg);
+    fbDb = firebase.firestore();
+    fbDb.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+    return firebase.auth().signInAnonymously();
+  }).then(()=>{
+    fbAuthReady = true;
+    subscribeCloud();
+  }).catch(err=>{
+    console.error('Firebase connect failed', err);
+    cloudStatus = 'error'; updateCloudStatusUI();
+  });
+}
+function subscribeCloud(){
+  if(cloudUnsub) cloudUnsub();
+  cloudUnsub = fbDb.collection('posData').doc('store').onSnapshot(doc=>{
+    cloudStatus = 'connected'; updateCloudStatusUI();
+    if(doc.exists){
+      const remote = doc.data();
+      if(remote.updatedAt && remote.updatedAt > (state._updatedAt||0)){
+        const localFbConfig = state.settings.firebaseConfig;
+        state = remote.payload;
+        state._updatedAt = remote.updatedAt;
+        if(!state.kitchenTickets) state.kitchenTickets = [];
+        state.settings = Object.assign({}, DEFAULT_DATA.settings, state.settings, {firebaseConfig: localFbConfig});
+        localStorage.setItem(LS_KEY, JSON.stringify(state));
+        renderAll();
+      }
+    } else {
+      pushCloud(true);
+    }
+  }, err=>{
+    console.error('cloud snapshot error', err);
+    cloudStatus = 'error'; updateCloudStatusUI();
+  });
+}
+function cloudPayload(){
+  const copy = JSON.parse(JSON.stringify(state));
+  if(copy.settings) delete copy.settings.firebaseConfig;
+  return copy;
+}
+function pushCloud(immediate){
+  if(!fbDb || !fbAuthReady) return;
+  const doWrite = ()=>{
+    fbDb.collection('posData').doc('store').set({payload: cloudPayload(), updatedAt: state._updatedAt})
+      .catch(err=>{ console.error('cloud push failed', err); cloudStatus='error'; updateCloudStatusUI(); });
+  };
+  if(immediate){ doWrite(); return; }
+  clearTimeout(cloudPushTimer);
+  cloudPushTimer = setTimeout(doWrite, 1200);
+}
+function disconnectCloud(){
+  if(cloudUnsub){ cloudUnsub(); cloudUnsub = null; }
+  fbAuthReady = false;
+  cloudStatus = 'idle';
+  state.settings.firebaseConfig = null;
+  state.settings.storageMode = 'local';
+  save();
+}
 
 /* current session */
 let currentStaff = null;
@@ -980,7 +1122,20 @@ function renderTopbar(){
     b.addEventListener('click', ()=> setOrderType(b.dataset.type));
   });
   updateClock();
+  updateNetStatus();
 }
+function updateNetStatus(){
+  const el = document.getElementById('netStatus');
+  if(!el) return;
+  const online = navigator.onLine;
+  el.textContent = online ? ('🟢 '+t('online_label')) : ('🔴 '+t('offline_label'));
+  el.style.color = online ? 'var(--success)' : 'var(--danger)';
+}
+window.addEventListener('online', ()=>{
+  updateNetStatus();
+  if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig) connectFirebase();
+});
+window.addEventListener('offline', updateNetStatus);
 function updateClock(){
   document.getElementById('clock').textContent = formatTime(Date.now());
 }
@@ -2194,6 +2349,42 @@ function renderSettings(){
     </div>
   </div>
   <div class="card" style="margin-top:16px;">
+    <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('cloud_setup_title')}</div>
+    <div style="color:var(--muted);font-size:.8rem;margin-bottom:10px;">${t('cloud_setup_note')}</div>
+    <textarea id="setFirebaseConfig" rows="4" style="font-family:monospace;font-size:.78rem;" placeholder='{"apiKey":"...","authDomain":"...","projectId":"...","storageBucket":"...","messagingSenderId":"...","appId":"..."}'>${S.firebaseConfig?JSON.stringify(S.firebaseConfig,null,2):''}</textarea>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+      <button type="button" class="btn btn-accent" id="connectFirebaseBtn">${t('connect_cloud_btn')}</button>
+      ${S.firebaseConfig?`<button type="button" class="btn btn-outline" id="disconnectFirebaseBtn">${t('disconnect_cloud_btn')}</button>`:''}
+    </div>
+    <div id="cloudStatusLine" style="margin-top:10px;font-size:.82rem;font-weight:700;"></div>
+    <details style="margin-top:14px;">
+      <summary style="cursor:pointer;font-weight:700;font-size:.85rem;color:var(--accent-dark);">${t('cloud_howto_title')}</summary>
+      <ol style="font-size:.8rem;color:var(--muted);line-height:1.9;padding-inline-start:20px;margin:10px 0;">
+        <li>${t('cloud_step1')}</li>
+        <li>${t('cloud_step2')}</li>
+        <li>${t('cloud_step3')}</li>
+        <li>${t('cloud_step4')}</li>
+        <li>${t('cloud_step5')}</li>
+      </ol>
+      <div style="background:var(--card2);padding:10px;border-radius:8px;font-family:monospace;font-size:.72rem;white-space:pre-wrap;direction:ltr;text-align:left;">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /posData/{doc} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}</div>
+    </details>
+  </div>
+  <div class="card" style="margin-top:16px;">
+    <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('backup_title')}</div>
+    <div style="color:var(--muted);font-size:.8rem;margin-bottom:10px;">${t('backup_note')}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button type="button" class="btn btn-outline" id="downloadBackupBtn">⬇️ ${t('download_backup_btn')}</button>
+      <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;align-items:center;">⬆️ ${t('restore_backup_btn')}<input type="file" accept="application/json" id="restoreBackupFile" style="display:none;"></label>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px;">
     <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('global_discount_title')}</div>
     <div class="toggle" style="margin-bottom:14px;">
       <label class="switch"><input type="checkbox" id="setGlobalDiscountEnabled" ${S.globalDiscountEnabled?'checked':''}><span class="slider"></span></label>
@@ -2400,6 +2591,52 @@ function attachViewHandlers(){
     state.settings.language = b.dataset.lang;
     save(); applyDocDir(); renderAll();
   }));
+  const connectFbBtn = root.querySelector('#connectFirebaseBtn');
+  if(connectFbBtn) connectFbBtn.addEventListener('click', ()=>{
+    const raw = root.querySelector('#setFirebaseConfig').value.trim();
+    if(!raw){ showToast(t('toast_paste_config')); return; }
+    let cfg;
+    try{ cfg = parseLooseFirebaseConfig(raw); }catch(e){ showToast(t('toast_invalid_config')); return; }
+    if(!cfg.apiKey || !cfg.projectId){ showToast(t('toast_invalid_config')); return; }
+    state.settings.firebaseConfig = cfg;
+    state.settings.storageMode = 'cloud';
+    save();
+    connectFirebase();
+    renderAll();
+  });
+  const disconnectFbBtn = root.querySelector('#disconnectFirebaseBtn');
+  if(disconnectFbBtn) disconnectFbBtn.addEventListener('click', ()=>{
+    disconnectCloud();
+    showToast(t('toast_cloud_disconnected'));
+    renderAll();
+  });
+  if(root.querySelector('#cloudStatusLine')) updateCloudStatusUI();
+  const downloadBackupBtn = root.querySelector('#downloadBackupBtn');
+  if(downloadBackupBtn) downloadBackupBtn.addEventListener('click', ()=>{
+    const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `coffee-pos-backup-${formatInputDate(Date.now())}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
+  const restoreBackupFile = root.querySelector('#restoreBackupFile');
+  if(restoreBackupFile) restoreBackupFile.addEventListener('change', e=>{
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      try{
+        const data = JSON.parse(ev.target.result);
+        if(!data.settings || !data.products) throw new Error('invalid');
+        if(!confirm(t('confirm_restore_backup'))) return;
+        state = data;
+        if(!state.kitchenTickets) state.kitchenTickets = [];
+        save(); cart = freshCart(); saveCart(); renderAll();
+        showToast(t('toast_restore_success'));
+      }catch(err){ showToast(t('toast_restore_failed')); }
+    };
+    reader.readAsText(file);
+  });
   const saveSettingsBtn = root.querySelector('#saveSettingsBtn'); if(saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettingsForm);
   const resetBtn = root.querySelector('#resetDataBtn'); if(resetBtn) resetBtn.addEventListener('click', ()=>{
     if(confirm(t('confirm_reset_data'))){
@@ -2422,6 +2659,7 @@ function renderLoginBrand(){
   document.getElementById('pinCancelBtn').textContent = t('cancel');
 }
 renderLoginBrand();
+if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig) connectFirebase();
 if(currentStaff){
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
