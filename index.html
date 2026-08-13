@@ -263,6 +263,9 @@
   .del-btn{background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:1.05rem;padding:4px 8px;border-radius:6px;}
   .del-btn:hover{background:rgba(220,38,38,.12);}
   .del-btn:disabled{opacity:.25;cursor:not-allowed;}
+  .copy-btn{background:transparent;border:none;color:var(--accent);cursor:pointer;font-size:1rem;padding:4px 6px;border-radius:6px;}
+  .copy-btn:hover{background:var(--accent-tint-08);}
+  .row-num{color:var(--muted);font-size:.78rem;text-align:center;font-variant-numeric:tabular-nums;}
   .add-btn{
     margin-top:10px;background:var(--card2);border:1px dashed var(--border);color:var(--accent);
     padding:9px 16px;border-radius:9px;cursor:pointer;font-size:.86rem;font-family:inherit;
@@ -278,11 +281,17 @@
   .order-settings-list li button{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:3px 9px;cursor:pointer;font-size:.85rem;}
   .order-settings-list li button:hover{border-color:var(--accent);}
   .order-settings-list li button:disabled{opacity:.3;cursor:not-allowed;}
-  .month-nav{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:6px 10px;margin-bottom:16px;font-size:.85rem;}
+  .month-nav{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:6px 10px;margin-bottom:16px;font-size:.85rem;direction:ltr;}
   .month-nav b{min-width:120px;text-align:center;color:var(--accent);}
   .month-nav button{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:5px 12px;cursor:pointer;font-size:.85rem;font-family:inherit;}
   .month-nav button:hover{border-color:var(--accent);}
   .month-nav .clear-btn{margin-inline-start:auto;font-size:.78rem;}
+  .mini-chart-svg{width:100%;height:auto;display:block;}
+  .chart-bar{transition:filter .1s;cursor:pointer;}
+  .chart-bar:hover{filter:brightness(1.15);}
+  .chart-legend{display:flex;gap:16px;margin-top:8px;font-size:.78rem;color:var(--muted);}
+  .chart-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .chart-legend i{width:10px;height:10px;border-radius:3px;display:inline-block;}
 
   /* تبويبات فرعية */
   .subtabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
@@ -596,14 +605,15 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:16%" data-i18n="thEmployee">الموظف</th>
-                  <th style="width:13%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:13%" data-i18n="thDate">التاريخ</th>
-                  <th style="width:13%" data-i18n="thBaseSalary">الراتب الأساسي</th>
-                  <th style="width:13%" data-i18n="thAllowances">البدلات</th>
-                  <th style="width:12%" data-i18n="thAdvances">السلف</th>
-                  <th style="width:15%" data-i18n="thTotal">الإجمالي</th>
-                  <th style="width:5%"></th>
+                  <th style="width:4%">#</th>
+                  <th style="width:14%" data-i18n="thEmployee">الموظف</th>
+                  <th style="width:12%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:12%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:12%" data-i18n="thBaseSalary">الراتب الأساسي</th>
+                  <th style="width:12%" data-i18n="thAllowances">البدلات</th>
+                  <th style="width:11%" data-i18n="thAdvances">السلف</th>
+                  <th style="width:13%" data-i18n="thTotal">الإجمالي</th>
+                  <th style="width:10%"></th>
                 </tr></thead>
                 <tbody id="salaries-body"></tbody>
               </table>
@@ -640,14 +650,15 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:18%" data-i18n="thItemName">اسم الصنف</th>
-                  <th style="width:14%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:12%" data-i18n="thDate">التاريخ</th>
-                  <th style="width:15%" data-i18n="thCompanyName">اسم الشركة</th>
-                  <th style="width:12%" data-i18n="thUnitPrice">سعر الوحدة</th>
-                  <th style="width:9%" data-i18n="thQty">الكمية</th>
-                  <th style="width:15%" data-i18n="thTotal">الإجمالي</th>
-                  <th style="width:5%"></th>
+                  <th style="width:4%">#</th>
+                  <th style="width:16%" data-i18n="thItemName">اسم الصنف</th>
+                  <th style="width:12%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:11%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:13%" data-i18n="thCompanyName">اسم الشركة</th>
+                  <th style="width:11%" data-i18n="thUnitPrice">سعر الوحدة</th>
+                  <th style="width:8%" data-i18n="thQty">الكمية</th>
+                  <th style="width:13%" data-i18n="thTotal">الإجمالي</th>
+                  <th style="width:12%"></th>
                 </tr></thead>
                 <tbody id="purchases-body"></tbody>
               </table>
@@ -665,13 +676,14 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:17%" data-i18n="thCategory">البند</th>
-                  <th style="width:15%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:13%" data-i18n="thDate">التاريخ</th>
-                  <th style="width:14%" data-i18n="thQty">الكمية</th>
-                  <th style="width:16%" data-i18n="thUnitPrice">سعر الوحدة</th>
-                  <th style="width:15%" data-i18n="thTotal">الإجمالي</th>
-                  <th style="width:5%"></th>
+                  <th style="width:4%">#</th>
+                  <th style="width:15%" data-i18n="thCategory">البند</th>
+                  <th style="width:13%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:12%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:12%" data-i18n="thQty">الكمية</th>
+                  <th style="width:14%" data-i18n="thUnitPrice">سعر الوحدة</th>
+                  <th style="width:13%" data-i18n="thTotal">الإجمالي</th>
+                  <th style="width:12%"></th>
                 </tr></thead>
                 <tbody id="other-body"></tbody>
               </table>
@@ -689,12 +701,13 @@
               <div class="table-scroll">
               <table>
                 <thead><tr>
-                  <th style="width:18%" data-i18n="thCategory">البند</th>
-                  <th style="width:16%" data-i18n="thAmount">المبلغ</th>
-                  <th style="width:16%" data-i18n="thBranch">الفرع</th>
-                  <th style="width:15%" data-i18n="thDate">التاريخ</th>
-                  <th style="width:25%" data-i18n="thNote">ملاحظة</th>
-                  <th style="width:10%"></th>
+                  <th style="width:4%">#</th>
+                  <th style="width:16%" data-i18n="thCategory">البند</th>
+                  <th style="width:14%" data-i18n="thAmount">المبلغ</th>
+                  <th style="width:14%" data-i18n="thBranch">الفرع</th>
+                  <th style="width:13%" data-i18n="thDate">التاريخ</th>
+                  <th style="width:22%" data-i18n="thNote">ملاحظة</th>
+                  <th style="width:17%"></th>
                 </tr></thead>
                 <tbody id="housing-rent-body"></tbody>
               </table>
@@ -1002,6 +1015,32 @@
             </table>
             </div>
             <div class="section-total"><span data-i18n="totalSystemSales">إجمالي مبيعات النظام (مرجعي):</span> <b id="report-system-sales-total">0.000</b> <span class="cur-suffix"></span></div>
+          </div>
+
+          <div class="section" data-report-key="annual">
+            <h2><span class="icon">📅</span> <span data-i18n="reportAnnualTitle">التقرير السنوي — الأرباح والخسائر</span></h2>
+            <div id="annual-year-nav"></div>
+            <h3 style="font-size:.85rem;margin:14px 0 8px;color:var(--muted);" data-i18n="annualSalesChartLabel">المبيعات الشهرية</h3>
+            <div id="annual-sales-chart"></div>
+            <h3 style="font-size:.85rem;margin:16px 0 8px;color:var(--muted);" data-i18n="annualProfitChartLabel">الأرباح والخسائر الشهرية</h3>
+            <div id="annual-profit-chart"></div>
+            <div class="chart-legend">
+              <span><i style="background:var(--accent);"></i> <span data-i18n="legendProfit">ربح</span></span>
+              <span><i style="background:var(--danger);"></i> <span data-i18n="legendLoss">خسارة</span></span>
+            </div>
+            <div class="table-scroll" style="margin-top:16px;">
+            <table>
+              <thead><tr>
+                <th data-i18n="thMonth2">الشهر</th>
+                <th data-i18n="thSales">المبيعات</th>
+                <th data-i18n="thExpenses">المصاريف</th>
+                <th data-i18n="thNetProfit">صافي الربح/الخسارة</th>
+              </tr></thead>
+              <tbody id="annual-table"></tbody>
+            </table>
+            </div>
+            <div class="section-total"><span data-i18n="totalAnnualProfits">إجمالي أرباح الأشهر الرابحة:</span> <b id="annual-total-profits" style="color:var(--accent);">0.000</b> <span class="cur-suffix"></span></div>
+            <div class="section-total"><span data-i18n="totalAnnualLosses">إجمالي خسائر الأشهر الخاسرة:</span> <b id="annual-total-losses" style="color:var(--danger);">0.000</b> <span class="cur-suffix"></span></div>
           </div>
 
           <div class="section" data-report-key="branchSales">
@@ -1365,7 +1404,9 @@ const I18N = {
     hrcat_housingRent:'إيجار السكن', hrcat_wifi:'واي فاي', hrcat_percentage:'نسبة',
     hrcat_companyAlKhalil:'شركة الحي الخليل', hrcat_companyMount:'شركة ماونت', hrcat_companyKingdom:'شركة كنج دوم', hrcat_companyGlobal:'شركة جلوبل',
     confirmAddHousingRent:'هل تريدين إضافة إيجار سكن جديد؟',
-    logAddHousingRent:'إضافة إيجار سكن', logDeleteHousingRent:'حذف إيجار سكن',
+    logAddHousingRent:'إضافة إيجار سكن', logDeleteHousingRent:'حذف إيجار سكن', logCopyEntry:'نسخ بند لشهر آخر',
+    btnCopyToMonth:'نسخ إلى شهر آخر', promptCopyToMonth:'اكتبي الشهر المطلوب النسخ إليه (YYYY-MM):',
+    errInvalidMonth:'صيغة الشهر غير صحيحة، اكتبيه هكذا: 2026-09', copySuccessMsg:'تم نسخ البند إلى {month}',
     subtabSalaries:'الرواتب', subtabRents:'الإيجارات', subtabPurchases:'المشتريات', subtabOther:'مصاريف أخرى',
     thEmployee:'الموظف', thBranch:'الفرع', thBaseSalary:'الراتب الأساسي', thAllowances:'البدلات',
     thAdvances:'السلف', thTotal:'الإجمالي', btnAddSalary:'+ إضافة راتب', totalSalaries:'إجمالي الرواتب:',
@@ -1419,6 +1460,7 @@ const I18N = {
     reportsTitle:'التقارير', reportsSubtitle:'تقارير شهرية وسنوية',
     periodToday:'اليوم', periodMonth:'هذا الشهر', periodYear:'هذه السنة', periodAll:'كل الفترات',
     prevMonth:'الشهر السابق', nextMonth:'الشهر التالي', backToCurrentMonth:'↩️ العودة للشهر الحالي',
+    prevYear:'السنة السابقة', nextYear:'السنة التالية',
     btnPrintReport:'🖨 طباعة التقرير', btnShareReport:'📤 مشاركة التقرير', btnShareReportPdf:'📄 مشاركة كـ PDF',
     btnExportSalesExcel:'📊 تصدير المبيعات (Excel)', btnExportCostsExcel:'📊 تصدير التكاليف التشغيلية (Excel)', btnExportAllExcel:'📊 تصدير كل البيانات (Excel)',
     shareCopiedMsg:'تم نسخ ملخص التقرير — يمكنك لصقه في أي مكان', shareUnavailableMsg:'المشاركة غير مدعومة في هذا المتصفح',
@@ -1435,6 +1477,9 @@ const I18N = {
     reportHousingRentDetailTitle:'تفاصيل إيجار السكن لكل فرع',
     reportAllProfitsTitle:'إجمالي الأرباح لكل الفروع (للمالك فقط)', thNetProfit:'صافي الربح', totalNetProfitAll:'إجمالي صافي الربح لكل الفروع:',
     totalBranchProfits:'إجمالي أرباح الفروع الرابحة:', totalBranchLosses:'إجمالي خسائر الفروع الخاسرة:',
+    totalAnnualProfits:'إجمالي أرباح الأشهر الرابحة:', totalAnnualLosses:'إجمالي خسائر الأشهر الخاسرة:',
+    reportAnnualTitle:'التقرير السنوي — الأرباح والخسائر', annualSalesChartLabel:'المبيعات الشهرية', annualProfitChartLabel:'الأرباح والخسائر الشهرية',
+    legendProfit:'ربح', legendLoss:'خسارة', thMonth2:'الشهر',
     noData:'لا توجد بيانات', noBranches:'لا توجد فروع', noSuppliers:'لا يوجد موردون',
     auditTitle:'سجل التدقيق', auditSubtitle:'سجل لكل عملية إضافة أو تعديل أو حذف (متاح للمالك فقط)',
     btnClearLog:'🗑 مسح السجل', thTime:'الوقت', thUser:'المستخدم', thRoleCol:'الدور', thOperation:'العملية',
@@ -1546,7 +1591,9 @@ const I18N = {
     hrcat_housingRent:'Housing Rent', hrcat_wifi:'WiFi', hrcat_percentage:'Percentage',
     hrcat_companyAlKhalil:'Al Hai Al Khalil Co.', hrcat_companyMount:'Mount Co.', hrcat_companyKingdom:'Kingdom Co.', hrcat_companyGlobal:'Global Co.',
     confirmAddHousingRent:'Add a new housing rent entry?',
-    logAddHousingRent:'Added housing rent', logDeleteHousingRent:'Deleted housing rent',
+    logAddHousingRent:'Added housing rent', logDeleteHousingRent:'Deleted housing rent', logCopyEntry:'Copied item to another month',
+    btnCopyToMonth:'Copy to another month', promptCopyToMonth:'Type the target month (YYYY-MM):',
+    errInvalidMonth:'Invalid month format, write it like: 2026-09', copySuccessMsg:'Item copied to {month}',
     subtabSalaries:'Salaries', subtabRents:'Rents', subtabPurchases:'Purchases', subtabOther:'Other Expenses',
     thEmployee:'Employee', thBranch:'Branch', thBaseSalary:'Base Salary', thAllowances:'Allowances',
     thAdvances:'Advances', thTotal:'Total', btnAddSalary:'+ Add Salary', totalSalaries:'Total Salaries:',
@@ -1600,6 +1647,7 @@ const I18N = {
     reportsTitle:'Reports', reportsSubtitle:'Monthly and yearly reports',
     periodToday:'Today', periodMonth:'This Month', periodYear:'This Year', periodAll:'All Time',
     prevMonth:'Previous Month', nextMonth:'Next Month', backToCurrentMonth:'↩️ Back to Current Month',
+    prevYear:'Previous Year', nextYear:'Next Year',
     btnPrintReport:'🖨 Print Report', btnShareReport:'📤 Share Report', btnShareReportPdf:'📄 Share as PDF',
     btnExportSalesExcel:'📊 Export Sales (Excel)', btnExportCostsExcel:'📊 Export Operating Costs (Excel)', btnExportAllExcel:'📊 Export All Data (Excel)',
     shareCopiedMsg:'Report summary copied — you can paste it anywhere', shareUnavailableMsg:'Sharing is not supported in this browser',
@@ -1616,6 +1664,9 @@ const I18N = {
     reportHousingRentDetailTitle:'Housing Rent Detail by Branch',
     reportAllProfitsTitle:'Total Profits — All Branches (Owner Only)', thNetProfit:'Net Profit', totalNetProfitAll:'Total Net Profit — All Branches:',
     totalBranchProfits:'Total Profits (Profitable Branches):', totalBranchLosses:'Total Losses (Losing Branches):',
+    totalAnnualProfits:'Total Profits (Profitable Months):', totalAnnualLosses:'Total Losses (Losing Months):',
+    reportAnnualTitle:'Annual Report — Profits & Losses', annualSalesChartLabel:'Monthly Sales', annualProfitChartLabel:'Monthly Profits & Losses',
+    legendProfit:'Profit', legendLoss:'Loss', thMonth2:'Month',
     noData:'No data available', noBranches:'No branches', noSuppliers:'No suppliers',
     auditTitle:'Audit Log', auditSubtitle:'Log of every add, edit, or delete operation (owner only)',
     btnClearLog:'🗑 Clear Log', thTime:'Time', thUser:'User', thRoleCol:'Role', thOperation:'Operation',
@@ -1849,12 +1900,49 @@ function shiftMonth(delta){
   selectedMonth = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   switchView(currentView);
 }
+function shiftYear(delta){
+  const [y, m] = selectedMonth.split('-').map(Number);
+  selectedMonth = (y + delta) + '-' + String(m).padStart(2, '0');
+  switchView(currentView);
+}
+function yearNavHtml(){
+  const year = selectedMonth.slice(0,4);
+  const isCurrent = year === todayStr().slice(0,4);
+  return `<div class="month-nav">
+    <button onclick="shiftYear(-1)" title="${t('prevYear')}">◀</button>
+    <b>${year}</b>
+    <button onclick="shiftYear(1)" title="${t('nextYear')}">▶</button>
+    ${!isCurrent ? `<button class="clear-btn" onclick="resetToCurrentMonth()">${t('backToCurrentMonth')}</button>` : ''}
+  </div>`;
+}
 function resetToCurrentMonth(){
   selectedMonth = todayStr().slice(0,7);
   switchView(currentView);
 }
 function entryDateForSelectedMonth(){
   return selectedMonth === todayStr().slice(0,7) ? todayStr() : selectedMonth + '-01';
+}
+function copyEntryToMonth(stateKey, id, renderFnName){
+  const arr = state[stateKey];
+  const entry = arr.find(x => x.id === id);
+  if(!entry) return;
+  const [cy, cm] = selectedMonth.split('-').map(Number);
+  const next = new Date(cy, cm, 1);
+  const defaultTarget = next.getFullYear() + '-' + String(next.getMonth()+1).padStart(2,'0');
+  const input = prompt(t('promptCopyToMonth'), defaultTarget);
+  if(!input) return;
+  if(!/^\d{4}-\d{2}$/.test(input.trim())){ alert(t('errInvalidMonth')); return; }
+  const [ty, tm] = input.trim().split('-').map(Number);
+  const origDay = entry.date ? (parseInt(entry.date.slice(8,10), 10) || 1) : 1;
+  const lastDay = new Date(ty, tm, 0).getDate();
+  const day = Math.min(origDay, lastDay);
+  const newDate = ty + '-' + String(tm).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+  const copy = Object.assign({}, entry, { id: uid(), date: newDate });
+  arr.push(copy);
+  saveState();
+  logAction('logCopyEntry');
+  if(typeof window[renderFnName] === 'function') window[renderFnName]();
+  alert(t('copySuccessMsg').replace('{month}', monthLabelFull(ty + '-' + String(tm).padStart(2,'0'))));
 }
 function monthNavHtml(){
   const isCurrent = selectedMonth === todayStr().slice(0,7);
@@ -1918,7 +2006,7 @@ function defaultState(){
     settings: {
       visaPct: 1.5, talabatPct: 20, zadPct: 15, snoonuPct: 0, tmdonePct: 0, discounts: 0,
       customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} },
-      reportOrder: ['systemSales','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers','notes'],
+      reportOrder: ['systemSales','annual','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers','notes'],
       costsOrder: ['salaries','rents','purchases','other','housingRent'],
       customExpenseCategories: [],
       customHousingRentCategories: [],
@@ -1941,7 +2029,7 @@ function normalizeSettings(settings){
   settings.customTheme = settings.customTheme || {};
   settings.customTheme.aventus = settings.customTheme.aventus || {};
   settings.customTheme.chickenville = settings.customTheme.chickenville || {};
-  settings.reportOrder = normalizeOrderList(settings.reportOrder, ['systemSales','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers','notes']);
+  settings.reportOrder = normalizeOrderList(settings.reportOrder, ['systemSales','annual','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers','notes']);
   settings.costsOrder = normalizeOrderList(settings.costsOrder, ['salaries','rents','purchases','other','housingRent']);
   settings.customExpenseCategories = Array.isArray(settings.customExpenseCategories) ? settings.customExpenseCategories : [];
   settings.customHousingRentCategories = Array.isArray(settings.customHousingRentCategories) ? settings.customHousingRentCategories : [];
@@ -2299,6 +2387,53 @@ function commissionsTotal(period, branchId){
     + snoonu * (num(state.settings.snoonuPct)/100) + tmdone * (num(state.settings.tmdonePct)/100);
 }
 
+function annualMonthlyData(branchId, year){
+  const months = [];
+  for(let m=1; m<=12; m++){
+    const ym = year + '-' + String(m).padStart(2,'0');
+    const matches = x => (!branchId || x.branchId===branchId) && (x.date||'').slice(0,7)===ym;
+    const salesRows = state.sales.filter(matches);
+    const grossSales = salesRows.reduce((a,s)=>a+saleTotal(s),0);
+    const netSales = salesRows.reduce((a,s)=>a+num(s.visa)+num(s.talabat)+num(s.zad)+num(s.snoonu)+num(s.tmdone)+num(s.other),0);
+    const commissions = salesRows.reduce((a,s)=>
+      a + num(s.visa)*(num(state.settings.visaPct)/100) + num(s.talabat)*(num(state.settings.talabatPct)/100)
+        + num(s.zad)*(num(state.settings.zadPct)/100) + num(s.snoonu)*(num(state.settings.snoonuPct)/100) + num(s.tmdone)*(num(state.settings.tmdonePct)/100)
+    , 0);
+    const sal = state.salaries.filter(matches).reduce((a,x)=>a+salaryTotal(x),0);
+    const pur = state.purchases.filter(matches).reduce((a,x)=>a+purchaseTotal(x),0);
+    const oth = state.otherExpenses.filter(matches).reduce((a,x)=>a+otherExpenseTotal(x),0);
+    const hr = state.housingRent.filter(matches).reduce((a,x)=>a+num(x.amount),0);
+    const rent = totalRents(branchId);
+    const expenses = sal + pur + oth + hr + rent;
+    const net = netSales - expenses - commissions - num(state.settings.discounts);
+    months.push({ym, m, grossSales, expenses, net});
+  }
+  return months;
+}
+function svgBarChart(items, opts){
+  opts = opts || {};
+  const w = 760, h = opts.height || 190, padL = 50, padR = 14, padT = 14, padB = 26;
+  const chartW = w - padL - padR, chartH = h - padT - padB;
+  const values = items.map(d=>d.value);
+  const hasNeg = values.some(v=>v<0);
+  const maxAbs = Math.max(1, ...values.map(v=>Math.abs(v)));
+  const zeroY = hasNeg ? padT + chartH/2 : padT + chartH;
+  const scale = (hasNeg ? chartH/2 : chartH) / maxAbs;
+  const slot = chartW / items.length;
+  const barW = Math.min(28, slot * 0.55);
+  let svg = `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${w-padR}" y2="${zeroY.toFixed(1)}" stroke="var(--border)" stroke-width="1"/>`;
+  svg += `<line x1="${padL}" y1="${padT}" x2="${w-padR}" y2="${padT}" stroke="var(--border)" stroke-width="1" opacity=".35"/>`;
+  if(hasNeg) svg += `<line x1="${padL}" y1="${(padT+chartH).toFixed(1)}" x2="${w-padR}" y2="${(padT+chartH).toFixed(1)}" stroke="var(--border)" stroke-width="1" opacity=".35"/>`;
+  items.forEach((d,i) => {
+    const x = padL + slot*i + slot/2 - barW/2;
+    const barH = Math.abs(d.value) * scale;
+    const y = d.value >= 0 ? zeroY - barH : zeroY;
+    const color = opts.colorFn ? opts.colorFn(d.value, i) : 'var(--accent)';
+    svg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(barH,1).toFixed(1)}" rx="4" fill="${color}" class="chart-bar"><title>${escapeHtml(d.label)}: ${formatCurrency(d.value)}</title></rect>`;
+    svg += `<text x="${(x+barW/2).toFixed(1)}" y="${h-8}" text-anchor="middle" font-size="10" fill="var(--muted)">${escapeHtml(d.shortLabel||d.label)}</text>`;
+  });
+  return `<svg viewBox="0 0 ${w} ${h}" class="mini-chart-svg" preserveAspectRatio="xMidYMid meet" style="direction:ltr;">${svg}</svg>`;
+}
 function barRow(label, value, max, color, extra){
   const pct = max > 0 ? Math.min(100, (value/max)*100) : 0;
   return `<div class="bar-row" title="${escapeHtml(label)}: ${formatCurrency(value)}">
@@ -2568,8 +2703,9 @@ function removeSalary(id){
 function renderSalaries(){
   const scope = activeBranchId();
   const rows = (scope ? state.salaries.filter(s=>s.branchId===scope) : state.salaries).filter(s=>matchesPeriod(s.date,'month'));
-  document.getElementById('salaries-body').innerHTML = rows.map(s => `
+  document.getElementById('salaries-body').innerHTML = rows.map((s,i) => `
     <tr data-id="${s.id}">
+      <td class="row-num">${i+1}</td>
       <td><input type="text" value="${escapeHtml(s.employee)}" placeholder="${t('thEmployee')}" oninput="updateSalary('${s.id}','employee',this.value)"></td>
       <td><select onchange="updateSalary('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
       <td><input type="date" value="${s.date||''}" onchange="updateSalary('${s.id}','date',this.value)"></td>
@@ -2577,7 +2713,10 @@ function renderSalaries(){
       <td><input type="number" min="0" step="any" value="${s.allowance}" oninput="updateSalary('${s.id}','allowance',this.value); renderSalariesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${s.advance}" oninput="updateSalary('${s.id}','advance',this.value); renderSalariesTotals();"></td>
       <td class="row-total">${formatCurrency(salaryTotal(s))}</td>
-      <td><button class="del-btn" onclick="removeSalary('${s.id}')">✕</button></td>
+      <td>
+        <button class="copy-btn" title="${t('btnCopyToMonth')}" onclick="copyEntryToMonth('salaries','${s.id}','renderSalaries')">📋</button>
+        <button class="del-btn" onclick="removeSalary('${s.id}')">✕</button>
+      </td>
     </tr>`).join('');
   renderSalariesTotals();
   renderAddBranchPicker('salaries-branch-picker', 'salaries');
@@ -2641,8 +2780,9 @@ function removePurchase(id){
 function renderPurchases(){
   const scope = activeBranchId();
   const rows = (scope ? state.purchases.filter(p=>p.branchId===scope) : state.purchases).filter(p=>matchesPeriod(p.date,'month'));
-  document.getElementById('purchases-body').innerHTML = rows.map(p => `
+  document.getElementById('purchases-body').innerHTML = rows.map((p,i) => `
     <tr data-id="${p.id}">
+      <td class="row-num">${i+1}</td>
       <td><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updatePurchase('${p.id}','item',this.value)"></td>
       <td><select onchange="updatePurchase('${p.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(p.branchId)}</select></td>
       <td><input type="date" value="${p.date||''}" onchange="updatePurchase('${p.id}','date',this.value)"></td>
@@ -2650,7 +2790,10 @@ function renderPurchases(){
       <td><input type="number" min="0" step="any" value="${p.price}" oninput="updatePurchase('${p.id}','price',this.value); renderPurchasesTotals();"></td>
       <td><input type="number" min="0" step="any" value="${p.qty}" oninput="updatePurchase('${p.id}','qty',this.value); renderPurchasesTotals();"></td>
       <td class="row-total">${formatCurrency(purchaseTotal(p))}</td>
-      <td><button class="del-btn" onclick="removePurchase('${p.id}')">✕</button></td>
+      <td>
+        <button class="copy-btn" title="${t('btnCopyToMonth')}" onclick="copyEntryToMonth('purchases','${p.id}','renderPurchases')">📋</button>
+        <button class="del-btn" onclick="removePurchase('${p.id}')">✕</button>
+      </td>
     </tr>`).join('');
   renderPurchasesTotals();
   renderAddBranchPicker('purchases-branch-picker', 'purchases');
@@ -2832,15 +2975,19 @@ function removeOtherExpense(id){
 function renderOtherExpenses(){
   const scope = activeBranchId();
   const rows = (scope ? state.otherExpenses.filter(o=>o.branchId===scope) : state.otherExpenses).filter(o=>matchesPeriod(o.date,'month'));
-  document.getElementById('other-body').innerHTML = rows.map(o => `
+  document.getElementById('other-body').innerHTML = rows.map((o,i) => `
     <tr data-id="${o.id}">
+      <td class="row-num">${i+1}</td>
       <td><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.concat(state.settings.customExpenseCategories).map(c=>`<option value="${escapeHtml(c)}" ${o.category===c?'selected':''}>${escapeHtml(categoryLabel(c))}</option>`).join('')}</select></td>
       <td><select onchange="updateOtherExpense('${o.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(o.branchId)}</select></td>
       <td><input type="date" value="${o.date||''}" onchange="updateOtherExpense('${o.id}','date',this.value)"></td>
       <td><input type="number" min="0" step="any" value="${o.qty ?? 1}" oninput="updateOtherExpense('${o.id}','qty',this.value); renderOtherTotals();"></td>
       <td><input type="number" min="0" step="any" value="${o.unitPrice ?? 0}" oninput="updateOtherExpense('${o.id}','unitPrice',this.value); renderOtherTotals();"></td>
       <td class="row-total">${formatCurrency(otherExpenseTotal(o))}</td>
-      <td><button class="del-btn" onclick="removeOtherExpense('${o.id}')">✕</button></td>
+      <td>
+        <button class="copy-btn" title="${t('btnCopyToMonth')}" onclick="copyEntryToMonth('otherExpenses','${o.id}','renderOtherExpenses')">📋</button>
+        <button class="del-btn" onclick="removeOtherExpense('${o.id}')">✕</button>
+      </td>
     </tr>`).join('');
   renderOtherTotals();
   renderAddBranchPicker('other-branch-picker', 'other');
@@ -2883,15 +3030,19 @@ function removeHousingRent(id){
 function renderHousingRent(){
   const scope = activeBranchId();
   const rows = (scope ? state.housingRent.filter(h=>h.branchId===scope) : state.housingRent).filter(h=>matchesPeriod(h.date,'month'));
-  document.getElementById('housing-rent-body').innerHTML = rows.map(h => `
+  document.getElementById('housing-rent-body').innerHTML = rows.map((h,i) => `
     <tr data-id="${h.id}">
+      <td class="row-num">${i+1}</td>
       <td><select onchange="updateHousingRent('${h.id}','category',this.value)">${HOUSING_RENT_CATEGORIES.concat(state.settings.customHousingRentCategories).map(c=>`<option value="${escapeHtml(c)}" ${(h.category||'housingRent')===c?'selected':''}>${escapeHtml(housingRentCategoryLabel(c))}</option>`).join('')}</select></td>
       <td><input type="number" min="0" step="any" value="${h.amount}" oninput="updateHousingRent('${h.id}','amount',this.value); renderHousingRentTotals();"></td>
       <td><select onchange="updateHousingRent('${h.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(h.branchId)}</select></td>
       <td><input type="date" value="${h.date||''}" onchange="updateHousingRent('${h.id}','date',this.value)"></td>
       <td><input type="text" value="${escapeHtml(h.note)}" placeholder="${t('thNote')}" oninput="updateHousingRent('${h.id}','note',this.value)"></td>
-      <td><button class="del-btn" onclick="removeHousingRent('${h.id}')">✕</button></td>
-    </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
+      <td>
+        <button class="copy-btn" title="${t('btnCopyToMonth')}" onclick="copyEntryToMonth('housingRent','${h.id}','renderHousingRent')">📋</button>
+        <button class="del-btn" onclick="removeHousingRent('${h.id}')">✕</button>
+      </td>
+    </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted);">${t('noData')}</td></tr>`;
   renderHousingRentTotals();
   renderAddBranchPicker('housingRent-branch-picker', 'housingRent');
 }
@@ -3237,6 +3388,35 @@ function applyCostsOrder(){
     if(btn) btn.style.order = i;
   });
 }
+function renderAnnualReport(reportScope){
+  document.getElementById('annual-year-nav').innerHTML = yearNavHtml();
+  const year = selectedMonth.slice(0,4);
+  const months = annualMonthlyData(reportScope, year);
+  const monthNames = MONTH_NAMES[LANG] || MONTH_NAMES.ar;
+  const shortMonths = monthNames.map(n => n.slice(0,3));
+
+  document.getElementById('annual-sales-chart').innerHTML = svgBarChart(
+    months.map((d,i) => ({label: monthNames[i], shortLabel: shortMonths[i], value: d.grossSales})),
+    { colorFn: () => 'var(--accent)' }
+  );
+  document.getElementById('annual-profit-chart').innerHTML = svgBarChart(
+    months.map((d,i) => ({label: monthNames[i], shortLabel: shortMonths[i], value: d.net})),
+    { colorFn: v => v >= 0 ? 'var(--accent)' : 'var(--danger)' }
+  );
+
+  document.getElementById('annual-table').innerHTML = months.map((d,i) => `
+    <tr>
+      <td>${monthNames[i]}</td>
+      <td>${formatCurrency(d.grossSales)}</td>
+      <td>${formatCurrency(d.expenses)}</td>
+      <td style="color:${d.net>=0?'var(--accent)':'var(--danger)'}"><b>${formatCurrency(d.net)}</b></td>
+    </tr>`).join('');
+
+  const totalProfits = months.filter(d=>d.net>0).reduce((a,d)=>a+d.net,0);
+  const totalLosses = Math.abs(months.filter(d=>d.net<0).reduce((a,d)=>a+d.net,0));
+  document.getElementById('annual-total-profits').textContent = formatNum(totalProfits);
+  document.getElementById('annual-total-losses').textContent = formatNum(totalLosses);
+}
 function renderReports(){
   renderReportLogo();
   populateReportBranchSelect();
@@ -3245,6 +3425,8 @@ function renderReports(){
   document.getElementById('report-month-nav').innerHTML = (period === 'month' || period === 'year') ? monthNavHtml() : '';
   const reportScope = activeBranchId() || document.getElementById('report-branch').value || null;
   const reportBranches = reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches;
+
+  renderAnnualReport(reportScope);
 
   const branchSales = reportBranches.map(b => ({name:b.name, total: totalSales(b.id, period)}));
   const maxBS = Math.max(1, ...branchSales.map(b=>b.total));
@@ -3481,7 +3663,7 @@ function renderUsers(){
    ترتيب أقسام التقرير وتبويبات التكاليف التشغيلية
 ========================================================= */
 const REPORT_ORDER_LABELS = {
-  systemSales:'reportSystemSalesDetailTitle', branchSales:'reportBranchSalesTitle', paymentMethods:'reportPaymentMethodsTitle',
+  systemSales:'reportSystemSalesDetailTitle', annual:'reportAnnualTitle', branchSales:'reportBranchSalesTitle', paymentMethods:'reportPaymentMethodsTitle',
   expenses:'reportExpensesTitle', profit:'reportProfitTitle', rents:'reportRentsDetailTitle', housingRent:'reportHousingRentDetailTitle',
   purchases:'reportPurchasesDetailTitle', other:'reportOtherDetailTitle', suppliers:'suppliersTitle', notes:'reportNotesTitle',
 };
