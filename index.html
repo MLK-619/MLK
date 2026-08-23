@@ -388,7 +388,7 @@
     .table-scroll::after{
       display:block;text-align:center;font-size:.7rem;color:var(--muted);padding-top:8px;
     }
-    html[lang="ar"] .table-scroll::after{content:"⇠ اسحبي يميناً/يساراً لعرض بقية الأعمدة";}
+    html[lang="ar"] .table-scroll::after{content:"⇠ اسحب يميناً/يساراً لعرض بقية الأعمدة";}
     html[lang="en"] .table-scroll::after{content:"⇠ Swipe left/right to see more columns";}
     .toolbar{flex-direction:column;align-items:stretch;}
     .toolbar-right{justify-content:stretch;}
@@ -413,7 +413,7 @@
     <div class="chooser-toprow">
       <button type="button" class="lang-toggle-btn lang-toggle" onclick="toggleLang()">English</button>
     </div>
-    <h1 class="chooser-title" data-i18n="chooseBrandTitle">اختاري النظام الذي تريدين الدخول إليه</h1>
+    <h1 class="chooser-title" data-i18n="chooseBrandTitle">اختر النظام الذي تريد الدخول إليه</h1>
     <p class="chooser-subtitle"><span data-i18n="brandLicensedTo">مرخّص لـ</span> <b data-i18n="clientName">شركة المزن التجارية</b></p>
     <div class="chooser-grid">
       <button type="button" class="chooser-card" onclick="selectBrandAndContinue('aventus')">
@@ -500,7 +500,7 @@
 
       <div class="wrap">
 
-        <div class="cloud-offline-banner" id="cloud-offline-banner" data-i18n="cloudOfflineBanner">⚠️ غير متصلة بقاعدة البيانات — تعطّل إدخال وتعديل البيانات مؤقتاً لحمايتها من الفقدان. انتظري حتى تظهر "متصل".</div>
+        <div class="cloud-offline-banner" id="cloud-offline-banner" data-i18n="cloudOfflineBanner">⚠️ غير متصلة بقاعدة البيانات — تعطّل إدخال وتعديل البيانات مؤقتاً لحمايتها من الفقدان. انتظر حتى تظهر "متصل".</div>
         <div class="role-readonly-banner" id="role-readonly-banner" data-i18n="roleReadonlyBanner">👁️ هذا الحساب للمشاهدة فقط — لا يمكن إضافة أو تعديل أو حذف أي بيانات.</div>
 
         <!-- ============ لوحة التحكم ============ -->
@@ -548,7 +548,7 @@
             <h2><span class="icon">📝</span> <span data-i18n="sectionNotes">ملاحظات وتذكيرات</span></h2>
             <div class="toolbar" style="margin-bottom:14px;">
               <div style="display:flex;gap:10px;flex:1;flex-wrap:wrap;">
-                <input type="text" id="note-text-input" data-i18n-ph="notePlaceholder" placeholder="اكتبي ملاحظة أو تذكيراً..." style="flex:2;min-width:180px;">
+                <input type="text" id="note-text-input" data-i18n-ph="notePlaceholder" placeholder="اكتب ملاحظة أو تذكيراً..." style="flex:2;min-width:180px;">
                 <input type="date" id="note-date-input" style="flex:1;min-width:130px;">
               </div>
               <div class="toolbar-right"><button id="add-note-btn" onclick="addNote()" data-i18n="btnAddNote">+ إضافة</button></div>
@@ -1153,7 +1153,7 @@
 
           <div class="section" data-report-key="notes">
             <h2><span class="icon">📝</span> <span data-i18n="reportNotesTitle">ملاحظات التقرير</span></h2>
-            <textarea id="report-notes-input" data-i18n-ph="reportNotesPh" placeholder="اكتبي أي ملاحظات تريدين إضافتها لهذا التقرير..." style="width:100%;min-height:110px;background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:.88rem;resize:vertical;"></textarea>
+            <textarea id="report-notes-input" data-i18n-ph="reportNotesPh" placeholder="اكتب أي ملاحظات تريد إضافتها لهذا التقرير..." style="width:100%;min-height:110px;background:var(--card2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:.88rem;resize:vertical;"></textarea>
           </div>
           </div>
         </section>
@@ -1213,7 +1213,7 @@
 
           <div class="section">
             <h2><span class="icon">🖼️</span> <span data-i18n="moreLogoTitle">شعار العلامة التجارية</span></h2>
-            <p class="subtitle" style="margin-bottom:6px;" data-i18n="moreLogoDesc">غيّري الشعار الذي يظهر في شاشة الدخول، الشريط الجانبي، وأعلى صفحة التقارير.</p>
+            <p class="subtitle" style="margin-bottom:6px;" data-i18n="moreLogoDesc">غيّر الشعار الذي يظهر في شاشة الدخول، الشريط الجانبي، وأعلى صفحة التقارير.</p>
             <p class="subtitle" style="margin-bottom:14px;"><span data-i18n="moreLogoBrandNote">الشعار الحالي لِـ:</span> <b id="logo-brand-label"></b></p>
             <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
               <div class="report-logo-mark" id="logo-preview"></div>
@@ -1227,7 +1227,7 @@
 
           <div class="section">
             <h2><span class="icon">🎨</span> <span data-i18n="moreThemeTitle">ألوان الثيم</span></h2>
-            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreThemeDesc">غيّري اللون الأساسي ولون التدرج لهذا البراند.</p>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreThemeDesc">غيّر اللون الأساسي ولون التدرج لهذا البراند.</p>
             <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;">
               <label style="display:flex;flex-direction:column;gap:6px;font-size:.8rem;color:var(--muted);">
                 <span data-i18n="labelAccentColor">اللون الأساسي</span>
@@ -1258,7 +1258,7 @@
 
           <div class="section">
             <h2><span class="icon">➕</span> <span data-i18n="moreCustomCatTitle">إضافة بنود جديدة للتكاليف التشغيلية</span></h2>
-            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreCustomCatDesc">أضيفي بنوداً جديدة تظهر كخيارات إضافية عند إدخال "مصاريف أخرى" أو "إيجار السكن" (متاح للمالك فقط).</p>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreCustomCatDesc">أضف بنوداً جديدة تظهر كخيارات إضافية عند إدخال "مصاريف أخرى" أو "إيجار السكن" (متاح للمالك فقط).</p>
             <div style="display:flex;gap:24px;flex-wrap:wrap;">
               <div style="flex:1;min-width:260px;">
                 <h3 style="font-size:.85rem;margin:0 0 10px;color:var(--muted);" data-i18n="moreCustomCatOtherLabel">بنود مصاريف أخرى</h3>
@@ -1281,13 +1281,13 @@
 
           <div class="section">
             <h2><span class="icon">🔎</span> <span data-i18n="moreSearchTitle">بحث شامل</span></h2>
-            <input type="text" id="global-search-input" data-i18n-ph="moreSearchPh" placeholder="ابحثي بالاسم في الفروع، الموردين، المخزون، المشتريات..." oninput="runGlobalSearch()">
+            <input type="text" id="global-search-input" data-i18n-ph="moreSearchPh" placeholder="ابحث بالاسم في الفروع، الموردين، المخزون، المشتريات..." oninput="runGlobalSearch()">
             <div id="global-search-results" style="margin-top:14px;"></div>
           </div>
 
           <div class="section">
             <h2><span class="icon">💾</span> <span data-i18n="moreBackupTitle">النسخ الاحتياطي واستعادة البيانات</span></h2>
-            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreBackupDesc">نزّلي نسخة من كل بيانات النظام كملف JSON، أو استعيديها لاحقاً على أي جهاز.</p>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreBackupDesc">نزّل نسخة من كل بيانات النظام كملف JSON، أو استعِدها لاحقاً على أي جهاز.</p>
             <div class="toolbar-right" style="justify-content:flex-start;">
               <button onclick="downloadBackup()" data-i18n="btnDownloadBackup">⬇️ تنزيل نسخة احتياطية</button>
               <label class="add-btn" style="display:inline-block;cursor:pointer;">
@@ -1299,7 +1299,7 @@
 
           <div class="section">
             <h2><span class="icon">☁️</span> <span data-i18n="moreCloudBackupTitle">النسخ الاحتياطية السحابية</span></h2>
-            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreCloudBackupDesc">نسخة تلقائية تُحفظ يومياً في قاعدة البيانات، وتقدرين تسوين نسخة إضافية يدوياً وقت ما تبين، وترجعين لأي نسخة سابقة.</p>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreCloudBackupDesc">نسخة تلقائية تُحفظ يومياً في قاعدة البيانات، وتقدر تسوي نسخة إضافية يدوياً وقت ما تبي، وترجع لأي نسخة سابقة.</p>
             <div class="toolbar-right" style="justify-content:flex-start;margin-bottom:14px;">
               <button id="create-backup-btn" onclick="createManualBackup()" data-i18n="btnCreateBackupNow">🔖 إنشاء نسخة الآن</button>
               <button onclick="renderCloudBackupsList()" data-i18n="btnRefreshBackups">🔄 تحديث القائمة</button>
@@ -1347,7 +1347,7 @@ let LANG = localStorage.getItem(LANG_KEY) || 'ar';
 const I18N = {
   ar: {
     brandTagline:'نظام إدارة فروع الشركات التجارية', brandLicensedTo:'مرخّص لـ', clientName:'شركة المزن التجارية',
-    chooseBrandTitle:'اختاري النظام الذي تريدين الدخول إليه', chooseBrandHint:'يمكنك تغيير الاختيار لاحقاً من شاشة الدخول',
+    chooseBrandTitle:'اختر النظام الذي تريد الدخول إليه', chooseBrandHint:'يمكنك تغيير الاختيار لاحقاً من شاشة الدخول',
     backToChooser:'‹ تغيير الاختيار',
     labelUsername:'اسم المستخدم', placeholderUsername:'أدخل اسم المستخدم',
     labelPassword:'كلمة المرور', placeholderPassword:'أدخل كلمة المرور',
@@ -1359,24 +1359,24 @@ const I18N = {
     errFillFields:'الرجاء إدخال اسم المستخدم وكلمة المرور',
     errSelectBranch:'الرجاء اختيار الفرع (يجب إضافة فرع واحد على الأقل أولاً)',
     errInvalidCredentials:'اسم المستخدم أو كلمة المرور غير صحيحة',
-    errAccountLocked:'هذا الحساب مقفل بسبب محاولات دخول خاطئة متكررة. تواصلي مع المالك لفتحه.',
+    errAccountLocked:'هذا الحساب مقفل بسبب محاولات دخول خاطئة متكررة. تواصل مع المالك لفتحه.',
     navDashboard:'لوحة التحكم', navBranches:'الفروع', navCosts:'التكاليف التشغيلية', navCashPurchases:'المشتريات بالكاش', navCapital:'رأس المال', navStock:'المخزون', navSales:'المبيعات',
     navProfit:'حساب الأرباح', navSuppliers:'الفواتير المتأخرة', navReports:'التقارير', navPaymentReport:'تقرير المدفوعات', navAuditlog:'سجل التدقيق',
     navUsers:'إدارة المستخدمين', usersTitle:'إدارة المستخدمين',
     usersSubtitle:'المالك فقط يقدر يضيف حسابات ويحدد الدور والفرع الثابت لكل مستخدم — لا يختار المستخدم فرعه بنفسه',
     btnAddUser:'+ إضافة مستخدم', errLastOwner:'لا يمكن حذف آخر حساب بصلاحية مالك',
-    confirmDeleteUser:'هل تريدين حذف هذا المستخدم؟', confirmAddUser:'هل تريدين إضافة مستخدم جديد؟',
+    confirmDeleteUser:'هل تريد حذف هذا المستخدم؟', confirmAddUser:'هل تريد إضافة مستخدم جديد؟',
     thAccountStatus:'حالة الحساب', accountLocked:'مقفل', accountActive:'نشط',
     btnSaveUser:'💾 حفظ', btnUnlockUser:'🔓 فتح', userSavedMsg:'تم حفظ بيانات المستخدم',
     logUnlockUser:'فتح حساب مستخدم', logRestoreCloudBackup:'استعادة نسخة احتياطية سحابية',
-    confirmAddBranch:'هل تريدين إضافة فرع جديد؟', confirmAddSalary:'هل تريدين إضافة سجل راتب جديد؟',
-    confirmAddPurchase:'هل تريدين إضافة مشترى جديد؟', confirmAddOther:'هل تريدين إضافة مصروف جديد؟',
-    confirmAddStock:'هل تريدين إضافة مادة خام جديدة؟', confirmAddSale:'هل تريدين إضافة مبيعات جديدة؟',
-    confirmAddSupplier:'هل تريدين إضافة مورد جديد؟', confirmAddNote:'هل تريدين إضافة هذه الملاحظة؟',
+    confirmAddBranch:'هل تريد إضافة فرع جديد؟', confirmAddSalary:'هل تريد إضافة سجل راتب جديد؟',
+    confirmAddPurchase:'هل تريد إضافة مشترى جديد؟', confirmAddOther:'هل تريد إضافة مصروف جديد؟',
+    confirmAddStock:'هل تريد إضافة مادة خام جديدة؟', confirmAddSale:'هل تريد إضافة مبيعات جديدة؟',
+    confirmAddSupplier:'هل تريد إضافة مورد جديد؟', confirmAddNote:'هل تريد إضافة هذه الملاحظة؟',
     logAddUser:'إضافة مستخدم جديد', logDeleteUser:'حذف مستخدم',
     welcomeText:'مرحباً،', logout:'تسجيل الخروج',
     cloudStatus_offline:'⚠️ محلي فقط', cloudStatus_connecting:'⏳ يتصل...', cloudStatus_online:'☁️ متصل',
-    cloudOfflineBanner:'⚠️ غير متصلة بقاعدة البيانات — تعطّل إدخال وتعديل البيانات مؤقتاً لحمايتها من الفقدان. انتظري حتى تظهر "متصل".',
+    cloudOfflineBanner:'⚠️ غير متصلة بقاعدة البيانات — تعطّل إدخال وتعديل البيانات مؤقتاً لحمايتها من الفقدان. انتظر حتى تظهر "متصل".',
     roleReadonlyBanner:'👁️ هذا الحساب للمشاهدة فقط — لا يمكن إضافة أو تعديل أو حذف أي بيانات.',
     dashboardTitle:'لوحة التحكم الرئيسية', dashboardSubtitle:'نظام إدارة فروع شركة المزن التجارية — ملخص سريع',
     dashboardBranchLabel:'عرض بيانات فرع:',
@@ -1385,7 +1385,7 @@ const I18N = {
     kpiTopBranch:'أفضل فرع مبيعاً', kpiTopSupplier:'أكثر مورد يتم التعامل معه',
     sectionBranchSales:'المبيعات حسب الفرع', sectionAlerts:'التنبيهات',
     sectionExpenseBreakdown:'توزيع المصروفات', sectionNotes:'ملاحظات وتذكيرات',
-    notePlaceholder:'اكتبي ملاحظة أو تذكيراً...', btnAddNote:'+ إضافة', noNotes:'لا توجد ملاحظات بعد',
+    notePlaceholder:'اكتب ملاحظة أو تذكيراً...', btnAddNote:'+ إضافة', noNotes:'لا توجد ملاحظات بعد',
     noBranchesAdded:'لا توجد فروع مضافة بعد', noAlerts:'لا توجد تنبيهات حالياً ✅',
     branchesTitle:'إدارة الفروع', branchesSubtitle:'بيانات كل فرع وحالته ومبيعاته ومصاريفه',
     btnAddBranch:'+ إضافة فرع',
@@ -1393,30 +1393,30 @@ const I18N = {
     thMonthlyRent:'الإيجار الشهري', thStatus:'الحالة', thSales:'المبيعات', thExpenses:'المصاريف',
     statusActive:'نشط', statusStopped:'متوقف', statusPreparing:'تحت التجهيز',
     placeholderBranchName:'اسم الفرع', placeholderLocation:'الموقع', placeholderActivityType:'نوع النشاط',
-    confirmDeleteBranch:'هل تريدين حذف هذا الفرع؟',
+    confirmDeleteBranch:'هل تريد حذف هذا الفرع؟',
     costsTitle:'التكاليف التشغيلية', costsSubtitle:'الرواتب، الإيجارات، المشتريات، والمصاريف الأخرى لكل فرع',
     cashPurchasesTitle:'المشتريات بالكاش', cashPurchasesSubtitle:'تسجيل المشتريات النقدية لكل فرع — لا تُحتسب ضمن التكاليف التشغيلية',
     capitalTitle:'رأس المال', capitalSubtitle:'المبالغ اللي جُمعت لتمويل المحل (للمالك فقط)',
     thAmount:'المبلغ', thNote:'ملاحظة', btnAddCapital:'+ إضافة مبلغ', totalCapital:'إجمالي رأس المال:',
-    confirmAddCapital:'هل تريدين إضافة مبلغ جديد لرأس المال؟',
+    confirmAddCapital:'هل تريد إضافة مبلغ جديد لرأس المال؟',
     logAddCapital:'إضافة مبلغ لرأس المال', logDeleteCapital:'حذف مبلغ من رأس المال',
     subtabHousingRent:'إيجار السكن', btnAddHousingRent:'+ إضافة إيجار سكن', totalHousingRent:'إجمالي إيجار السكن:',
     hrcat_housingRent:'إيجار السكن', hrcat_wifi:'واي فاي', hrcat_percentage:'نسبة',
     hrcat_companyAlKhalil:'شركة الحي الخليل', hrcat_companyMount:'شركة ماونت', hrcat_companyKingdom:'شركة كنج دوم', hrcat_companyGlobal:'شركة جلوبل',
-    confirmAddHousingRent:'هل تريدين إضافة إيجار سكن جديد؟',
+    confirmAddHousingRent:'هل تريد إضافة إيجار سكن جديد؟',
     logAddHousingRent:'إضافة إيجار سكن', logDeleteHousingRent:'حذف إيجار سكن', logCopyEntry:'نسخ بند لشهر آخر',
-    btnCopyToMonth:'نسخ إلى شهر آخر', promptCopyToMonth:'اكتبي الشهر المطلوب النسخ إليه (YYYY-MM):',
-    errInvalidMonth:'صيغة الشهر غير صحيحة، اكتبيه هكذا: 2026-09', copySuccessMsg:'تم نسخ البند إلى {month}',
+    btnCopyToMonth:'نسخ إلى شهر آخر', promptCopyToMonth:'اكتب الشهر المطلوب النسخ إليه (YYYY-MM):',
+    errInvalidMonth:'صيغة الشهر غير صحيحة، اكتبه هكذا: 2026-09', copySuccessMsg:'تم نسخ البند إلى {month}',
     subtabSalaries:'الرواتب', subtabRents:'الإيجارات', subtabPurchases:'المشتريات', subtabOther:'مصاريف أخرى',
     thEmployee:'الموظف', thBranch:'الفرع', thBaseSalary:'الراتب الأساسي', thAllowances:'البدلات',
     thAdvances:'السلف', thTotal:'الإجمالي', btnAddSalary:'+ إضافة راتب', totalSalaries:'إجمالي الرواتب:',
     thDueDate:'تاريخ الاستحقاق', thPaymentStatus:'حالة الدفع', paidUnpaid:'غير مدفوع', paidPaid:'مدفوع',
-    totalRents:'إجمالي الإيجارات:', noBranchesAddFirst:'أضيفي فروعاً أولاً من قسم "الفروع"',
+    totalRents:'إجمالي الإيجارات:', noBranchesAddFirst:'أضف فروعاً أولاً من قسم "الفروع"',
     thItemName:'اسم الصنف', thCompanyName:'اسم الشركة', thUnitPrice:'سعر الوحدة', thQty:'الكمية',
     btnAddPurchase:'+ إضافة مشترى', totalPurchases:'إجمالي المشتريات:',
     addForBranchLabel:'إضافة إلى فرع:',
     btnAddCashPurchase:'+ إضافة مشترى كاش', totalCashPurchases:'إجمالي المشتريات بالكاش:',
-    confirmAddCashPurchase:'هل تريدين إضافة مشترى كاش جديد؟',
+    confirmAddCashPurchase:'هل تريد إضافة مشترى كاش جديد؟',
     logAddCashPurchase:'إضافة مشترى بالكاش', logDeleteCashPurchase:'حذف مشترى بالكاش',
     placeholderItemName:'اسم الصنف', placeholderCompanyName:'اسم الشركة الموردة',
     thCategory:'البند', thAmount:'المبلغ', btnAddOtherExpense:'+ إضافة مصروف', totalOther:'إجمالي المصاريف الأخرى:',
@@ -1428,7 +1428,7 @@ const I18N = {
     stockSubtitleStaff:'يمكنك تحديث الكمية والتاريخ فقط؛ أسماء المواد يحددها المالك',
     thMaterialName:'اسم المادة', thQuantity:'الكمية المتوفرة', thDate:'التاريخ',
     thDispense:'صرف كمية', thLastUpdated:'آخر تحديث', btnDispense:'صرف', noLastUpdate:'لم يُحدَّث بعد',
-    errDispenseInvalid:'أدخلي كمية صحيحة للصرف', errDispenseExceeds:'الكمية المطلوب صرفها أكبر من المتوفر',
+    errDispenseInvalid:'أدخل كمية صحيحة للصرف', errDispenseExceeds:'الكمية المطلوب صرفها أكبر من المتوفر',
     btnAddMaterial:'+ إضافة مادة خام', placeholderMaterialName:'اسم المادة الخام',
     salesTitle:'المبيعات', salesSubtitle:'إدخال المبيعات الشهرية حسب طريقة الدفع لكل فرع',
     thMonth:'الشهر', thSaleDate:'التاريخ', thEntryType:'نوع الإدخال', optionMonthly:'شهري', optionDaily:'يومي',
@@ -1439,7 +1439,7 @@ const I18N = {
     systemSalesTitle:'مبيعات النظام (مرجعي)',
     systemSalesSubtitle:'رقم مرجعي يُدخل يدوياً من نظام الكاشير/الجهاز لكل فرع، لأغراض المقارنة في التقرير فقط — لا يُحتسب ضمن التكاليف أو المبيعات الفعلية ولا يؤثر على أي حسابات.',
     btnAddSystemSales:'+ إضافة مبلغ مرجعي', totalSystemSales:'إجمالي مبيعات النظام (مرجعي):',
-    confirmAddSystemSales:'هل تريدين إضافة مبلغ مرجعي جديد؟',
+    confirmAddSystemSales:'هل تريد إضافة مبلغ مرجعي جديد؟',
     logAddSystemSales:'إضافة مبيعات نظام مرجعية', logDeleteSystemSales:'حذف مبيعات نظام مرجعية',
     reportSystemSalesDetailTitle:'مبيعات النظام (مرجعي) لكل فرع',
     pm_cash:'كاش', pm_visa:'فيزا/بطاقة', pm_talabat:'طلبات', pm_zad:'زادكم', pm_snoonu:'سنونو', pm_tmdone:'تم دن', pm_other:'أخرى',
@@ -1456,7 +1456,7 @@ const I18N = {
     showOverdueOnly:'إظهار الفواتير المتأخرة فقط', totalSupplierInvoices:'إجمالي فواتير الموردين',
     placeholderCompany:'اسم الشركة', placeholderContact:'رقم التواصل', placeholderMaterialType:'نوع المواد',
     alertDeleteInvoicePerm:'حذف الفواتير متاح لصاحب الصلاحية (المالك) فقط.',
-    confirmDeleteInvoice:'هل تريدين حذف هذه الفاتورة؟', titleOwnerOnly:'متاح للمالك فقط',
+    confirmDeleteInvoice:'هل تريد حذف هذه الفاتورة؟', titleOwnerOnly:'متاح للمالك فقط',
     reportsTitle:'التقارير', reportsSubtitle:'تقارير شهرية وسنوية',
     periodToday:'اليوم', periodMonth:'هذا الشهر', periodYear:'هذه السنة', periodAll:'كل الفترات',
     prevMonth:'الشهر السابق', nextMonth:'الشهر التالي', backToCurrentMonth:'↩️ العودة للشهر الحالي',
@@ -1464,7 +1464,7 @@ const I18N = {
     btnPrintReport:'🖨 طباعة التقرير', btnShareReport:'📤 مشاركة التقرير', btnShareReportPdf:'📄 مشاركة كـ PDF',
     btnExportSalesExcel:'📊 تصدير المبيعات (Excel)', btnExportCostsExcel:'📊 تصدير التكاليف التشغيلية (Excel)', btnExportAllExcel:'📊 تصدير كل البيانات (Excel)',
     shareCopiedMsg:'تم نسخ ملخص التقرير — يمكنك لصقه في أي مكان', shareUnavailableMsg:'المشاركة غير مدعومة في هذا المتصفح',
-    pdfShareHint:'ستفتح نافذة الطباعة الآن — اختاري "Save as PDF" (حفظ كـ PDF) من قائمة الطابعة، أو استخدمي زر المشاركة داخل معاينة الطباعة على الجوال للحصول على نسخة PDF جاهزة للمشاركة.',
+    pdfShareHint:'ستفتح نافذة الطباعة الآن — اختر "Save as PDF" (حفظ كـ PDF) من قائمة الطابعة، أو استخدم زر المشاركة داخل معاينة الطباعة على الجوال للحصول على نسخة PDF جاهزة للمشاركة.',
     reportBranchSalesTitle:'تقرير مبيعات كل فرع',
     reportExpensesTitle:'تقرير المصروفات (حسب البند)', reportProfitTitle:'تقرير الأرباح',
     reportCompareTitle:'مقارنة بين الفروع', thComparison:'المقارنة', thNetEstimate:'الصافي التقديري',
@@ -1495,29 +1495,29 @@ const I18N = {
     logLogin:'تسجيل دخول', logLogout:'تسجيل خروج',
     logBackupDownload:'تنزيل نسخة احتياطية', logBackupRestore:'استعادة نسخة احتياطية', logExportCsv:'تصدير بيانات CSV',
     navMore:'المزيد من الميزات', moreTitle:'المزيد من الميزات', moreSubtitle:'أدوات إضافية متاحة للمالك',
-    moreSearchTitle:'بحث شامل', moreSearchPh:'ابحثي بالاسم في الفروع، الموردين، المخزون، المشتريات...',
-    moreLogoTitle:'شعار العلامة التجارية', moreLogoDesc:'غيّري الشعار الذي يظهر في شاشة الدخول، الشريط الجانبي، وأعلى صفحة التقارير.',
+    moreSearchTitle:'بحث شامل', moreSearchPh:'ابحث بالاسم في الفروع، الموردين، المخزون، المشتريات...',
+    moreLogoTitle:'شعار العلامة التجارية', moreLogoDesc:'غيّر الشعار الذي يظهر في شاشة الدخول، الشريط الجانبي، وأعلى صفحة التقارير.',
     moreLogoBrandNote:'الشعار الحالي لِـ:',
     btnUploadLogo:'⬆️ رفع شعار جديد', btnResetLogo:'↩️ استعادة الشعار الافتراضي',
-    moreThemeTitle:'ألوان الثيم', moreThemeDesc:'غيّري اللون الأساسي ولون التدرج لهذا البراند.',
+    moreThemeTitle:'ألوان الثيم', moreThemeDesc:'غيّر اللون الأساسي ولون التدرج لهذا البراند.',
     moreOrderTitle:'ترتيب أقسام التقرير والتكاليف التشغيلية',
     moreOrderDesc:'تحكمي بترتيب ظهور الأقسام في صفحة التقارير وترتيب تبويبات التكاليف التشغيلية (متاح للمالك فقط).',
     moreReportOrderLabel:'ترتيب أقسام التقرير', moreCostsOrderLabel:'ترتيب تبويبات التكاليف التشغيلية',
     moreCustomCatTitle:'إضافة بنود جديدة للتكاليف التشغيلية',
-    moreCustomCatDesc:'أضيفي بنوداً جديدة تظهر كخيارات إضافية عند إدخال "مصاريف أخرى" أو "إيجار السكن" (متاح للمالك فقط).',
+    moreCustomCatDesc:'أضف بنوداً جديدة تظهر كخيارات إضافية عند إدخال "مصاريف أخرى" أو "إيجار السكن" (متاح للمالك فقط).',
     moreCustomCatOtherLabel:'بنود مصاريف أخرى', moreCustomCatHousingLabel:'بنود إيجار السكن',
     moreCustomCatPh:'اسم البند الجديد...', btnAddCategory:'+ إضافة',
-    reportNotesTitle:'ملاحظات التقرير', reportNotesPh:'اكتبي أي ملاحظات تريدين إضافتها لهذا التقرير...',
-    errCategoryExists:'هذا البند موجود مسبقاً', errCategoryEmpty:'اكتبي اسم البند أولاً',
+    reportNotesTitle:'ملاحظات التقرير', reportNotesPh:'اكتب أي ملاحظات تريد إضافتها لهذا التقرير...',
+    errCategoryExists:'هذا البند موجود مسبقاً', errCategoryEmpty:'اكتب اسم البند أولاً',
     labelAccentColor:'اللون الأساسي', labelAccentLightColor:'لون التدرج الفاتح', btnResetTheme:'↩️ استعادة الألوان الافتراضية',
     moreBackupTitle:'النسخ الاحتياطي واستعادة البيانات',
-    moreBackupDesc:'نزّلي نسخة من كل بيانات النظام كملف JSON، أو استعيديها لاحقاً على أي جهاز.',
+    moreBackupDesc:'نزّل نسخة من كل بيانات النظام كملف JSON، أو استعِدها لاحقاً على أي جهاز.',
     btnDownloadBackup:'⬇️ تنزيل نسخة احتياطية', btnRestoreBackup:'⬆️ استعادة من نسخة احتياطية',
     moreCloudBackupTitle:'النسخ الاحتياطية السحابية',
-    moreCloudBackupDesc:'نسخة تلقائية تُحفظ يومياً في قاعدة البيانات، وتقدرين تسوين نسخة إضافية يدوياً وقت ما تبين، وترجعين لأي نسخة سابقة.',
+    moreCloudBackupDesc:'نسخة تلقائية تُحفظ يومياً في قاعدة البيانات، وتقدر تسوي نسخة إضافية يدوياً وقت ما تبي، وترجع لأي نسخة سابقة.',
     btnCreateBackupNow:'🔖 إنشاء نسخة الآن', btnRefreshBackups:'🔄 تحديث القائمة', btnRestoreThis:'استعادة',
-    errOfflineBlocked:'محتاجة اتصال بقاعدة البيانات لهذا الإجراء. انتظري حتى تظهر "متصل".',
-    backupCreatedMsg:'تم إنشاء النسخة الاحتياطية بنجاح', backupFailedMsg:'تعذّر إتمام العملية، حاولي مرة أخرى',
+    errOfflineBlocked:'هذا الإجراء يحتاج اتصالاً بقاعدة البيانات. انتظر حتى تظهر "متصل".',
+    backupCreatedMsg:'تم إنشاء النسخة الاحتياطية بنجاح', backupFailedMsg:'تعذّر إتمام العملية، حاول مرة أخرى',
     loadingMsg:'جارٍ التحميل...', noBackupsYet:'لا توجد نسخ احتياطية بعد',
     confirmRestoreCloudBackup:'سيتم استبدال كل البيانات الحالية بهذه النسخة الاحتياطية. متابعة؟',
     confirmRestoreBackup:'سيتم استبدال كل البيانات الحالية بالنسخة المستعادة. متابعة؟',
@@ -1527,7 +1527,7 @@ const I18N = {
     moreResetTitle:'إعادة تعيين النظام',
     moreResetDesc:'يمسح جميع البيانات المحفوظة محلياً ويعيد النظام لحالته الافتراضية. لا يمكن التراجع عن هذا الإجراء.',
     btnResetSystem:'🗑 مسح جميع البيانات',
-    confirmResetSystem1:'هل أنتِ متأكدة من مسح جميع بيانات النظام؟',
+    confirmResetSystem1:'هل أنت متأكد من مسح جميع بيانات النظام؟',
     confirmResetSystem2:'تأكيد أخير: سيتم حذف كل شيء نهائياً ولا يمكن التراجع. متابعة؟',
     footerText:'نظام إدارة الفروع',
     currencySuffix:'ر.ع.',
@@ -2497,7 +2497,8 @@ function renderDashboard(){
   const allProfitsSection = document.getElementById('dashboard-all-profits-section');
   if(session && session.role === 'owner'){
     allProfitsSection.style.display = '';
-    const branchProfits = state.branches.map(b => {
+    const profitBranches = scope ? state.branches.filter(b=>b.id===scope) : state.branches;
+    const branchProfits = profitBranches.map(b => {
       const bs = salesForProfit(b.id, 'month');
       const be = totalExpenses(b.id, 'month');
       const bc = commissionsTotal('month', b.id);
@@ -3463,7 +3464,8 @@ function renderReports(){
     kpiCard(t('discountsRow'), formatCurrency(discounts)),
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true, net < 0),
   ].join('') + (session && session.role === 'owner' ? (() => {
-    const branchNets = state.branches.map(b => salesForProfit(b.id, period) - totalExpenses(b.id, period) - commissionsTotal(period, b.id));
+    const profitReportBranches = reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches;
+    const branchNets = profitReportBranches.map(b => salesForProfit(b.id, period) - totalExpenses(b.id, period) - commissionsTotal(period, b.id));
     const totalProfits = branchNets.filter(n=>n>0).reduce((a,n)=>a+n,0);
     const totalLosses = Math.abs(branchNets.filter(n=>n<0).reduce((a,n)=>a+n,0));
     return kpiCard(t('totalBranchProfits').replace(':',''), formatCurrency(totalProfits))
