@@ -3463,14 +3463,7 @@ function renderReports(){
     kpiCard(t('totalExpensesRow'), formatCurrency(expenses)),
     kpiCard(t('discountsRow'), formatCurrency(discounts)),
     kpiCard(t('netProfitRow'), formatCurrency(net), null, true, net < 0),
-  ].join('') + (session && session.role === 'owner' ? (() => {
-    const profitReportBranches = reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches;
-    const branchNets = profitReportBranches.map(b => salesForProfit(b.id, period) - totalExpenses(b.id, period) - commissionsTotal(period, b.id));
-    const totalProfits = branchNets.filter(n=>n>0).reduce((a,n)=>a+n,0);
-    const totalLosses = Math.abs(branchNets.filter(n=>n<0).reduce((a,n)=>a+n,0));
-    return kpiCard(t('totalBranchProfits').replace(':',''), formatCurrency(totalProfits))
-      + kpiCard(t('totalBranchLosses').replace(':',''), formatCurrency(totalLosses), null, false, totalLosses > 0);
-  })() : '');
+  ].join('');
 
   const reportRentBranches = (reportScope ? state.branches.filter(b=>b.id===reportScope) : state.branches)
     .slice().sort((a,b) => a.name.localeCompare(b.name));
