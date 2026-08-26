@@ -473,7 +473,7 @@ const T = {
     customer_info_title:'بيانات العميل', customer_name_label:'اسم العميل', customer_phone_label:'رقم الجوال',
     tables_title:'الطاولات', table_free:'متاحة', table_held:'معلّق', table_occupied:'قيد الطلب',
     checkout_title:'الدفع', total_due:'الإجمالي المطلوب',
-    pay_cash:'💵 نقدي', pay_card:'💳 بطاقة', pay_applepay:'📱 آبل باي', pay_split:'➗ مقسوم',
+    pay_cash:'💵 نقدي', pay_card:'💳 بطاقة', pay_applepay:'📱 آبل باي', pay_talabat:'🛵 طلبات', pay_split:'➗ مقسوم',
     amount_received_label:'المبلغ المستلم', insufficient_amount:'المبلغ غير كافٍ', change_due:'الباقي للعميل',
     label_cash:'نقدي', label_card:'بطاقة',
     split_total_note:'المجموع', must_equal_note:'يجب أن يساوي',
@@ -481,7 +481,7 @@ const T = {
     receipt_phone_label:'هاتف', order_number_label:'رقم الطلب', date_label:'التاريخ', staff_label:'الموظف',
     order_type_label:'نوع الطلب', customer_label:'العميل', payment_method_label:'طريقة الدفع',
     received_label:'المستلم', change_label:'الباقي',
-    pay_method_cash:'نقدي', pay_method_card:'بطاقة', pay_method_applepay:'آبل باي', pay_method_split:'مقسوم',
+    pay_method_cash:'نقدي', pay_method_card:'بطاقة', pay_method_applepay:'آبل باي', pay_method_talabat:'طلبات', pay_method_split:'مقسوم',
     dinein_table:'صالة - طاولة',
     receipt_success_title:'✅ تم الدفع بنجاح', print_btn:'🖨️ طباعة', new_order_btn:'طلب جديد',
     orders_title:'الطلبات', filter_today:'اليوم', filter_week:'آخر 7 أيام', filter_all:'الكل', filter_void:'ملغاة',
@@ -497,6 +497,8 @@ const T = {
     from_date:'من تاريخ', to_date:'إلى تاريخ', print_report_btn:'🖨️ طباعة التقرير',
     kpi_total_sales:'إجمالي المبيعات', sales_by_category:'المبيعات حسب الفئة', no_data:'لا توجد بيانات',
     sales_by_payment:'المبيعات حسب طريقة الدفع', top_revenue_items:'الأصناف الأكثر تحقيقًا للإيرادات',
+    daily_breakdown_title:'تفصيل المبيعات اليومية حسب طريقة الدفع', th_date:'التاريخ',
+    preset_today:'اليوم', preset_week:'آخر 7 أيام', preset_month:'هذا الشهر', preset_lastmonth:'الشهر الماضي',
     other_category:'أخرى',
     menu_title:'إدارة القائمة', add_category_btn:'+ فئة جديدة', add_product_btn:'+ صنف جديد',
     edit_category_btn:'تعديل الفئة', avail_yes:'متوفر', avail_no:'موقوف', unavailable_overlay:'غير متوفر',
@@ -628,7 +630,7 @@ const T = {
     customer_info_title:'Customer Info', customer_name_label:'Customer name', customer_phone_label:'Phone number',
     tables_title:'Tables', table_free:'Free', table_held:'Held', table_occupied:'Occupied',
     checkout_title:'Payment', total_due:'Total due',
-    pay_cash:'💵 Cash', pay_card:'💳 Card', pay_applepay:'📱 Apple Pay', pay_split:'➗ Split',
+    pay_cash:'💵 Cash', pay_card:'💳 Card', pay_applepay:'📱 Apple Pay', pay_talabat:'🛵 Talabat', pay_split:'➗ Split',
     amount_received_label:'Amount received', insufficient_amount:'Insufficient amount', change_due:'Change due',
     label_cash:'Cash', label_card:'Card',
     split_total_note:'Total', must_equal_note:'must equal',
@@ -636,7 +638,7 @@ const T = {
     receipt_phone_label:'Phone', order_number_label:'Order #', date_label:'Date', staff_label:'Staff',
     order_type_label:'Order type', customer_label:'Customer', payment_method_label:'Payment method',
     received_label:'Received', change_label:'Change',
-    pay_method_cash:'Cash', pay_method_card:'Card', pay_method_applepay:'Apple Pay', pay_method_split:'Split',
+    pay_method_cash:'Cash', pay_method_card:'Card', pay_method_applepay:'Apple Pay', pay_method_talabat:'Talabat', pay_method_split:'Split',
     dinein_table:'Dine-in - Table',
     receipt_success_title:'✅ Payment Successful', print_btn:'🖨️ Print', new_order_btn:'New Order',
     orders_title:'Orders', filter_today:'Today', filter_week:'Last 7 days', filter_all:'All', filter_void:'Voided',
@@ -652,6 +654,8 @@ const T = {
     from_date:'From date', to_date:'To date', print_report_btn:'🖨️ Print Report',
     kpi_total_sales:'Total Sales', sales_by_category:'Sales by Category', no_data:'No data',
     sales_by_payment:'Sales by Payment Method', top_revenue_items:'Top Revenue-Generating Items',
+    daily_breakdown_title:'Daily Sales Breakdown by Payment Method', th_date:'Date',
+    preset_today:'Today', preset_week:'Last 7 days', preset_month:'This month', preset_lastmonth:'Last month',
     other_category:'Other',
     menu_title:'Menu Management', add_category_btn:'+ New Category', add_product_btn:'+ New Item',
     edit_category_btn:'Edit Category', avail_yes:'Available', avail_no:'Unavailable', unavailable_overlay:'Unavailable',
@@ -995,6 +999,10 @@ function initials(name){
   return name.trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('');
 }
 function roleLabel(role){ return role==='manager' ? t('role_manager') : t('role_cashier'); }
+function payMethodLabel(method){
+  const map = {cash:'pay_method_cash', card:'pay_method_card', applepay:'pay_method_applepay', talabat:'pay_method_talabat', split:'pay_method_split'};
+  return map[method] ? t(map[method]) : method;
+}
 function renderStaffGrid(){
   const el = document.getElementById('staffGrid');
   el.innerHTML = state.staff.map(s=>`
@@ -1630,6 +1638,7 @@ function openCheckoutModal(){
         <button class="chip ${method==='cash'?'active':''}" data-m="cash">${t('pay_cash')}</button>
         <button class="chip ${method==='card'?'active':''}" data-m="card">${t('pay_card')}</button>
         <button class="chip ${method==='applepay'?'active':''}" data-m="applepay">${t('pay_applepay')}</button>
+        <button class="chip ${method==='talabat'?'active':''}" data-m="talabat">${t('pay_talabat')}</button>
         <button class="chip ${method==='split'?'active':''}" data-m="split">${t('pay_split')}</button>
       </div>
       ${method==='cash'?`
@@ -1821,7 +1830,7 @@ function receiptHtml(order){
     const mods = [L(it.size),L(it.milk),L(it.sugar),it.shots?`+${it.shots}${t('shot_word')}`:'',it.syrup&&it.syrup!=='بدون'?L(it.syrup):''].filter(Boolean).join(' · ');
     return `<div class="receipt-line"><span>${it.qty} × ${L(it.name)}</span><span>${fmt(it.unitPrice*it.qty)}</span></div>${mods?`<div style="font-size:.7rem;color:#555;">${mods}</div>`:''}`;
   }).join('');
-  const payLabel = {cash:t('pay_method_cash'),card:t('pay_method_card'),applepay:t('pay_method_applepay'),split:t('pay_method_split')}[order.payment.method]||'';
+  const payLabel = payMethodLabel(order.payment.method);
   return `
     ${S.logoImage?`<div class="r-center"><img src="${S.logoImage}" style="height:44px;width:44px;object-fit:contain;"></div>`:''}
     <div class="r-center" style="font-weight:800;font-size:1.05rem;">${S.shopName}</div>
@@ -1898,7 +1907,7 @@ function renderOrders(){
           <td>${o.type==='dine-in'?t('dinein_table')+' '+o.table:o.type==='delivery'?t('order_delivery'):t('order_takeaway')}</td>
           <td>${o.items.reduce((a,i)=>a+i.qty,0)}</td>
           <td>${fmt(o.total)}</td>
-          <td>${({cash:t('pay_method_cash'),card:t('pay_method_card'),applepay:t('pay_method_applepay'),split:t('pay_method_split')})[o.payment.method]||''}</td>
+          <td>${payMethodLabel(o.payment.method)}</td>
           <td><span class="tag ${o.status==='completed'?'ok':'bad'}">${o.status==='completed'?t('status_completed'):t('status_void')}</span></td>
           <td>${L(o.staffName)}</td>
           <td style="white-space:nowrap;">
@@ -1990,6 +1999,16 @@ function renderOverviewReport(){
       </div>
     </div>`;
 }
+function computeDailyBreakdown(orders){
+  const days = {};
+  orders.filter(o=>o.status==='completed').forEach(o=>{
+    const key = startOfDay(o.time);
+    if(!days[key]) days[key] = {dateTs:key, byMethod:{}, total:0};
+    days[key].byMethod[o.payment.method] = money((days[key].byMethod[o.payment.method]||0) + o.total);
+    days[key].total = money(days[key].total + o.total);
+  });
+  return Object.values(days).sort((a,b)=>b.dateTs-a.dateTs);
+}
 function renderDetailedReport(){
   window._reportRange = window._reportRange || {from: formatInputDate(Date.now()-6*86400000), to: formatInputDate(Date.now())};
   const from = new Date(window._reportRange.from).getTime();
@@ -1999,16 +2018,26 @@ function renderDetailedReport(){
   const topByRevenue = Object.entries(stats.byProduct).sort((a,b)=>b[1].revenue-a[1].revenue).slice(0,8);
   const catEntries = Object.entries(stats.byCategory).sort((a,b)=>b[1]-a[1]);
   const payEntries = Object.entries(stats.byPayment);
-  const payLabels = {cash:t('pay_method_cash'),card:t('pay_method_card'),applepay:t('pay_method_applepay'),split:t('pay_method_split')};
+  const payLabels = {cash:payMethodLabel('cash'),card:payMethodLabel('card'),applepay:payMethodLabel('applepay'),talabat:payMethodLabel('talabat'),split:payMethodLabel('split')};
   const maxCat = Math.max(1,...catEntries.map(e=>e[1]));
   const maxPay = Math.max(1,...payEntries.map(e=>e[1]));
   const maxProd = Math.max(1,...topByRevenue.map(e=>e[1].revenue));
+  const dailyRows = computeDailyBreakdown(orders);
+  const methodKeys = [...new Set(dailyRows.flatMap(d=>Object.keys(d.byMethod)))];
   return `
-    <div class="card" style="margin-bottom:16px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
-      <div class="form-row" style="margin:0;"><label>${t('from_date')}</label><input type="date" id="repFrom" value="${window._reportRange.from}"></div>
-      <div class="form-row" style="margin:0;"><label>${t('to_date')}</label><input type="date" id="repTo" value="${window._reportRange.to}"></div>
-      <button class="btn btn-accent" id="applyRange">${t('apply')}</button>
-      <button class="btn btn-outline" id="printReport">${t('print_report_btn')}</button>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="chip-row" style="margin-bottom:12px;">
+        <button type="button" class="chip" data-date-preset="today">${t('preset_today')}</button>
+        <button type="button" class="chip" data-date-preset="week">${t('preset_week')}</button>
+        <button type="button" class="chip" data-date-preset="month">${t('preset_month')}</button>
+        <button type="button" class="chip" data-date-preset="lastmonth">${t('preset_lastmonth')}</button>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;">
+        <div class="form-row" style="margin:0;"><label>${t('from_date')}</label><input type="date" id="repFrom" value="${window._reportRange.from}"></div>
+        <div class="form-row" style="margin:0;"><label>${t('to_date')}</label><input type="date" id="repTo" value="${window._reportRange.to}"></div>
+        <button class="btn btn-accent" id="applyRange">${t('apply')}</button>
+        <button class="btn btn-outline" id="printReport">${t('print_report_btn')}</button>
+      </div>
     </div>
     <div class="kpi-grid">
       <div class="kpi-card"><div class="kpi-label">${t('kpi_total_sales')}</div><div class="kpi-value">${fmt(stats.totalSales)}</div></div>
@@ -2034,6 +2063,20 @@ function renderDetailedReport(){
       ${topByRevenue.length?topByRevenue.map(([name,d])=>`
         <div class="bar-row"><span class="bar-label">${L(name)}</span><div class="bar-track"><div class="bar-fill" style="width:${d.revenue/maxProd*100}%"></div></div><span class="bar-val">${fmt(d.revenue)}</span></div>
       `).join(''):`<div class="cart-empty">${t('no_data')}</div>`}
+    </div>
+    <div class="card" style="margin-top:16px;padding:0;overflow-x:auto;">
+      <div class="section-title" style="font-size:1rem;padding:18px 18px 0;">${t('daily_breakdown_title')}</div>
+      <table class="data-table" style="margin-top:10px;">
+        <thead><tr><th>${t('th_date')}</th>${methodKeys.map(k=>`<th>${payLabels[k]||k}</th>`).join('')}<th>${t('th_total')}</th></tr></thead>
+        <tbody>
+          ${dailyRows.length? dailyRows.map(d=>`
+          <tr>
+            <td>${formatDateShort(d.dateTs)}</td>
+            ${methodKeys.map(k=>`<td>${d.byMethod[k]?fmt(d.byMethod[k]):'—'}</td>`).join('')}
+            <td style="font-weight:800;color:var(--accent-dark);">${fmt(d.total)}</td>
+          </tr>`).join('') : `<tr><td colspan="${methodKeys.length+2}" style="text-align:center;color:var(--muted);padding:24px;">${t('no_data')}</td></tr>`}
+        </tbody>
+      </table>
     </div>`;
 }
 function printReportHtml(){
@@ -2045,7 +2088,7 @@ function printReportHtml(){
   const stats = computeStats(orders);
   const topByRevenue = Object.entries(stats.byProduct).sort((a,b)=>b[1].revenue-a[1].revenue).slice(0,8);
   const catEntries = Object.entries(stats.byCategory).sort((a,b)=>b[1]-a[1]);
-  const payLabels = {cash:t('pay_method_cash'),card:t('pay_method_card'),applepay:t('pay_method_applepay'),split:t('pay_method_split')};
+  const payLabels = {cash:payMethodLabel('cash'),card:payMethodLabel('card'),applepay:payMethodLabel('applepay'),talabat:payMethodLabel('talabat'),split:payMethodLabel('split')};
   const payEntries = Object.entries(stats.byPayment);
   return `
     ${S.logoImage?`<div class="r-center"><img src="${S.logoImage}" style="height:44px;width:44px;object-fit:contain;"></div>`:''}
@@ -2560,6 +2603,16 @@ function attachViewHandlers(){
 
   // Reports
   root.querySelectorAll('[data-rt]').forEach(b=>b.addEventListener('click', ()=>{ reportsTab=b.dataset.rt; renderAll(); }));
+  root.querySelectorAll('[data-date-preset]').forEach(b=>b.addEventListener('click', ()=>{
+    const now = new Date();
+    let from, to = now;
+    if(b.dataset.datePreset==='today'){ from = now; }
+    else if(b.dataset.datePreset==='week'){ from = new Date(now.getTime()-6*86400000); }
+    else if(b.dataset.datePreset==='month'){ from = new Date(now.getFullYear(), now.getMonth(), 1); }
+    else if(b.dataset.datePreset==='lastmonth'){ from = new Date(now.getFullYear(), now.getMonth()-1, 1); to = new Date(now.getFullYear(), now.getMonth(), 0); }
+    window._reportRange = {from: formatInputDate(from.getTime()), to: formatInputDate(to.getTime())};
+    renderAll();
+  }));
   const applyRange = root.querySelector('#applyRange');
   if(applyRange) applyRange.addEventListener('click', ()=>{
     window._reportRange = {from:document.getElementById('repFrom').value, to:document.getElementById('repTo').value};
