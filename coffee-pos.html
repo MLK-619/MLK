@@ -760,6 +760,16 @@ function applyDocDir(){
   document.documentElement.dir = lang==='en' ? 'ltr' : 'rtl';
 }
 
+const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBxcaVHXKiBarG5WGZaHDAYlwb7CunJcjo",
+  authDomain: "daze360-pos.firebaseapp.com",
+  projectId: "daze360-pos",
+  storageBucket: "daze360-pos.firebasestorage.app",
+  messagingSenderId: "283651204210",
+  appId: "1:283651204210:web:8ef87538aa08594638ceeb",
+  measurementId: "G-YBSH51PBNF"
+};
+
 const DEFAULT_DATA = {
   settings:{
     shopName:'DAZE 360',
@@ -767,11 +777,11 @@ const DEFAULT_DATA = {
     logoImage:'',
     branchName:'الفرع الرئيسي',
     branchLocation:'',
-    storageMode:'local',
+    storageMode:'cloud',
     discountEnabled:true,
     discountPresets:[10, 15, 20, 25, 50],
     globalDiscountEnabled:false, globalDiscountType:'percent', globalDiscountValue:0,
-    firebaseConfig:null,
+    firebaseConfig:DEFAULT_FIREBASE_CONFIG,
     language:'ar',
     currency:'ر.س',
     taxRate:15,
@@ -884,6 +894,15 @@ const FIREBASE_SDK_URLS = [
 ];
 let fbApp = null, fbDb = null, fbAuthReady = false, cloudUnsub = null, cloudPushTimer = null;
 let cloudStatus = 'idle'; // idle | connecting | connected | error
+let cloudRetryTimer = null, cloudRetryDelay = 5000;
+function scheduleCloudRetry(){
+  if(cloudRetryTimer) return;
+  cloudRetryTimer = setTimeout(()=>{
+    cloudRetryTimer = null;
+    if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig && cloudStatus!=='connected') connectFirebase();
+  }, cloudRetryDelay);
+  cloudRetryDelay = Math.min(cloudRetryDelay * 2, 60000);
+}
 function loadFirebaseSDK(){
   if(window.firebase && window.firebase.firestore) return Promise.resolve();
   return FIREBASE_SDK_URLS.reduce((p,url)=>p.then(()=>new Promise((res,rej)=>{
@@ -925,12 +944,14 @@ function connectFirebase(){
   }).catch(err=>{
     console.error('Firebase connect failed', err);
     cloudStatus = 'error'; updateCloudStatusUI();
+    scheduleCloudRetry();
   });
 }
 function subscribeCloud(){
   if(cloudUnsub) cloudUnsub();
   cloudUnsub = fbDb.collection('posData').doc('store').onSnapshot(doc=>{
     cloudStatus = 'connected'; updateCloudStatusUI();
+    cloudRetryDelay = 5000;
     if(doc.exists){
       const remote = doc.data();
       if(remote.updatedAt && remote.updatedAt > (state._updatedAt||0)){
@@ -948,6 +969,7 @@ function subscribeCloud(){
   }, err=>{
     console.error('cloud snapshot error', err);
     cloudStatus = 'error'; updateCloudStatusUI();
+    scheduleCloudRetry();
   });
 }
 function cloudPayload(){
@@ -967,6 +989,8 @@ function pushCloud(immediate){
 }
 function disconnectCloud(){
   if(cloudUnsub){ cloudUnsub(); cloudUnsub = null; }
+  if(cloudRetryTimer){ clearTimeout(cloudRetryTimer); cloudRetryTimer = null; }
+  cloudRetryDelay = 5000;
   fbAuthReady = false;
   cloudStatus = 'idle';
   state.settings.firebaseConfig = null;
