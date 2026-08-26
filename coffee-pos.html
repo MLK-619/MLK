@@ -2036,6 +2036,39 @@ function renderDetailedReport(){
       `).join(''):`<div class="cart-empty">${t('no_data')}</div>`}
     </div>`;
 }
+function printReportHtml(){
+  const S = state.settings;
+  const range = window._reportRange || {from: formatInputDate(Date.now()-6*86400000), to: formatInputDate(Date.now())};
+  const from = new Date(range.from).getTime();
+  const to = new Date(range.to).getTime() + 86399999;
+  const orders = state.orders.filter(o=>o.time>=from && o.time<=to);
+  const stats = computeStats(orders);
+  const topByRevenue = Object.entries(stats.byProduct).sort((a,b)=>b[1].revenue-a[1].revenue).slice(0,8);
+  const catEntries = Object.entries(stats.byCategory).sort((a,b)=>b[1]-a[1]);
+  const payLabels = {cash:t('pay_method_cash'),card:t('pay_method_card'),applepay:t('pay_method_applepay'),split:t('pay_method_split')};
+  const payEntries = Object.entries(stats.byPayment);
+  return `
+    ${S.logoImage?`<div class="r-center"><img src="${S.logoImage}" style="height:44px;width:44px;object-fit:contain;"></div>`:''}
+    <div class="r-center" style="font-weight:800;font-size:1.05rem;">${S.shopName}</div>
+    ${S.branchName?`<div class="r-center" style="font-size:.78rem;font-weight:700;">${L(S.branchName)}</div>`:''}
+    <div class="r-center" style="font-weight:800;font-size:.9rem;margin-top:6px;">${t('tab_detailed')}</div>
+    <div class="r-center" style="font-size:.75rem;">${range.from} → ${range.to}</div>
+    <hr>
+    <div class="receipt-line"><span>${t('kpi_total_sales')}</span><span>${fmt(stats.totalSales)}</span></div>
+    <div class="receipt-line"><span>${t('kpi_orders_count')}</span><span>${stats.count}</span></div>
+    <div class="receipt-line"><span>${t('kpi_avg_order')}</span><span>${fmt(stats.avg)}</span></div>
+    <hr>
+    <div style="font-weight:800;font-size:.82rem;margin-bottom:4px;">${t('sales_by_category')}</div>
+    ${catEntries.length?catEntries.map(([name,val])=>`<div class="receipt-line"><span>${L(name)}</span><span>${fmt(val)}</span></div>`).join(''):`<div class="receipt-line"><span>${t('no_data')}</span></div>`}
+    <hr>
+    <div style="font-weight:800;font-size:.82rem;margin-bottom:4px;">${t('sales_by_payment')}</div>
+    ${payEntries.length?payEntries.map(([k,val])=>`<div class="receipt-line"><span>${payLabels[k]||k}</span><span>${fmt(val)}</span></div>`).join(''):`<div class="receipt-line"><span>${t('no_data')}</span></div>`}
+    <hr>
+    <div style="font-weight:800;font-size:.82rem;margin-bottom:4px;">${t('top_revenue_items')}</div>
+    ${topByRevenue.length?topByRevenue.map(([name,d])=>`<div class="receipt-line"><span>${L(name)}</span><span>${fmt(d.revenue)}</span></div>`).join(''):`<div class="receipt-line"><span>${t('no_data')}</span></div>`}
+    <hr>
+    <div class="r-center" style="font-size:.72rem;">${formatDateTime(Date.now())}</div>`;
+}
 function formatInputDate(ts){
   const d = new Date(ts);
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -2533,7 +2566,10 @@ function attachViewHandlers(){
     renderAll();
   });
   const printRep = root.querySelector('#printReport');
-  if(printRep) printRep.addEventListener('click', ()=>{ window.print(); });
+  if(printRep) printRep.addEventListener('click', ()=>{
+    document.getElementById('receipt-print').innerHTML = printReportHtml();
+    window.print();
+  });
 
   // Menu
   const addCatBtn = root.querySelector('#addCatBtn'); if(addCatBtn) addCatBtn.addEventListener('click', ()=>openCategoryModal());
