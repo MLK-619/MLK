@@ -3480,6 +3480,7 @@ function renderReports(){
   document.getElementById('report-rents-total').textContent = formatNum(reportRentBranches.reduce((a,b)=>a+num(b.rent),0));
 
   const reportPurchases = (reportScope ? state.purchases.filter(p=>p.branchId===reportScope) : state.purchases)
+    .filter(p=>matchesPeriod(p.date,period))
     .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
   document.getElementById('report-purchases-detail').innerHTML = reportPurchases.map(p => `
     <tr>
@@ -3493,6 +3494,7 @@ function renderReports(){
   document.getElementById('report-purchases-total').textContent = formatNum(reportPurchases.reduce((a,p)=>a+purchaseTotal(p),0));
 
   const reportOther = (reportScope ? state.otherExpenses.filter(o=>o.branchId===reportScope) : state.otherExpenses)
+    .filter(o=>matchesPeriod(o.date,period))
     .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
   document.getElementById('report-other-detail').innerHTML = reportOther.map(o => `
     <tr>
@@ -3506,6 +3508,7 @@ function renderReports(){
   document.getElementById('report-other-total').textContent = formatNum(reportOther.reduce((a,o)=>a+otherExpenseTotal(o),0));
 
   const reportHousingRent = (reportScope ? state.housingRent.filter(h=>h.branchId===reportScope) : state.housingRent)
+    .filter(h=>matchesPeriod(h.date,period))
     .slice().sort((a,b) => branchNameById(a.branchId).localeCompare(branchNameById(b.branchId)));
   document.getElementById('report-housing-rent-detail').innerHTML = reportHousingRent.map(h => `
     <tr>
