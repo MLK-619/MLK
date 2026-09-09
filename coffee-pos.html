@@ -339,6 +339,11 @@ input:checked + .slider::before{transform:translateX(-20px);}
   </div>
 </div>
 
+<!-- ===================== CUSTOMER SELF-ORDER (QR) ===================== -->
+<div id="customer-app" class="hidden">
+  <div id="customer-root" style="max-width:640px;margin:0 auto;padding:16px;"></div>
+</div>
+
 <div id="modal-root"></div>
 <div id="receipt-print"></div>
 
@@ -351,6 +356,7 @@ input:checked + .slider::before{transform:translateX(-20px);}
 const LS_KEY = 'coffeepos_data_v1';
 const SESSION_STAFF_KEY = 'coffeepos_staff_v1';
 const SESSION_CART_KEY = 'coffeepos_cart_v1';
+const isCustomerMode = new URLSearchParams(location.search).get('order') === '1';
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 function clone(o){ return JSON.parse(JSON.stringify(o)); }
@@ -560,7 +566,23 @@ const T = {
     backup_title:'نسخة احتياطية', backup_note:'نزّل نسخة من كل بياناتك (المبيعات، المخزون، الإعدادات) كملف، واحتفظ بها لاستعادتها لاحقًا إذا فُقدت بيانات الجهاز.',
     download_backup_btn:'تنزيل نسخة احتياطية', restore_backup_btn:'استعادة من ملف',
     confirm_restore_backup:'سيتم استبدال جميع البيانات الحالية بمحتوى الملف. متابعة؟',
-    toast_restore_success:'تم استعادة البيانات بنجاح', toast_restore_failed:'ملف النسخة الاحتياطية غير صالح'
+    toast_restore_success:'تم استعادة البيانات بنجاح', toast_restore_failed:'ملف النسخة الاحتياطية غير صالح',
+    alert_tone_title:'نغمة التنبيه', alert_tone_classic:'كلاسيكي', alert_tone_bell:'جرس',
+    alert_tone_siren:'إنذار', alert_tone_chime:'رنين لطيف', test_sound_btn:'🔊 تجربة الصوت',
+    menu_qr_title:'باركود طلب الزبائن', menu_qr_note:'اطبع هذا الباركود وضعه على الطاولات — يقدر الزبون يمسحه بجواله ويطلب مباشرة من المنيو دون تحميل أي تطبيق.',
+    print_qr_btn:'🖨️ طباعة الباركود', copy_link_btn:'📋 نسخ الرابط', toast_link_copied:'تم نسخ الرابط',
+    nav_customer_orders:'طلبات الزبائن', customer_orders_title:'طلبات الزبائن الواردة',
+    customer_orders_none:'لا توجد طلبات واردة حاليًا', receive_order_btn:'✅ استلام الطلب',
+    decline_order_btn:'رفض', toast_order_received:'تم استلام الطلب وإضافته للسلة',
+    incoming_order_table_note:'ملاحظة الزبون', minutes_ago_suffix:'د',
+    customer_order_title:'اطلب الآن', customer_order_sub:'اختر ما يعجبك وأضفه للسلة',
+    customer_cart_title:'سلتك', customer_cart_empty:'سلتك فارغة، ابدأ بإضافة أصناف',
+    customer_note_placeholder:'رقم الطاولة أو اسمك (اختياري)', customer_submit_btn:'إرسال الطلب',
+    customer_loading:'جاري تحميل المنيو...', customer_offline_note:'تعذّر الاتصال، جرّب مرة أخرى',
+    customer_thanks_title:'✅ تم إرسال طلبك!', customer_thanks_sub:'سيتم تحضيره قريبًا، يمكنك المتابعة مع الكاشير',
+    customer_order_ref:'رقم الطلب', customer_new_order_btn:'إرسال طلب جديد',
+    toast_customer_order_offline:'تعذّر إرسال الطلب، تحقق من الاتصال بالإنترنت وحاول مرة أخرى',
+    toast_customer_order_failed:'حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى'
   },
   en:{
     cancel:'Cancel', save:'Save', edit:'Edit', delete:'Delete', apply:'Apply', logout:'Logout',
@@ -717,7 +739,23 @@ const T = {
     backup_title:'Backup', backup_note:'Download a copy of all your data (sales, inventory, settings) as a file, and keep it to restore later if this device loses its data.',
     download_backup_btn:'Download Backup', restore_backup_btn:'Restore From File',
     confirm_restore_backup:'This will replace all current data with the file contents. Continue?',
-    toast_restore_success:'Data restored successfully', toast_restore_failed:'Invalid backup file'
+    toast_restore_success:'Data restored successfully', toast_restore_failed:'Invalid backup file',
+    alert_tone_title:'Alert Tone', alert_tone_classic:'Classic', alert_tone_bell:'Bell',
+    alert_tone_siren:'Siren', alert_tone_chime:'Soft Chime', test_sound_btn:'🔊 Test Sound',
+    menu_qr_title:'Customer Order QR Code', menu_qr_note:'Print this QR code and place it on tables — customers can scan it with their phone and order straight from the menu, no app needed.',
+    print_qr_btn:'🖨️ Print QR Code', copy_link_btn:'📋 Copy Link', toast_link_copied:'Link copied',
+    nav_customer_orders:'Customer Orders', customer_orders_title:'Incoming Customer Orders',
+    customer_orders_none:'No incoming orders right now', receive_order_btn:'✅ Receive Order',
+    decline_order_btn:'Decline', toast_order_received:'Order received and added to cart',
+    incoming_order_table_note:'Customer note', minutes_ago_suffix:'min',
+    customer_order_title:'Order Now', customer_order_sub:'Pick what you like and add it to your cart',
+    customer_cart_title:'Your Cart', customer_cart_empty:'Your cart is empty, start adding items',
+    customer_note_placeholder:'Table number or your name (optional)', customer_submit_btn:'Submit Order',
+    customer_loading:'Loading menu...', customer_offline_note:'Connection failed, please try again',
+    customer_thanks_title:'✅ Order Sent!', customer_thanks_sub:'It will be prepared shortly, follow up with the cashier',
+    customer_order_ref:'Order Reference', customer_new_order_btn:'Send Another Order',
+    toast_customer_order_offline:'Could not send your order, check your internet connection and try again',
+    toast_customer_order_failed:'Something went wrong sending your order, please try again'
   }
 };
 function t(key){ const lang=(state&&state.settings&&state.settings.language)||'ar'; return (T[lang]&&T[lang][key]!==undefined)?T[lang][key]:(T.ar[key]||key); }
@@ -781,6 +819,7 @@ const DEFAULT_DATA = {
     discountEnabled:true,
     discountPresets:[10, 15, 20, 25, 50],
     globalDiscountEnabled:false, globalDiscountType:'percent', globalDiscountValue:0,
+    alertTone:'classic',
     firebaseConfig:DEFAULT_FIREBASE_CONFIG,
     language:'ar',
     currency:'ر.س',
@@ -927,6 +966,29 @@ function loadFirebaseSDK(){
     document.head.appendChild(s);
   })), Promise.resolve());
 }
+let _qrLibPromise = null;
+function loadQrLib(){
+  if(window.QRCode) return Promise.resolve();
+  if(_qrLibPromise) return _qrLibPromise;
+  _qrLibPromise = new Promise((res,rej)=>{
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    s.onload = res; s.onerror = ()=>{ _qrLibPromise = null; rej(new Error('failed to load qr lib')); };
+    document.head.appendChild(s);
+  });
+  return _qrLibPromise;
+}
+function customerOrderUrl(){
+  return location.origin + location.pathname + '?order=1';
+}
+function renderCustomerQr(containerId){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  el.innerHTML = '';
+  loadQrLib().then(()=>{
+    new QRCode(el, { text: customerOrderUrl(), width:160, height:160, correctLevel: QRCode.CorrectLevel.M });
+  }).catch(()=>{ el.textContent = '⚠️'; });
+}
 function parseLooseFirebaseConfig(raw){
   const match = raw.match(/\{[\s\S]*\}/);
   if(!match) throw new Error('no config object found');
@@ -957,11 +1019,19 @@ function connectFirebase(){
   }).then(()=>{
     fbAuthReady = true;
     subscribeCloud();
+    if(!isCustomerMode) subscribeIncomingOrders();
   }).catch(err=>{
     console.error('Firebase connect failed', err);
     cloudStatus = 'error'; updateCloudStatusUI();
     scheduleCloudRetry();
   });
+}
+function afterCloudDataChange(){
+  if(isCustomerMode){ custDataReady = true; renderCustomerApp(); }
+  else { renderAll(); }
+}
+function markCustomerReady(){
+  if(isCustomerMode){ custDataReady = true; renderCustomerApp(); }
 }
 function subscribeCloud(){
   if(cloudUnsub) cloudUnsub();
@@ -979,13 +1049,17 @@ function subscribeCloud(){
         const json = JSON.stringify(state);
         localStorage.setItem(LS_KEY, json);
         try{ localStorage.setItem(LS_BACKUP_KEY, json); }catch(e){}
-        renderAll();
+        afterCloudDataChange();
       } else if(!remote.updatedAt || remote.updatedAt < (state._updatedAt||0)){
         // this device made changes while disconnected — push them now that we're back online
         pushCloud(true);
+        markCustomerReady();
+      } else {
+        markCustomerReady();
       }
     } else {
       pushCloud(true);
+      markCustomerReady();
     }
   }, err=>{
     console.error('cloud snapshot error', err);
@@ -1021,6 +1095,222 @@ function disconnectCloud(){
   state.settings.firebaseConfig = null;
   state.settings.storageMode = 'local';
   save();
+}
+
+/* ============================================================
+   INCOMING CUSTOMER ORDERS (received from the QR self-order page)
+   ============================================================ */
+let incomingOrdersUnsub = null;
+let incomingOrders = [];
+let _incomingKnownIds = new Set();
+let _incomingFirstSnapshot = true;
+function subscribeIncomingOrders(){
+  if(!fbDb || !fbAuthReady) return;
+  if(incomingOrdersUnsub) incomingOrdersUnsub();
+  incomingOrdersUnsub = fbDb.collection('incomingOrders').where('status','==','pending').onSnapshot(snap=>{
+    const docs = snap.docs.map(d=>Object.assign({fid:d.id}, d.data()));
+    const newOnes = docs.filter(d=>!_incomingKnownIds.has(d.fid));
+    _incomingKnownIds = new Set(docs.map(d=>d.fid));
+    incomingOrders = docs.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+    if(!_incomingFirstSnapshot && newOnes.length) playKitchenAlert();
+    _incomingFirstSnapshot = false;
+    if(currentStaff){
+      renderNav();
+      if(currentView==='customerOrders') renderAll();
+    }
+  }, err=>console.error('incoming orders snapshot error', err));
+}
+function receiveIncomingOrder(fid){
+  const order = incomingOrders.find(o=>o.fid===fid);
+  if(!order) return;
+  cart = freshCart();
+  order.items.forEach(it=>{ cart.items.push(Object.assign({uid:uid()}, it)); });
+  if(order.tableNote) cart.note = order.tableNote;
+  saveCart();
+  fbDb.collection('incomingOrders').doc(fid).update({status:'received'}).catch(()=>{});
+  currentView = 'pos';
+  renderAll();
+  showToast(t('toast_order_received'));
+}
+function declineIncomingOrder(fid){
+  if(!fbDb) return;
+  fbDb.collection('incomingOrders').doc(fid).update({status:'declined'}).catch(()=>{});
+}
+function renderCustomerOrdersView(){
+  return `
+  <div class="section-head"><div class="section-title">${t('customer_orders_title')}</div></div>
+  ${!incomingOrders.length?`<div class="card" style="text-align:center;padding:60px 20px;color:var(--muted);font-size:1.1rem;">${t('customer_orders_none')}</div>`:`
+  <div class="kitchen-grid">${incomingOrders.map(o=>renderIncomingOrderCard(o)).join('')}</div>`}
+  `;
+}
+function renderIncomingOrderCard(o){
+  const mins = kitchenElapsedMinutes(o.createdAt||Date.now());
+  return `
+  <div class="kitchen-ticket ${mins>=5?'warn':'ok'}">
+    <div class="kitchen-ticket-head">
+      <span class="kitchen-ticket-order">📥</span>
+      <span>${o.tableNote?L(o.tableNote):''}</span>
+      <span class="kitchen-ticket-time">${mins} ${t('minutes_ago_suffix')}</span>
+    </div>
+    <div class="kitchen-ticket-items">
+      ${o.items.map(it=>{
+        const mods = [L(it.size),L(it.milk),L(it.sugar),it.shots?`+${it.shots} ${t('shot_word')}`:'',(it.syrup&&it.syrup!=='بدون')?L(it.syrup):''].filter(Boolean).join(' · ');
+        return `<div class="kitchen-item">
+          <span class="kitchen-item-qty">${it.qty}×</span>
+          <div class="kitchen-item-body">
+            <div class="kitchen-item-name">${it.icon||''} ${L(it.name)}</div>
+            ${mods?`<div class="kitchen-item-mods">${mods}</div>`:''}
+            ${it.note?`<div class="kitchen-item-mods">${t('note_prefix')}: ${it.note}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-success btn-lg" style="flex:1;" data-receive-order="${o.fid}">${t('receive_order_btn')}</button>
+      <button class="btn btn-outline" data-decline-order="${o.fid}">${t('decline_order_btn')}</button>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   CUSTOMER SELF-ORDER PAGE (opened via ?order=1 from the QR code)
+   ============================================================ */
+let custCart = { items: [], note: '' };
+let custCategory = null;
+let custDataReady = false;
+let custOrderConfirmation = null;
+let custSubmitting = false;
+
+function custCartSubtotal(){ return money(custCart.items.reduce((a,i)=>a+i.unitPrice*i.qty,0)); }
+function findCustCartMatch(cfg){
+  return custCart.items.find(i=> i.productId===cfg.productId && i.size===cfg.size && i.milk===cfg.milk &&
+    i.sugar===cfg.sugar && i.shots===cfg.shots && i.syrup===cfg.syrup && i.note===cfg.note);
+}
+function addToCustCart(cfg){
+  const existing = findCustCartMatch(cfg);
+  if(existing){ existing.qty += cfg.qty; }
+  else { custCart.items.push(Object.assign({uid:uid()}, cfg)); }
+  renderCustomerApp();
+  showToast(t('toast_added_cart'));
+}
+function changeCustQty(uidVal, delta){
+  const it = custCart.items.find(i=>i.uid===uidVal); if(!it) return;
+  it.qty += delta;
+  if(it.qty<=0) custCart.items = custCart.items.filter(i=>i.uid!==uidVal);
+  renderCustomerApp();
+}
+function removeCustCartItem(uidVal){
+  custCart.items = custCart.items.filter(i=>i.uid!==uidVal);
+  renderCustomerApp();
+}
+function openCustomerProduct(productId){
+  const p = state.products.find(x=>x.id===productId);
+  if(!p || !p.available) return;
+  if(!productHasAnyMods(p)){
+    addToCustCart({productId:p.id, name:p.name, icon:p.icon, size:'', milk:'', sugar:'', shots:0, syrup:'', note:'', qty:1, unitPrice:p.price});
+    return;
+  }
+  openCustomizeModal(p, addToCustCart);
+}
+function submitCustomerOrder(){
+  if(!custCart.items.length || custSubmitting) return;
+  if(!(fbDb && fbAuthReady)){ showToast(t('toast_customer_order_offline')); return; }
+  custSubmitting = true;
+  const noteEl = document.getElementById('custNoteInput');
+  const payload = {
+    items: custCart.items.map(it=>({productId:it.productId, name:it.name, icon:it.icon, size:it.size, milk:it.milk, sugar:it.sugar, shots:it.shots, syrup:it.syrup, note:it.note, qty:it.qty, unitPrice:it.unitPrice})),
+    tableNote: noteEl ? noteEl.value.trim() : '',
+    status: 'pending',
+    createdAt: Date.now()
+  };
+  fbDb.collection('incomingOrders').add(payload).then(ref=>{
+    custSubmitting = false;
+    custOrderConfirmation = { ref: ref.id.slice(-5).toUpperCase(), time: payload.createdAt };
+    custCart = { items: [], note: '' };
+    renderCustomerApp();
+  }).catch(err=>{
+    console.error('submit customer order failed', err);
+    custSubmitting = false;
+    showToast(t('toast_customer_order_failed'));
+  });
+}
+function renderCustomerApp(){
+  const root = document.getElementById('customer-root');
+  if(!root) return;
+  if(custOrderConfirmation){
+    root.innerHTML = `
+      <div class="card" style="text-align:center;padding:50px 20px;">
+        <div style="font-size:1.4rem;font-weight:800;margin-bottom:10px;">${t('customer_thanks_title')}</div>
+        <div style="color:var(--muted);margin-bottom:18px;">${t('customer_thanks_sub')}</div>
+        <div style="font-size:.85rem;color:var(--muted);">${t('customer_order_ref')}: <b>#${custOrderConfirmation.ref}</b></div>
+        <button class="btn btn-accent btn-lg" id="custNewOrderBtn" style="margin-top:22px;">${t('customer_new_order_btn')}</button>
+      </div>`;
+    document.getElementById('custNewOrderBtn').addEventListener('click', ()=>{
+      custOrderConfirmation = null;
+      renderCustomerApp();
+    });
+    return;
+  }
+  if(!custDataReady){
+    root.innerHTML = `<div class="card" style="text-align:center;padding:60px 20px;color:var(--muted);">${t('customer_loading')}</div>`;
+    return;
+  }
+  if(!custCategory) custCategory = state.categories[0].id;
+  const products = state.products.filter(p=>p.cat===custCategory);
+  root.innerHTML = `
+    <div style="text-align:center;padding:14px 0 6px;">
+      <div class="logo-emoji" style="font-size:2.2rem;">${logoMarkup('login-logo-img')}</div>
+      <div style="font-weight:800;font-size:1.2rem;margin-top:6px;">${state.settings.shopName}</div>
+      <div style="color:var(--muted);font-size:.85rem;">${t('customer_order_sub')}</div>
+    </div>
+    <div class="cat-tabs">
+      ${state.categories.map(c=>`<button class="cat-tab ${c.id===custCategory?'active':''}" data-cust-cat="${c.id}">${c.icon} ${L(c.name)}</button>`).join('')}
+    </div>
+    <div class="product-grid">${renderProductCards(products)}</div>
+    <div class="card" style="margin-top:18px;">
+      <div class="cart-header-row" style="margin-bottom:10px;">
+        <span class="cart-title">${t('customer_cart_title')}</span>
+      </div>
+      <div class="cart-items">${custCart.items.length ? custCart.items.map(it=>renderCustCartItem(it)).join('') : `<div class="cart-empty">${t('customer_cart_empty')}</div>`}</div>
+      ${custCart.items.length ? `
+      <div class="form-row" style="margin-top:10px;"><input id="custNoteInput" placeholder="${t('customer_note_placeholder')}" value="${custCart.note||''}"></div>
+      <div class="cart-summary">
+        <div class="sum-row total"><span>${t('total_label')}</span><span>${fmt(custCartSubtotal())}</span></div>
+      </div>
+      <button class="btn btn-accent btn-lg" id="custSubmitBtn" style="width:100%;margin-top:10px;">${t('customer_submit_btn')} · ${fmt(custCartSubtotal())}</button>
+      ` : ''}
+    </div>`;
+  attachCustomerHandlers();
+}
+function renderCustCartItem(it){
+  const mods = [L(it.size), L(it.milk), L(it.sugar), it.shots?`+${it.shots} ${t('shot_word')}`:'', (it.syrup&&it.syrup!=='بدون')?L(it.syrup):'']
+    .filter(Boolean).join(' · ');
+  return `
+  <div class="cart-item" data-cust-uid="${it.uid}">
+    <div class="cart-item-top">
+      <span class="cart-item-name">${it.icon||''} ${L(it.name)}</span>
+      <button class="cart-item-remove" data-cust-remove="${it.uid}">${t('remove_btn')}</button>
+    </div>
+    ${mods?`<div class="cart-item-mods">${mods}</div>`:''}
+    <div class="cart-item-bottom">
+      <div class="qty-stepper">
+        <button data-cust-dec="${it.uid}">−</button><span>${it.qty}</span><button data-cust-inc="${it.uid}">+</button>
+      </div>
+      <span class="cart-item-price">${fmt(it.unitPrice*it.qty)}</span>
+    </div>
+  </div>`;
+}
+function attachCustomerHandlers(){
+  const root = document.getElementById('customer-root');
+  root.querySelectorAll('[data-cust-cat]').forEach(b=>b.addEventListener('click', ()=>{ custCategory=b.dataset.custCat; renderCustomerApp(); }));
+  root.querySelectorAll('.product-card[data-product]').forEach(b=>b.addEventListener('click', ()=>{ if(!b.disabled) openCustomerProduct(b.dataset.product); }));
+  root.querySelectorAll('[data-cust-inc]').forEach(b=>b.addEventListener('click', ()=>changeCustQty(b.dataset.custInc, 1)));
+  root.querySelectorAll('[data-cust-dec]').forEach(b=>b.addEventListener('click', ()=>changeCustQty(b.dataset.custDec, -1)));
+  root.querySelectorAll('[data-cust-remove]').forEach(b=>b.addEventListener('click', ()=>removeCustCartItem(b.dataset.custRemove)));
+  const submitBtn = root.querySelector('#custSubmitBtn');
+  if(submitBtn) submitBtn.addEventListener('click', submitCustomerOrder);
+  const noteInput = root.querySelector('#custNoteInput');
+  if(noteInput) noteInput.addEventListener('input', e=>{ custCart.note = e.target.value; });
 }
 
 /* current session */
@@ -1141,6 +1431,7 @@ function hasAccess(view){
    ============================================================ */
 const NAV_ITEMS = [
   {id:'pos', key:'nav_pos', icon:'🧾'},
+  {id:'customerOrders', key:'nav_customer_orders', icon:'📥'},
   {id:'kitchen', key:'nav_kitchen', icon:'🍳'},
   {id:'tables', key:'nav_tables', icon:'🍽️'},
   {id:'orders', key:'nav_orders', icon:'📋'},
@@ -1153,11 +1444,15 @@ const NAV_ITEMS = [
 function renderNav(){
   const el = document.getElementById('sidenav');
   const pendingKitchen = state.kitchenTickets.filter(k=>k.status==='pending').length;
-  el.innerHTML = NAV_ITEMS.filter(i=>hasAccess(i.id)).map(i=>`
+  const pendingIncoming = incomingOrders.length;
+  el.innerHTML = NAV_ITEMS.filter(i=>hasAccess(i.id)).map(i=>{
+    const badgeCount = i.id==='kitchen' ? pendingKitchen : i.id==='customerOrders' ? pendingIncoming : 0;
+    return `
     <button data-view="${i.id}" class="${currentView===i.id?'active':''}" style="position:relative;">
       <span class="nav-ic">${i.icon}</span><span>${t(i.key)}</span>
-      ${i.id==='kitchen' && pendingKitchen?`<span class="badge" style="position:absolute;top:4px;inset-inline-end:10px;">${pendingKitchen}</span>`:''}
-    </button>`).join('');
+      ${badgeCount?`<span class="badge" style="position:absolute;top:4px;inset-inline-end:10px;">${badgeCount}</span>`:''}
+    </button>`;
+  }).join('');
   el.querySelectorAll('button').forEach(b=>{
     b.addEventListener('click', ()=>{ currentView = b.dataset.view; renderAll(); });
   });
@@ -1252,6 +1547,7 @@ function renderAll(){
   renderTopbar();
   const root = document.getElementById('view-root');
   if(currentView==='pos') root.innerHTML = renderPOS();
+  else if(currentView==='customerOrders') root.innerHTML = renderCustomerOrdersView();
   else if(currentView==='kitchen') root.innerHTML = renderKitchen();
   else if(currentView==='tables') root.innerHTML = renderTables();
   else if(currentView==='orders') root.innerHTML = renderOrders();
@@ -1315,6 +1611,7 @@ function renderCartPanel(){
         ${cart.orderType==='delivery' ? `<button class="btn btn-sm btn-outline" id="custBtn">👤 ${cart.customer.name||t('customer_info_btn')}</button>`:''}
         ${cart.items.length ? `<button class="btn btn-sm btn-outline" id="clearCartBtn">${t('clear_btn')}</button>`:''}
       </div>
+      ${cart.note ? `<div class="table-badge" style="margin-top:8px;">📥 ${t('incoming_order_table_note')}: ${cart.note}</div>` : ''}
     </div>
     <div class="cart-items">${itemsHtml}</div>
     <div class="cart-summary">
@@ -1418,7 +1715,8 @@ function openProduct(productId){
   }
   openCustomizeModal(p);
 }
-function openCustomizeModal(p){
+function openCustomizeModal(p, addFn){
+  addFn = addFn || addToCart;
   const mods = resolveMods(p);
   const S = state.settings;
   let sel = {
@@ -1467,7 +1765,7 @@ function openCustomizeModal(p){
     document.getElementById('mClose').onclick = closeModal;
     document.getElementById('noteInput').oninput = e=>{ sel.note = e.target.value; };
     document.getElementById('addBtn').onclick = ()=>{
-      addToCart({productId:p.id, name:p.name, icon:p.icon, size:sel.size, milk:sel.milk, sugar:sel.sugar, shots:sel.shots, syrup:sel.syrup, note:sel.note, qty:sel.qty, unitPrice:unitPrice()});
+      addFn({productId:p.id, name:p.name, icon:p.icon, size:sel.size, milk:sel.milk, sugar:sel.sugar, shots:sel.shots, syrup:sel.syrup, note:sel.note, qty:sel.qty, unitPrice:unitPrice()});
       closeModal();
     };
     document.querySelectorAll('[data-act]').forEach(b=>{
@@ -1809,23 +2107,47 @@ function getAudioCtx(){
   return _kitchenAudioCtx;
 }
 document.addEventListener('click', ()=>{ getAudioCtx(); }, {once:true});
-function playKitchenAlert(){
+function beep(ctx, now, offset, freq, dur, type, peak){
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type||'square';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.0001, now+offset);
+  gain.gain.exponentialRampToValueAtTime(peak||0.6, now+offset+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now+offset+dur);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(now+offset);
+  osc.stop(now+offset+dur+0.02);
+}
+const ALERT_TONES = {
+  classic:(ctx, now)=>{ [0,0.35,0.7].forEach(o=>beep(ctx, now, o, 880, 0.28, 'square', 0.6)); },
+  bell:(ctx, now)=>{
+    [0, 0.6].forEach(o=>{
+      beep(ctx, now, o, 987, 0.9, 'sine', 0.5);
+      beep(ctx, now, o, 1975, 0.6, 'sine', 0.2);
+    });
+  },
+  siren:(ctx, now)=>{
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(420, now);
+    osc.frequency.linearRampToValueAtTime(920, now+0.4);
+    osc.frequency.linearRampToValueAtTime(420, now+0.8);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.45, now+0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now+0.85);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(now); osc.stop(now+0.9);
+  },
+  chime:(ctx, now)=>{ [523,659,784].forEach((f,i)=>beep(ctx, now, i*0.16, f, 0.5, 'sine', 0.35)); }
+};
+function playTone(name){
   const ctx = getAudioCtx();
   if(!ctx) return;
-  const now = ctx.currentTime;
-  [0, 0.35, 0.7].forEach(offset=>{
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'square';
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.0001, now+offset);
-    gain.gain.exponentialRampToValueAtTime(0.6, now+offset+0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now+offset+0.28);
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start(now+offset);
-    osc.stop(now+offset+0.3);
-  });
+  const fn = ALERT_TONES[name] || ALERT_TONES.classic;
+  fn(ctx, ctx.currentTime);
 }
+function playKitchenAlert(){ playTone(state.settings.alertTone||'classic'); }
 function kitchenElapsedMinutes(ts){ return Math.floor((Date.now()-ts)/60000); }
 function renderKitchen(){
   const pending = state.kitchenTickets.filter(k=>k.status==='pending').sort((a,b)=>a.time-b.time);
@@ -2497,6 +2819,9 @@ service cloud.firestore {
     match /posData/{doc} {
       allow read, write: if request.auth != null;
     }
+    match /incomingOrders/{doc} {
+      allow read, write: if request.auth != null;
+    }
   }
 }</div>
     </details>
@@ -2507,6 +2832,29 @@ service cloud.firestore {
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button type="button" class="btn btn-outline" id="downloadBackupBtn">⬇️ ${t('download_backup_btn')}</button>
       <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;align-items:center;">⬆️ ${t('restore_backup_btn')}<input type="file" accept="application/json" id="restoreBackupFile" style="display:none;"></label>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px;">
+    <div class="card">
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('alert_tone_title')}</div>
+      <div class="form-row">
+        <select id="setAlertTone">
+          <option value="classic" ${S.alertTone!=='bell'&&S.alertTone!=='siren'&&S.alertTone!=='chime'?'selected':''}>${t('alert_tone_classic')}</option>
+          <option value="bell" ${S.alertTone==='bell'?'selected':''}>${t('alert_tone_bell')}</option>
+          <option value="siren" ${S.alertTone==='siren'?'selected':''}>${t('alert_tone_siren')}</option>
+          <option value="chime" ${S.alertTone==='chime'?'selected':''}>${t('alert_tone_chime')}</option>
+        </select>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" id="testAlertToneBtn">${t('test_sound_btn')}</button>
+    </div>
+    <div class="card">
+      <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('menu_qr_title')}</div>
+      <div style="color:var(--muted);font-size:.8rem;margin-bottom:10px;">${t('menu_qr_note')}</div>
+      <div id="customerQrBox" style="background:#fff;padding:10px;border-radius:8px;display:inline-block;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+        <button type="button" class="btn btn-outline btn-sm" id="printQrBtn">${t('print_qr_btn')}</button>
+        <button type="button" class="btn btn-outline btn-sm" id="copyQrLinkBtn">${t('copy_link_btn')}</button>
+      </div>
     </div>
   </div>
   <div class="card" style="margin-top:16px;">
@@ -2580,6 +2928,7 @@ function saveSettingsForm(){
   const activeGdType = document.querySelector('[data-gd-type].active');
   S.globalDiscountType = activeGdType ? activeGdType.dataset.gdType : 'percent';
   S.globalDiscountValue = parseFloat(document.getElementById('setGlobalDiscountValue').value)||0;
+  S.alertTone = document.getElementById('setAlertTone').value || 'classic';
   S.branchName = document.getElementById('setBranchName').value;
   S.branchLocation = document.getElementById('setBranchLocation').value;
   const newCount = parseInt(document.getElementById('setTables').value)||S.tablesCount;
@@ -2634,6 +2983,10 @@ function attachViewHandlers(){
     const k = state.kitchenTickets.find(x=>x.id===b.dataset.kitchenReady);
     if(k){ k.status='done'; k.doneAt=Date.now(); save(); renderAll(); }
   }));
+
+  // Incoming customer orders
+  root.querySelectorAll('[data-receive-order]').forEach(b=>b.addEventListener('click', ()=>receiveIncomingOrder(b.dataset.receiveOrder)));
+  root.querySelectorAll('[data-decline-order]').forEach(b=>b.addEventListener('click', ()=>declineIncomingOrder(b.dataset.declineOrder)));
 
   // Tables
   root.querySelectorAll('[data-table]').forEach(b=>b.addEventListener('click', ()=>selectTable(parseInt(b.dataset.table))));
@@ -2749,6 +3102,35 @@ function attachViewHandlers(){
     renderAll();
   });
   if(root.querySelector('#cloudStatusLine')) updateCloudStatusUI();
+  const testAlertToneBtn = root.querySelector('#testAlertToneBtn');
+  if(testAlertToneBtn) testAlertToneBtn.addEventListener('click', ()=>{
+    const sel = document.getElementById('setAlertTone');
+    playTone(sel ? sel.value : (state.settings.alertTone||'classic'));
+  });
+  if(root.querySelector('#customerQrBox')) renderCustomerQr('customerQrBox');
+  const printQrBtn = root.querySelector('#printQrBtn');
+  if(printQrBtn) printQrBtn.addEventListener('click', ()=>{
+    const box = document.getElementById('customerQrBox');
+    const canvas = box && box.querySelector('canvas');
+    const img = box && box.querySelector('img');
+    const src = canvas ? canvas.toDataURL('image/png') : (img ? img.src : '');
+    if(!src){ showToast(t('customer_offline_note')); return; }
+    document.getElementById('receipt-print').innerHTML = `
+      <div style="text-align:center;padding:20px;">
+        ${state.settings.logoImage?`<img src="${state.settings.logoImage}" style="height:50px;">`:''}
+        <div style="font-weight:800;font-size:1.1rem;margin:8px 0;">${state.settings.shopName}</div>
+        <img src="${src}" style="width:200px;height:200px;">
+        <div style="font-size:.9rem;margin-top:10px;">${t('customer_order_title')}</div>
+      </div>`;
+    window.print();
+  });
+  const copyQrLinkBtn = root.querySelector('#copyQrLinkBtn');
+  if(copyQrLinkBtn) copyQrLinkBtn.addEventListener('click', ()=>{
+    const url = customerOrderUrl();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(url).then(()=>showToast(t('toast_link_copied'))).catch(()=>showToast(url));
+    } else { showToast(url); }
+  });
   const downloadBackupBtn = root.querySelector('#downloadBackupBtn');
   if(downloadBackupBtn) downloadBackupBtn.addEventListener('click', ()=>{
     const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
@@ -2796,15 +3178,26 @@ function renderLoginBrand(){
   document.getElementById('pinPrompt').textContent = t('pin_prompt');
   document.getElementById('pinCancelBtn').textContent = t('cancel');
 }
-renderLoginBrand();
-if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig) connectFirebase();
-if(currentStaff){
+if(isCustomerMode){
   document.getElementById('login-screen').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-  currentView = hasAccess('pos') ? 'pos' : 'orders';
-  renderAll();
-}else{
-  renderStaffGrid();
+  document.getElementById('customer-app').classList.remove('hidden');
+  applyDocDir();
+  state.settings.firebaseConfig = state.settings.firebaseConfig || DEFAULT_FIREBASE_CONFIG;
+  state.settings.storageMode = 'cloud';
+  connectFirebase();
+  renderCustomerApp();
+  setTimeout(()=>{ if(!custDataReady){ custDataReady = true; renderCustomerApp(); } }, 6000);
+} else {
+  renderLoginBrand();
+  if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig) connectFirebase();
+  if(currentStaff){
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    currentView = hasAccess('pos') ? 'pos' : 'orders';
+    renderAll();
+  }else{
+    renderStaffGrid();
+  }
 }
 </script>
 </body>
