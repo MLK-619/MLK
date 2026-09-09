@@ -302,6 +302,36 @@
   .subtab-btn.active{background:var(--accent-tint-12);border-color:var(--accent);color:var(--accent);font-weight:600;}
   .cost-sub{display:none;}
   .cost-sub.active{display:block;}
+  .menu-sub{display:none;}
+  .menu-sub.active{display:block;}
+
+  /* المنيو والطلبات */
+  .menu-item-thumb{width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--card2);border:1px solid var(--border);display:block;}
+  .menu-item-thumb-placeholder{width:48px;height:48px;border-radius:8px;background:var(--card2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--muted);}
+  .menu-img-upload-label{display:inline-block;cursor:pointer;font-size:.75rem;color:var(--accent);text-decoration:underline;}
+  .order-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+  .order-card.status-new{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-tint-12);}
+  .order-card-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+  .order-card-table{font-weight:800;font-size:1rem;}
+  .order-status-pill{font-size:.72rem;padding:3px 10px;border-radius:999px;font-weight:700;}
+  .order-status-pill.new{background:rgba(220,38,38,.12);color:var(--danger);}
+  .order-status-pill.preparing{background:rgba(237,161,0,.15);color:#b57500;}
+  .order-status-pill.ready{background:rgba(12,163,12,.15);color:var(--success);}
+  .order-status-pill.served{background:var(--card3);color:var(--muted);}
+  .order-status-pill.cancelled{background:var(--card3);color:var(--muted);text-decoration:line-through;}
+  .order-items-list{list-style:none;margin:0 0 10px;padding:0;font-size:.85rem;}
+  .order-items-list li{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed var(--border);}
+  .order-card-actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .order-card-actions button{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;cursor:pointer;font-size:.8rem;font-family:inherit;}
+  .order-card-actions button:hover{border-color:var(--accent);}
+  .order-card-actions button.primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .order-card-actions button.danger{color:var(--danger);border-color:var(--danger);}
+  #qr-result-box img{background:#fff;padding:10px;border-radius:12px;border:1px solid var(--border);}
+  @media print{
+    body *{visibility:hidden;}
+    #qr-print-card, #qr-print-card *{visibility:visible;}
+    #qr-print-card{position:absolute;top:0;inset-inline-start:0;width:100%;}
+  }
 
   /* بطاقات KPI */
   .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px;}
@@ -472,6 +502,7 @@
           <li class="nav-item" data-view="cashPurchases" data-perm="cashPurchases"><span class="nav-icon">💵</span> <span data-i18n="navCashPurchases">المشتريات بالكاش</span></li>
           <li class="nav-item" data-view="capital" data-perm="capital"><span class="nav-icon">🏦</span> <span data-i18n="navCapital">رأس المال</span></li>
           <li class="nav-item" data-view="stock" data-perm="stock"><span class="nav-icon">📦</span> <span data-i18n="navStock">المخزون</span></li>
+          <li class="nav-item" data-view="menu" data-perm="menu"><span class="nav-icon">🍔</span> <span data-i18n="navMenu">المنيو والطلبات</span></li>
           <li class="nav-item" data-view="sales" data-perm="sales"><span class="nav-icon">🧾</span> <span data-i18n="navSales">المبيعات</span></li>
           <li class="nav-item" data-view="systemSales" data-perm="systemSales"><span class="nav-icon">🖥️</span> <span data-i18n="navSystemSales">مبيعات النظام (مرجعي)</span></li>
           <li class="nav-item" data-view="profit" data-perm="profit"><span class="nav-icon">📈</span> <span data-i18n="navProfit">حساب الأرباح</span></li>
@@ -793,6 +824,86 @@
             </div>
             <div class="add-branch-picker" id="stock-branch-picker"></div>
             <button class="add-btn" id="stock-add-btn" onclick="addStockItem()" data-i18n="btnAddMaterial">+ إضافة مادة خام</button>
+          </div>
+        </section>
+
+        <!-- ============ المنيو والطلبات ============ -->
+        <section class="view" id="view-menu">
+          <h1 class="page-title" data-i18n="menuTitle">إدارة المنيو والطلبات</h1>
+          <p class="subtitle" data-i18n="menuSubtitle">إدارة أصناف المنيو، استلام الطلبات الواردة من الزبائن، وإنشاء أكواد QR للطاولات</p>
+
+          <div class="subtabs" id="menu-subtabs">
+            <button class="subtab-btn active" data-msub="orders" onclick="switchMenuSub('orders')">🧾 <span data-i18n="subtabMenuOrders">الطلبات الواردة</span></button>
+            <button class="subtab-btn" data-msub="items" onclick="switchMenuSub('items')">🍽️ <span data-i18n="subtabMenuItems">الأصناف</span></button>
+            <button class="subtab-btn" data-msub="tables" onclick="switchMenuSub('tables')">📱 <span data-i18n="subtabMenuTables">أكواد الطاولات</span></button>
+          </div>
+
+          <!-- الطلبات الواردة -->
+          <div class="menu-sub active" id="menu-sub-orders">
+            <div class="toolbar">
+              <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <label style="font-size:.85rem;color:var(--muted);" id="menu-orders-branch-label" data-i18n="dashboardBranchLabel">عرض بيانات فرع:</label>
+                <select id="menu-orders-branch-filter" onchange="renderMenuOrders()"></select>
+                <label style="font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:6px;">
+                  <input type="checkbox" id="menu-orders-show-completed" onchange="renderMenuOrders()">
+                  <span data-i18n="toggleShowCompletedOrders">إظهار الطلبات المكتملة</span>
+                </label>
+              </div>
+            </div>
+            <div class="kpi-grid" id="menu-orders-kpis"></div>
+            <div class="section">
+              <div id="menu-orders-list"></div>
+            </div>
+          </div>
+
+          <!-- الأصناف -->
+          <div class="menu-sub" id="menu-sub-items">
+            <div class="section">
+              <h2><span class="icon">🗂️</span> <span data-i18n="menuCategoriesTitle">أقسام المنيو</span></h2>
+              <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+                <input type="text" id="menu-category-input" data-i18n-ph="placeholderCategoryName" placeholder="اسم القسم الجديد...">
+                <button id="menu-add-category-btn" onclick="addMenuCategory()" data-i18n="btnAddMenuCategory">+ إضافة قسم</button>
+              </div>
+              <ul class="order-settings-list" id="menu-categories-list"></ul>
+            </div>
+            <div class="section">
+              <div class="toolbar"><h2 style="margin:0;"><span class="icon">🍽️</span> <span data-i18n="menuItemsTitle">الأصناف</span></h2><div class="toolbar-right">
+                <button id="menu-add-item-btn" onclick="addMenuItem()" data-i18n="btnAddMenuItem">+ إضافة صنف</button>
+              </div></div>
+              <div class="table-scroll">
+              <table>
+                <thead><tr>
+                  <th style="width:10%" data-i18n="thItemImage">الصورة</th>
+                  <th style="width:24%" data-i18n="thItemName">اسم الصنف</th>
+                  <th style="width:20%" data-i18n="thItemCategory">القسم</th>
+                  <th style="width:16%" data-i18n="thItemPrice">السعر</th>
+                  <th style="width:12%" data-i18n="thItemAvailable">متاح</th>
+                  <th style="width:18%"></th>
+                </tr></thead>
+                <tbody id="menu-items-body"></tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- أكواد الطاولات -->
+          <div class="menu-sub" id="menu-sub-tables">
+            <div class="section">
+              <h2><span class="icon">📱</span> <span data-i18n="menuQrToolTitle">إنشاء كود طاولة</span></h2>
+              <p class="subtitle" style="margin-bottom:14px;" data-i18n="menuQrToolDesc">اختر الفرع ورقم الطاولة، ثم اطبع الكود وضعه على الطاولة. يفتح الزبون منيو الفرع ويطلب مباشرة عند مسحه.</p>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:.8rem;color:var(--muted);min-width:220px;">
+                  <span data-i18n="qrToolBranchLabel">اختر الفرع</span>
+                  <select id="qr-branch-select"></select>
+                </label>
+                <label style="display:flex;flex-direction:column;gap:6px;font-size:.8rem;color:var(--muted);">
+                  <span data-i18n="qrToolTableLabel">رقم الطاولة</span>
+                  <input type="text" id="qr-table-input" style="width:120px;" placeholder="1">
+                </label>
+                <button onclick="generateTableQr()" data-i18n="btnGenerateQr">إنشاء الكود</button>
+              </div>
+              <div id="qr-result-box" style="margin-top:22px;"></div>
+            </div>
           </div>
         </section>
 
@@ -1338,6 +1449,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
+/* مكتبة إنشاء أكواد QR (davidshimjs/qrcodejs — MIT) لتوليد كود كل طاولة */
+var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();
+</script>
+<script>
 /* =========================================================
    الترجمة (عربي / إنجليزي)
 ========================================================= */
@@ -1531,6 +1646,26 @@ const I18N = {
     confirmResetSystem2:'تأكيد أخير: سيتم حذف كل شيء نهائياً ولا يمكن التراجع. متابعة؟',
     footerText:'نظام إدارة الفروع',
     currencySuffix:'ر.ع.',
+
+    navMenu:'المنيو والطلبات',
+    menuTitle:'إدارة المنيو والطلبات', menuSubtitle:'إدارة أصناف المنيو، استلام الطلبات الواردة من الزبائن، وإنشاء أكواد QR للطاولات',
+    subtabMenuOrders:'الطلبات الواردة', subtabMenuItems:'الأصناف', subtabMenuTables:'أكواد الطاولات',
+    toggleShowCompletedOrders:'إظهار الطلبات المكتملة',
+    menuCategoriesTitle:'أقسام المنيو', placeholderCategoryName:'اسم القسم الجديد...', btnAddMenuCategory:'+ إضافة قسم',
+    noMenuCategories:'أضف قسماً أولاً', confirmDeleteCategory:'سيتم حذف هذا القسم وكل أصنافه. متابعة؟',
+    menuItemsTitle:'الأصناف', btnAddMenuItem:'+ إضافة صنف', confirmDeleteMenuItem:'هل تريد حذف هذا الصنف؟',
+    thItemImage:'الصورة', thItemCategory:'القسم', thItemPrice:'السعر', thItemAvailable:'متاح',
+    btnUploadItemImage:'⬆️ صورة',
+    menuQrToolTitle:'إنشاء كود طاولة', menuQrToolDesc:'اختر الفرع ورقم الطاولة، ثم اطبع الكود وضعه على الطاولة. يفتح الزبون منيو الفرع ويطلب مباشرة عند مسحه.',
+    qrToolBranchLabel:'اختر الفرع', qrToolTableLabel:'رقم الطاولة', btnGenerateQr:'إنشاء الكود',
+    btnPrintQr:'🖨️ طباعة', btnCopyLink:'🔗 نسخ الرابط', linkCopied:'تم نسخ الرابط',
+    menuOrderTable:'طاولة', menuOrderTotal:'الإجمالي',
+    menuOrderStatus_new:'طلب جديد', menuOrderStatus_preparing:'قيد التحضير', menuOrderStatus_ready:'جاهز للتسليم',
+    menuOrderStatus_served:'تم التسليم', menuOrderStatus_cancelled:'ملغي',
+    btnOrderStart:'▶️ بدء التحضير', btnOrderReady:'✅ جاهز للتسليم', btnOrderServed:'📦 تم التسليم', btnOrderCancel:'✕ إلغاء الطلب',
+    menuOrdersEmpty:'لا توجد طلبات حالياً',
+    logAddMenuCategory:'إضافة قسم منيو', logDeleteMenuCategory:'حذف قسم منيو',
+    logAddMenuItem:'إضافة صنف منيو', logDeleteMenuItem:'حذف صنف منيو',
   },
   en: {
     brandTagline:'Branch Management System for Trading Companies', brandLicensedTo:'Licensed to', clientName:'Al Muzn Trading Co.',
@@ -1718,6 +1853,26 @@ const I18N = {
     confirmResetSystem2:'Final confirmation: everything will be permanently deleted and cannot be undone. Continue?',
     footerText:'Branch Management System',
     currencySuffix:'OMR',
+
+    navMenu:'Menu & Orders',
+    menuTitle:'Menu & Orders Management', menuSubtitle:'Manage menu items, receive incoming customer orders, and generate table QR codes',
+    subtabMenuOrders:'Incoming Orders', subtabMenuItems:'Menu Items', subtabMenuTables:'Table QR Codes',
+    toggleShowCompletedOrders:'Show completed orders',
+    menuCategoriesTitle:'Menu Categories', placeholderCategoryName:'New category name...', btnAddMenuCategory:'+ Add Category',
+    noMenuCategories:'Add a category first', confirmDeleteCategory:'This will delete the category and all its items. Continue?',
+    menuItemsTitle:'Items', btnAddMenuItem:'+ Add Item', confirmDeleteMenuItem:'Delete this item?',
+    thItemImage:'Image', thItemCategory:'Category', thItemPrice:'Price', thItemAvailable:'Available',
+    btnUploadItemImage:'⬆️ Image',
+    menuQrToolTitle:'Generate Table Code', menuQrToolDesc:'Pick the branch and table number, then print the code and place it on the table. Customers scan it to open the branch menu and order directly.',
+    qrToolBranchLabel:'Select branch', qrToolTableLabel:'Table number', btnGenerateQr:'Generate Code',
+    btnPrintQr:'🖨️ Print', btnCopyLink:'🔗 Copy Link', linkCopied:'Link copied',
+    menuOrderTable:'Table', menuOrderTotal:'Total',
+    menuOrderStatus_new:'New Order', menuOrderStatus_preparing:'Preparing', menuOrderStatus_ready:'Ready',
+    menuOrderStatus_served:'Served', menuOrderStatus_cancelled:'Cancelled',
+    btnOrderStart:'▶️ Start Preparing', btnOrderReady:'✅ Mark Ready', btnOrderServed:'📦 Mark Served', btnOrderCancel:'✕ Cancel Order',
+    menuOrdersEmpty:'No orders yet',
+    logAddMenuCategory:'Added menu category', logDeleteMenuCategory:'Deleted menu category',
+    logAddMenuItem:'Added menu item', logDeleteMenuItem:'Deleted menu item',
   },
 };
 function t(key){ return (I18N[LANG] && I18N[LANG][key] !== undefined) ? I18N[LANG][key] : (I18N.ar[key] || key); }
@@ -1841,11 +1996,11 @@ function categoryLabel(key){ return EXPENSE_CATEGORIES.includes(key) ? t('cat_' 
 function paymentLabel(key){ return t('pm_' + key); }
 
 const PERMS = {
-  owner:      {nav:['dashboard','branches','costs','cashPurchases','capital','stock','sales','systemSales','profit','suppliers','reports','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:true,  editBranches:true,  manageStockNames:true},
-  manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:true},
-  accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:false},
-  staff:      {nav:['sales','cashPurchases','stock'],                                                                                  costSubtabs:[],                                       deleteInvoice:false, editBranches:false, manageStockNames:false},
-  viewer:     {nav:['dashboard','branches','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],   costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:false, readOnly:true},
+  owner:      {nav:['dashboard','branches','costs','cashPurchases','capital','stock','menu','sales','systemSales','profit','suppliers','reports','auditlog','users','more'], costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:true,  editBranches:true,  manageStockNames:true, manageMenu:true},
+  manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','menu','sales','systemSales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:true, manageMenu:true},
+  accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:false, manageMenu:false},
+  staff:      {nav:['sales','cashPurchases','stock','menu'],                                                                                  costSubtabs:[],                                       deleteInvoice:false, editBranches:false, manageStockNames:false, manageMenu:false},
+  viewer:     {nav:['dashboard','branches','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],   costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, manageStockNames:false, manageMenu:false, readOnly:true},
 };
 function activeBranchId(){ return (session && session.branchId) || null; }
 
@@ -2003,6 +2158,8 @@ function defaultState(){
     suppliers: [],
     stock: [],
     sales: [],
+    menuCategories: [],
+    menuItems: [],
     settings: {
       visaPct: 1.5, talabatPct: 20, zadPct: 15, snoonuPct: 0, tmdonePct: 0, discounts: 0,
       customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} },
@@ -2111,6 +2268,7 @@ function initCloudSync(){
         cloudReady = true;
         setCloudStatus('online');
         maybeAutoBackup();
+        if(session && PERMS[session.role].nav.includes('menu')) attachMenuOrdersListener();
         if(snap.exists){
           const data = snap.data();
           if(data._writerId === cloudClientId) return; /* صدى كتابتنا نحن، لا داعي لإعادة التطبيق */
@@ -2280,6 +2438,7 @@ function startApp(){
   document.body.classList.toggle('role-readonly', !!perms.readOnly);
 
   if(!perms.costSubtabs.includes(costSub)) costSub = perms.costSubtabs[0];
+  if(perms.nav.includes('menu')) attachMenuOrdersListener();
 
   const firstView = perms.nav[0] || 'sales';
   switchView(firstView);
@@ -2290,7 +2449,7 @@ function startApp(){
 ========================================================= */
 const VIEW_TITLE_KEYS = {
   dashboard:'navDashboard', branches:'navBranches', costs:'navCosts', cashPurchases:'navCashPurchases', capital:'navCapital', stock:'navStock',
-  sales:'navSales', systemSales:'navSystemSales', profit:'navProfit', suppliers:'navSuppliers',
+  menu:'navMenu', sales:'navSales', systemSales:'navSystemSales', profit:'navProfit', suppliers:'navSuppliers',
   reports:'navReports', auditlog:'navAuditlog', users:'navUsers', more:'navMore',
 };
 
@@ -2317,6 +2476,7 @@ function switchView(view){
   if(view === 'cashPurchases') renderCashPurchases();
   if(view === 'capital') renderCapital();
   if(view === 'stock') renderStock();
+  if(view === 'menu') renderMenuView();
   if(view === 'sales') renderSales();
   if(view === 'systemSales') renderSystemSales();
   if(view === 'profit') renderProfit();
@@ -3824,6 +3984,291 @@ function resetReportLogo(){
   renderReportLogo();
   applyBrandDisplay();
   logAction('logChangeLogo');
+}
+
+/* =========================================================
+   المنيو والطلبات (طلب بالباركود/QR على الطاولة)
+========================================================= */
+let menuSub = 'orders';
+function switchMenuSub(sub){
+  menuSub = sub;
+  document.querySelectorAll('#menu-subtabs .subtab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.msub === sub));
+  document.querySelectorAll('.menu-sub').forEach(el => el.classList.remove('active'));
+  document.getElementById('menu-sub-' + sub).classList.add('active');
+}
+function renderMenuView(){
+  const perms = PERMS[session.role];
+  document.querySelectorAll('#menu-subtabs .subtab-btn').forEach(btn => {
+    if(btn.dataset.msub !== 'orders') btn.style.display = perms.manageMenu ? 'inline-flex' : 'none';
+  });
+  if(!perms.manageMenu) menuSub = 'orders';
+  switchMenuSub(menuSub);
+  document.getElementById('menu-add-category-btn').style.display = perms.manageMenu ? 'inline-block' : 'none';
+  document.getElementById('menu-category-input').style.display = perms.manageMenu ? 'inline-block' : 'none';
+  document.getElementById('menu-add-item-btn').style.display = perms.manageMenu ? 'inline-block' : 'none';
+  renderMenuCategories();
+  renderMenuItems();
+  renderQrBranchSelect();
+  attachMenuOrdersListener();
+  renderMenuOrdersBranchFilter();
+  renderMenuOrders();
+}
+
+/* --- أقسام المنيو --- */
+function menuCategoriesForBrand(){
+  return state.menuCategories.filter(c => c.brand === BRAND).sort((a,b) => (a.order||0) - (b.order||0));
+}
+function addMenuCategory(){
+  if(!PERMS[session.role].manageMenu) return;
+  const input = document.getElementById('menu-category-input');
+  const name = input.value.trim();
+  if(!name) return;
+  state.menuCategories.push({id: uid(), brand: BRAND, name, order: menuCategoriesForBrand().length});
+  input.value = '';
+  saveState();
+  syncMenuPublicToCloud();
+  logAction('logAddMenuCategory');
+  renderMenuCategories();
+  renderMenuItems();
+}
+function renameMenuCategory(id, name){
+  const c = state.menuCategories.find(x => x.id === id);
+  if(!c) return;
+  c.name = name;
+  saveState();
+  syncMenuPublicToCloud();
+  renderMenuItems();
+}
+function removeMenuCategory(id){
+  if(!confirm(t('confirmDeleteCategory'))) return;
+  state.menuCategories = state.menuCategories.filter(c => c.id !== id);
+  state.menuItems = state.menuItems.filter(i => i.categoryId !== id);
+  saveState();
+  syncMenuPublicToCloud();
+  logAction('logDeleteMenuCategory');
+  renderMenuCategories();
+  renderMenuItems();
+}
+function moveMenuCategory(id, dir){
+  const cats = menuCategoriesForBrand();
+  const idx = cats.findIndex(c => c.id === id);
+  const swapIdx = idx + dir;
+  if(idx < 0 || swapIdx < 0 || swapIdx >= cats.length) return;
+  const tmp = cats[idx].order;
+  cats[idx].order = cats[swapIdx].order;
+  cats[swapIdx].order = tmp;
+  saveState();
+  syncMenuPublicToCloud();
+  renderMenuCategories();
+  renderMenuItems();
+}
+function renderMenuCategories(){
+  const perms = PERMS[session.role];
+  const cats = menuCategoriesForBrand();
+  document.getElementById('menu-categories-list').innerHTML = cats.length ? cats.map((c,i) => `
+    <li>
+      <input type="text" value="${escapeHtml(c.name)}" oninput="renameMenuCategory('${c.id}', this.value)" style="border:none;background:transparent;flex:1;font-size:.85rem;color:var(--text);" ${perms.manageMenu?'':'readonly'}>
+      ${perms.manageMenu ? `<div class="order-btns">
+        <button onclick="moveMenuCategory('${c.id}',-1)" ${i===0?'disabled':''}>▲</button>
+        <button onclick="moveMenuCategory('${c.id}',1)" ${i===cats.length-1?'disabled':''}>▼</button>
+        <button onclick="removeMenuCategory('${c.id}')">✕</button>
+      </div>` : ''}
+    </li>`).join('') : `<p style="color:var(--muted);font-size:.85rem;">${t('noMenuCategories')}</p>`;
+}
+
+/* --- أصناف المنيو --- */
+function menuCategoryOptions(selectedId){
+  return menuCategoriesForBrand().map(c => `<option value="${c.id}" ${c.id===selectedId?'selected':''}>${escapeHtml(c.name)}</option>`).join('');
+}
+function addMenuItem(){
+  if(!PERMS[session.role].manageMenu) return;
+  const cats = menuCategoriesForBrand();
+  if(!cats.length){ alert(t('noMenuCategories')); return; }
+  state.menuItems.push({id: uid(), brand: BRAND, categoryId: cats[0].id, name: '', price: 0, image: null, available: true});
+  saveState();
+  syncMenuPublicToCloud();
+  logAction('logAddMenuItem');
+  renderMenuItems();
+}
+function updateMenuItem(id, field, value){
+  const item = state.menuItems.find(x => x.id === id);
+  if(!item) return;
+  item[field] = value;
+  saveState();
+  syncMenuPublicToCloud();
+}
+function removeMenuItem(id){
+  if(!confirm(t('confirmDeleteMenuItem'))) return;
+  state.menuItems = state.menuItems.filter(i => i.id !== id);
+  saveState();
+  syncMenuPublicToCloud();
+  logAction('logDeleteMenuItem');
+  renderMenuItems();
+}
+function uploadMenuItemImage(id, file){
+  if(!file) return;
+  const finish = (url) => { updateMenuItem(id, 'image', url); renderMenuItems(); };
+  if(cloudReady && cloudStorage){
+    const ref = cloudStorage.ref().child('menu_images/' + BRAND + '-' + id + '-' + Date.now());
+    ref.put(file).then(() => ref.getDownloadURL()).then(finish)
+      .catch(err => { console.error('Menu image upload to Storage failed, falling back to local', err); readLogoAsDataUrl(file, finish); });
+  }else{
+    readLogoAsDataUrl(file, finish);
+  }
+}
+function renderMenuItems(){
+  const perms = PERMS[session.role];
+  const items = state.menuItems.filter(i => i.brand === BRAND);
+  document.getElementById('menu-items-body').innerHTML = items.length ? items.map(item => `
+    <tr data-id="${item.id}">
+      <td>
+        ${item.image ? `<img class="menu-item-thumb" src="${item.image}" alt="">` : `<div class="menu-item-thumb-placeholder">🍽️</div>`}
+        ${perms.manageMenu ? `<label class="menu-img-upload-label">${t('btnUploadItemImage')}<input type="file" accept="image/*" style="display:none;" onchange="uploadMenuItemImage('${item.id}', this.files[0])"></label>` : ''}
+      </td>
+      <td><input type="text" value="${escapeHtml(item.name)}" placeholder="${t('thItemName')}" oninput="updateMenuItem('${item.id}','name',this.value)" ${perms.manageMenu?'':'readonly'}></td>
+      <td><select onchange="updateMenuItem('${item.id}','categoryId',this.value)" ${perms.manageMenu?'':'disabled'}>${menuCategoryOptions(item.categoryId)}</select></td>
+      <td><input type="number" min="0" step="any" value="${item.price}" oninput="updateMenuItem('${item.id}','price',parseFloat(this.value)||0)" ${perms.manageMenu?'':'readonly'}></td>
+      <td><input type="checkbox" ${item.available!==false?'checked':''} onchange="updateMenuItem('${item.id}','available',this.checked)" ${perms.manageMenu?'':'disabled'}></td>
+      <td>${perms.manageMenu ? `<button class="del-btn" onclick="removeMenuItem('${item.id}')">✕</button>` : ''}</td>
+    </tr>`).join('') : `<tr><td colspan="6" style="text-align:center;color:var(--muted);">${t('noMenuCategories')}</td></tr>`;
+}
+
+/* --- مزامنة المنيو العام (يقرأه الزبون من menu.html بدون تسجيل دخول) --- */
+let menuPublicSyncTimer = null;
+function syncMenuPublicToCloud(){
+  if(!cloudReady || !cloudDb) return;
+  clearTimeout(menuPublicSyncTimer);
+  menuPublicSyncTimer = setTimeout(() => {
+    cloudDb.collection('menu_public').doc(BRAND).set({
+      categories: menuCategoriesForBrand().map(c => ({id:c.id, name:c.name, order:c.order||0})),
+      items: state.menuItems.filter(i => i.brand === BRAND).map(i => ({id:i.id, categoryId:i.categoryId, name:i.name, price:num(i.price), image:i.image||null, available:i.available!==false})),
+      brandLabel: BRAND_INFO[BRAND].nameHtml.replace(/<[^>]+>/g,'').trim(),
+      updatedAt: Date.now(),
+    }).catch(err => console.error('menu_public sync failed', err));
+  }, 800);
+}
+
+/* --- أكواد QR للطاولات --- */
+function renderQrBranchSelect(){
+  const sel = document.getElementById('qr-branch-select');
+  if(!sel) return;
+  sel.innerHTML = branchOptions(sel.value || (state.branches[0]||{}).id);
+}
+function generateTableQr(){
+  const branchId = document.getElementById('qr-branch-select').value;
+  const table = document.getElementById('qr-table-input').value.trim();
+  const box = document.getElementById('qr-result-box');
+  if(!branchId || !table){ alert(t('errFillFields')); return; }
+  const branch = state.branches.find(b => b.id === branchId);
+  const branchName = branch ? branch.name : '';
+  const basePath = location.pathname.replace(/index\.html$/, '');
+  const url = `${location.origin}${basePath}menu.html?brand=${encodeURIComponent(BRAND)}&branch=${encodeURIComponent(branchId)}&bn=${encodeURIComponent(branchName)}&table=${encodeURIComponent(table)}`;
+  box.innerHTML = `
+    <div id="qr-print-card" style="text-align:center;max-width:320px;padding:20px;border:1px solid var(--border);border-radius:14px;background:#fff;">
+      <div style="font-weight:800;margin-bottom:4px;color:#132743;">${escapeHtml(branchName)}</div>
+      <div style="color:#64748f;font-size:.85rem;margin-bottom:14px;">${t('menuOrderTable')} ${escapeHtml(table)}</div>
+      <div id="qr-canvas-holder" style="display:flex;justify-content:center;margin-bottom:14px;"></div>
+      <div style="font-size:.7rem;color:#94a3b8;word-break:break-all;">${escapeHtml(url)}</div>
+    </div>
+    <div class="toolbar-right" style="margin-top:14px;">
+      <button onclick="window.print()">${t('btnPrintQr')}</button>
+      <button onclick="copyQrLink(this)" data-url="${escapeHtml(url)}">${t('btnCopyLink')}</button>
+    </div>`;
+  new QRCode(document.getElementById('qr-canvas-holder'), {text:url, width:220, height:220, correctLevel: QRCode.CorrectLevel.M});
+}
+function copyQrLink(btn){
+  const url = btn.getAttribute('data-url');
+  navigator.clipboard.writeText(url).then(() => alert(t('linkCopied'))).catch(() => {});
+}
+
+/* --- الطلبات الواردة (Real-time) --- */
+let menuOrders = [];
+let menuOrdersListenerAttached = false;
+let menuOrdersFirstSnapshot = true;
+function attachMenuOrdersListener(){
+  if(menuOrdersListenerAttached || !cloudReady || !cloudDb) return;
+  menuOrdersListenerAttached = true;
+  cloudDb.collection('menu_orders').orderBy('createdAt','desc').limit(300).onSnapshot(snap => {
+    if(!menuOrdersFirstSnapshot){
+      snap.docChanges().forEach(change => {
+        const o = change.doc.data();
+        const scope = activeBranchId();
+        if(change.type === 'added' && o.status === 'new' && o.brand === BRAND && (!scope || o.branchId === scope)){
+          playNewOrderBeep();
+        }
+      });
+    }
+    menuOrdersFirstSnapshot = false;
+    menuOrders = snap.docs.map(d => Object.assign({id:d.id}, d.data()));
+    if(currentView === 'menu') renderMenuOrders();
+  }, err => console.error('menu_orders listener failed', err));
+}
+function playNewOrderBeep(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine'; osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(); osc.stop(ctx.currentTime + 0.6);
+  }catch(e){ /* المتصفح لا يدعم Web Audio */ }
+}
+function renderMenuOrdersBranchFilter(){
+  const sel = document.getElementById('menu-orders-branch-filter');
+  const label = document.getElementById('menu-orders-branch-label');
+  const scope = activeBranchId();
+  if(scope){
+    sel.style.display = 'none';
+    label.style.display = 'none';
+    return;
+  }
+  sel.style.display = 'inline-block';
+  label.style.display = 'inline-block';
+  const current = sel.value;
+  sel.innerHTML = `<option value="">${t('allBranches')}</option>` + branchOptions(current);
+}
+function orderStatusLabel(status){ return t('menuOrderStatus_' + status); }
+function renderMenuOrders(){
+  const scope = activeBranchId();
+  const filterSel = document.getElementById('menu-orders-branch-filter');
+  const branchFilter = scope || (filterSel ? filterSel.value : '');
+  const showCompleted = document.getElementById('menu-orders-show-completed').checked;
+  const scoped = menuOrders.filter(o => o.brand === BRAND && (!branchFilter || o.branchId === branchFilter));
+  const visible = showCompleted ? scoped : scoped.filter(o => o.status !== 'served' && o.status !== 'cancelled');
+
+  const counts = {new:0, preparing:0, ready:0};
+  scoped.forEach(o => { if(counts[o.status] !== undefined) counts[o.status]++; });
+  document.getElementById('menu-orders-kpis').innerHTML = [
+    kpiCard(t('menuOrderStatus_new'), counts.new),
+    kpiCard(t('menuOrderStatus_preparing'), counts.preparing),
+    kpiCard(t('menuOrderStatus_ready'), counts.ready),
+  ].join('');
+
+  document.getElementById('menu-orders-list').innerHTML = visible.length ? visible.map(o => `
+    <div class="order-card status-${o.status}">
+      <div class="order-card-head">
+        <span class="order-card-table">🍽️ ${escapeHtml(o.branchName||'')} — ${t('menuOrderTable')} ${escapeHtml(String(o.tableNumber||''))}</span>
+        <span class="order-status-pill ${o.status}">${orderStatusLabel(o.status)}</span>
+      </div>
+      <div style="font-size:.78rem;color:var(--muted);margin-bottom:8px;">${escapeHtml(o.createdAtLabel||'')}</div>
+      <ul class="order-items-list">
+        ${(o.items||[]).map(it => `<li><span>${escapeHtml(it.name)} × ${it.qty}</span><span>${formatCurrency(it.price*it.qty)}</span></li>`).join('')}
+      </ul>
+      ${o.customerNote ? `<div style="font-size:.8rem;color:var(--muted);margin-bottom:8px;">📝 ${escapeHtml(o.customerNote)}</div>` : ''}
+      <div class="section-total" style="margin:0 0 10px;"><span>${t('menuOrderTotal')}:</span> <b>${formatCurrency(o.total)}</b></div>
+      <div class="order-card-actions">
+        ${o.status==='new' ? `<button class="primary" onclick="updateOrderStatus('${o.id}','preparing')">${t('btnOrderStart')}</button>` : ''}
+        ${o.status==='preparing' ? `<button class="primary" onclick="updateOrderStatus('${o.id}','ready')">${t('btnOrderReady')}</button>` : ''}
+        ${o.status==='ready' ? `<button class="primary" onclick="updateOrderStatus('${o.id}','served')">${t('btnOrderServed')}</button>` : ''}
+        ${(o.status==='new'||o.status==='preparing') ? `<button class="danger" onclick="updateOrderStatus('${o.id}','cancelled')">${t('btnOrderCancel')}</button>` : ''}
+      </div>
+    </div>`).join('') : `<p style="color:var(--muted);font-size:.85rem;">${t('menuOrdersEmpty')}</p>`;
+}
+function updateOrderStatus(orderId, status){
+  if(!cloudReady || !cloudDb){ alert(t('errOfflineBlocked')); return; }
+  cloudDb.collection('menu_orders').doc(orderId).update({status, statusUpdatedAt: Date.now()}).catch(err => console.error('order status update failed', err));
 }
 
 /* =========================================================

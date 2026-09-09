@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>المنيو | اطلب الآن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eaf1fb; --card:#ffffff; --card2:#eef4fc; --text:#132743; --muted:#64748f;
+    --accent:#1e3a8a; --accent-light:#2563eb; --border:#dce6f4; --success:#0ca30c; --danger:#dc2626;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Cairo","Segoe UI",Tahoma,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg),#f7fafd);
+    color:var(--text); min-height:100vh; padding-bottom:90px;
+  }
+  .center-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;}
+  .spinner{width:38px;height:38px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .muted{color:var(--muted);font-size:.9rem;}
+
+  header.menu-header{
+    background:var(--card); border-bottom:1px solid var(--border); padding:16px 18px;
+    position:sticky; top:0; z-index:20; box-shadow:0 2px 10px rgba(20,60,120,.05);
+  }
+  .menu-header-row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .menu-brand-name{font-weight:800;font-size:1.05rem;color:var(--accent);}
+  .menu-branch-line{font-size:.8rem;color:var(--muted);margin-top:2px;}
+  .table-pill{background:var(--accent);color:#fff;font-weight:700;font-size:.8rem;padding:6px 14px;border-radius:999px;white-space:nowrap;}
+  .lang-btn{background:var(--card2);border:1px solid var(--border);color:var(--accent);padding:5px 12px;border-radius:999px;font-size:.72rem;cursor:pointer;font-family:inherit;font-weight:600;}
+
+  .cat-bar{display:flex;gap:8px;overflow-x:auto;padding:12px 14px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:64px;z-index:19;-webkit-overflow-scrolling:touch;}
+  .cat-bar::-webkit-scrollbar{display:none;}
+  .cat-btn{flex:none;background:var(--card2);border:1px solid var(--border);color:var(--muted);padding:8px 16px;border-radius:999px;font-size:.83rem;cursor:pointer;font-family:inherit;white-space:nowrap;}
+  .cat-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+
+  .items-wrap{padding:16px 14px;max-width:640px;margin:0 auto;}
+  .cat-title{font-weight:800;font-size:1.05rem;margin:18px 2px 10px;}
+  .item-card{
+    display:flex;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:12px;margin-bottom:12px;align-items:center;
+  }
+  .item-card.unavailable{opacity:.5;}
+  .item-img{width:64px;height:64px;border-radius:10px;object-fit:cover;background:var(--card2);flex:none;}
+  .item-img-placeholder{width:64px;height:64px;border-radius:10px;background:var(--card2);flex:none;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+  .item-info{flex:1;min-width:0;}
+  .item-name{font-weight:700;font-size:.95rem;margin-bottom:4px;}
+  .item-price{color:var(--accent);font-weight:700;font-size:.88rem;}
+  .item-unavailable-tag{font-size:.72rem;color:var(--danger);font-weight:700;}
+  .qty-ctrl{display:flex;align-items:center;gap:8px;flex:none;}
+  .qty-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--accent);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+  .qty-num{min-width:18px;text-align:center;font-weight:700;}
+  .add-item-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:.82rem;cursor:pointer;font-family:inherit;font-weight:700;}
+
+  .cart-bar{
+    position:fixed;bottom:0;inset-inline:0;background:var(--accent);color:#fff;
+    display:flex;justify-content:space-between;align-items:center;padding:14px 18px;
+    box-shadow:0 -4px 16px rgba(0,0,0,.15); cursor:pointer; z-index:30;
+  }
+  .cart-bar-left{display:flex;flex-direction:column;}
+  .cart-bar-count{font-size:.78rem;opacity:.85;}
+  .cart-bar-total{font-weight:800;font-size:1.05rem;}
+  .cart-bar-btn{background:#fff;color:var(--accent);border:none;border-radius:10px;padding:10px 20px;font-weight:800;font-size:.9rem;cursor:pointer;font-family:inherit;}
+
+  .sheet-overlay{position:fixed;inset:0;background:rgba(10,20,40,.45);z-index:40;display:flex;align-items:flex-end;justify-content:center;}
+  .sheet{background:var(--card);width:100%;max-width:640px;border-radius:20px 20px 0 0;max-height:88vh;overflow-y:auto;padding:20px;}
+  .sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .sheet-title{font-weight:800;font-size:1.1rem;}
+  .close-x{background:var(--card2);border:none;border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;color:var(--muted);}
+  .cart-line{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--border);}
+  .cart-line-name{font-weight:700;font-size:.9rem;}
+  .cart-line-price{color:var(--muted);font-size:.8rem;}
+  textarea#customer-note{width:100%;border:1px solid var(--border);border-radius:10px;padding:10px;font-family:inherit;font-size:.85rem;resize:vertical;min-height:60px;margin-top:12px;}
+  .sheet-total-row{display:flex;justify-content:space-between;font-weight:800;font-size:1.05rem;margin:16px 0;}
+  .submit-order-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px;font-weight:800;font-size:1rem;cursor:pointer;font-family:inherit;}
+  .submit-order-btn:disabled{opacity:.5;cursor:not-allowed;}
+  .empty-cart-msg{text-align:center;color:var(--muted);padding:30px 0;}
+
+  /* شاشة تتبع الطلب */
+  .track-wrap{max-width:520px;margin:40px auto;padding:0 18px;text-align:center;}
+  .track-icon{font-size:3rem;margin-bottom:10px;}
+  .track-steps{display:flex;justify-content:space-between;margin:28px 0;position:relative;}
+  .track-steps::before{content:'';position:absolute;top:15px;inset-inline:24px;height:3px;background:var(--border);z-index:0;}
+  .track-step{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;}
+  .track-dot{width:32px;height:32px;border-radius:50%;background:var(--card2);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.85rem;color:var(--muted);}
+  .track-step.done .track-dot{background:var(--success);border-color:var(--success);color:#fff;}
+  .track-step.current .track-dot{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .track-label{font-size:.72rem;color:var(--muted);text-align:center;}
+  .track-order-summary{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:start;margin-top:20px;}
+  .new-order-btn{margin-top:24px;background:var(--card2);border:1px solid var(--border);color:var(--accent);border-radius:10px;padding:10px 20px;font-weight:700;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+
+<div id="root">
+  <div class="center-screen" id="loading-screen">
+    <div>
+      <div class="spinner"></div>
+      <div class="muted" id="loading-text">جارٍ تحميل المنيو...</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDy4Sm8luKO0X5Ph15EyYcFiz9V0m9LoI4",
+  authDomain: "almuzin-company.firebaseapp.com",
+  projectId: "almuzin-company",
+  storageBucket: "almuzin-company.firebasestorage.app",
+  messagingSenderId: "803543561914",
+  appId: "1:803543561914:web:0ba0606f58ca1de840f483",
+  measurementId: "G-PYMCZFC6HN",
+};
+
+const BRAND_NAMES = { aventus: 'Aventus | أفنتوس', chickenville: 'Chicken Ville | تشكن فل' };
+
+const I18N = {
+  ar: {
+    loadingMenu:'جارٍ تحميل المنيو...', invalidLink:'هذا الرابط غير صالح', invalidLinkDesc:'يرجى مسح كود QR الموجود على الطاولة لفتح المنيو.',
+    menuLoadError:'تعذّر تحميل المنيو، تحقق من الاتصال بالإنترنت وحاول مرة أخرى.', table:'طاولة',
+    emptyCart:'السلة فارغة، أضف صنفاً لتبدأ الطلب', cartTitle:'سلة الطلب', notePlaceholder:'ملاحظة على الطلب (اختياري)...',
+    total:'الإجمالي', submitOrder:'إرسال الطلب', submitting:'جارٍ الإرسال...', itemsCount:'صنف',
+    orderSentTitle:'تم إرسال طلبك بنجاح!', orderSentDesc:'سيتم تحضير طلبك الآن، تابع حالته هنا',
+    stepNew:'تم الإرسال', stepPreparing:'قيد التحضير', stepReady:'جاهز', stepServed:'تم التسليم', stepCancelled:'تم الإلغاء',
+    orderCancelledMsg:'تم إلغاء هذا الطلب من قبل المطعم.', newOrderBtn:'🛒 طلب جديد', unavailable:'غير متوفر حالياً',
+    submitError:'تعذّر إرسال الطلب، حاول مرة أخرى', noItemsInBranch:'لا توجد أصناف في هذا القسم حالياً',
+  },
+  en: {
+    loadingMenu:'Loading menu...', invalidLink:'This link is invalid', invalidLinkDesc:'Please scan the QR code on your table to open the menu.',
+    menuLoadError:'Could not load the menu, check your internet connection and try again.', table:'Table',
+    emptyCart:'Your cart is empty, add an item to start your order', cartTitle:'Your Order', notePlaceholder:'Order note (optional)...',
+    total:'Total', submitOrder:'Send Order', submitting:'Sending...', itemsCount:'items',
+    orderSentTitle:'Your order was sent!', orderSentDesc:'It is being prepared now, track its status here',
+    stepNew:'Sent', stepPreparing:'Preparing', stepReady:'Ready', stepServed:'Served', stepCancelled:'Cancelled',
+    orderCancelledMsg:'This order was cancelled by the restaurant.', newOrderBtn:'🛒 New Order', unavailable:'Unavailable',
+    submitError:'Could not send the order, try again', noItemsInBranch:'No items in this category yet',
+  },
+};
+let LANG = 'ar';
+function t(key){ return (I18N[LANG] && I18N[LANG][key]) || key; }
+
+const params = new URLSearchParams(location.search);
+const BRAND = params.get('brand');
+const BRANCH_ID = params.get('branch');
+const BRANCH_NAME = params.get('bn') || '';
+const TABLE = params.get('table');
+
+let db = null;
+let menuData = null;
+let cart = {}; // { itemId: qty }
+let activeCategory = null;
+const ORDER_STORAGE_KEY = `menu_active_order_${BRAND}_${BRANCH_ID}_${TABLE}`;
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str ?? '';
+  return div.innerHTML;
+}
+function formatCurrency(n){
+  return (n||0).toLocaleString('en-US', {minimumFractionDigits:3, maximumFractionDigits:3}) + (LANG==='ar' ? ' ر.ع.' : ' OMR');
+}
+const root = document.getElementById('root');
+
+function showInvalidLink(){
+  root.innerHTML = `<div class="center-screen"><div>
+    <div class="track-icon">🔗</div>
+    <h2>${t('invalidLink')}</h2>
+    <p class="muted">${t('invalidLinkDesc')}</p>
+  </div></div>`;
+}
+function showLoadError(){
+  root.innerHTML = `<div class="center-screen"><div>
+    <div class="track-icon">⚠️</div>
+    <p class="muted">${t('menuLoadError')}</p>
+  </div></div>`;
+}
+
+if(!BRAND || !BRANCH_ID || !TABLE || !BRAND_NAMES[BRAND]){
+  showInvalidLink();
+}else{
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    firebase.auth().signInAnonymously().then(() => {
+      const savedOrderId = sessionStorage.getItem(ORDER_STORAGE_KEY);
+      if(savedOrderId){
+        trackOrder(savedOrderId);
+      }else{
+        loadMenu();
+      }
+    }).catch(err => { console.error('anon sign-in failed', err); showLoadError(); });
+  }catch(e){
+    console.error('firebase init failed', e);
+    showLoadError();
+  }
+}
+
+function loadMenu(){
+  db.collection('menu_public').doc(BRAND).onSnapshot(snap => {
+    if(!snap.exists){
+      menuData = {categories:[], items:[]};
+    }else{
+      menuData = snap.data();
+    }
+    if(!activeCategory && menuData.categories && menuData.categories.length){
+      activeCategory = [...menuData.categories].sort((a,b)=>(a.order||0)-(b.order||0))[0].id;
+    }
+    renderMenuScreen();
+  }, err => { console.error('menu load failed', err); showLoadError(); });
+}
+
+function renderMenuScreen(){
+  const cats = [...(menuData.categories||[])].sort((a,b)=>(a.order||0)-(b.order||0));
+  root.innerHTML = `
+    <header class="menu-header">
+      <div class="menu-header-row">
+        <div>
+          <div class="menu-brand-name">${escapeHtml((BRAND_NAMES[BRAND]||'').split('|')[LANG==='ar'?1:0]?.trim() || BRAND_NAMES[BRAND])}</div>
+          <div class="menu-branch-line">${escapeHtml(BRANCH_NAME)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <button class="lang-btn" onclick="toggleLang()">${LANG==='ar'?'EN':'AR'}</button>
+          <span class="table-pill">${t('table')} ${escapeHtml(TABLE)}</span>
+        </div>
+      </div>
+    </header>
+    <div class="cat-bar" id="cat-bar">
+      ${cats.map(c => `<button class="cat-btn ${c.id===activeCategory?'active':''}" onclick="selectCategory('${c.id}', this)">${escapeHtml(c.name)}</button>`).join('')}
+    </div>
+    <div class="items-wrap" id="items-wrap"></div>
+  `;
+  renderItems();
+  renderCartBar();
+}
+function selectCategory(id, btnEl){
+  activeCategory = id;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  if(btnEl) btnEl.classList.add('active');
+  renderItems();
+}
+function renderItems(){
+  const items = (menuData.items||[]).filter(i => i.categoryId === activeCategory);
+  const wrap = document.getElementById('items-wrap');
+  if(!items.length){ wrap.innerHTML = `<p class="muted" style="text-align:center;margin-top:30px;">${t('noItemsInBranch')}</p>`; return; }
+  wrap.innerHTML = items.map(item => {
+    const qty = cart[item.id] || 0;
+    const avail = item.available !== false;
+    return `<div class="item-card ${avail?'':'unavailable'}">
+      ${item.image ? `<img class="item-img" src="${item.image}" alt="">` : `<div class="item-img-placeholder">🍽️</div>`}
+      <div class="item-info">
+        <div class="item-name">${escapeHtml(item.name)}</div>
+        <div class="item-price">${formatCurrency(item.price)}</div>
+        ${!avail ? `<div class="item-unavailable-tag">${t('unavailable')}</div>` : ''}
+      </div>
+      ${avail ? (qty > 0 ? `
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty('${item.id}',-1)">−</button>
+          <span class="qty-num">${qty}</span>
+          <button class="qty-btn" onclick="changeQty('${item.id}',1)">+</button>
+        </div>` : `<button class="add-item-btn" onclick="changeQty('${item.id}',1)">+</button>`
+      ) : ''}
+    </div>`;
+  }).join('');
+}
+function changeQty(itemId, delta){
+  const next = (cart[itemId] || 0) + delta;
+  if(next <= 0) delete cart[itemId]; else cart[itemId] = next;
+  renderItems();
+  renderCartBar();
+}
+function cartCount(){ return Object.values(cart).reduce((a,q)=>a+q,0); }
+function cartTotal(){
+  return Object.entries(cart).reduce((sum,[id,qty]) => {
+    const item = (menuData.items||[]).find(i=>i.id===id);
+    return sum + (item ? item.price*qty : 0);
+  }, 0);
+}
+function renderCartBar(){
+  let bar = document.getElementById('cart-bar');
+  const count = cartCount();
+  if(!count){ if(bar) bar.remove(); return; }
+  if(!bar){
+    bar = document.createElement('div');
+    bar.id = 'cart-bar';
+    bar.className = 'cart-bar';
+    bar.onclick = openCartSheet;
+    document.body.appendChild(bar);
+  }
+  bar.innerHTML = `
+    <div class="cart-bar-left">
+      <span class="cart-bar-count">${count} ${t('itemsCount')}</span>
+      <span class="cart-bar-total">${formatCurrency(cartTotal())}</span>
+    </div>
+    <button class="cart-bar-btn" onclick="event.stopPropagation();openCartSheet();">${t('cartTitle')}</button>
+  `;
+}
+function openCartSheet(){
+  const overlay = document.createElement('div');
+  overlay.className = 'sheet-overlay';
+  overlay.id = 'cart-overlay';
+  overlay.onclick = (e) => { if(e.target===overlay) overlay.remove(); };
+  const lines = Object.entries(cart).map(([id,qty]) => {
+    const item = (menuData.items||[]).find(i=>i.id===id);
+    if(!item) return '';
+    return `<div class="cart-line">
+      <div>
+        <div class="cart-line-name">${escapeHtml(item.name)}</div>
+        <div class="cart-line-price">${formatCurrency(item.price)} × ${qty}</div>
+      </div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty('${item.id}',-1);refreshCartSheet();">−</button>
+        <span class="qty-num">${qty}</span>
+        <button class="qty-btn" onclick="changeQty('${item.id}',1);refreshCartSheet();">+</button>
+      </div>
+    </div>`;
+  }).join('');
+  overlay.innerHTML = `
+    <div class="sheet">
+      <div class="sheet-head">
+        <div class="sheet-title">${t('cartTitle')}</div>
+        <button class="close-x" onclick="document.getElementById('cart-overlay').remove()">✕</button>
+      </div>
+      <div id="cart-lines">${lines || `<div class="empty-cart-msg">${t('emptyCart')}</div>`}</div>
+      <textarea id="customer-note" placeholder="${t('notePlaceholder')}"></textarea>
+      <div class="sheet-total-row"><span>${t('total')}</span><span>${formatCurrency(cartTotal())}</span></div>
+      <button class="submit-order-btn" id="submit-order-btn" onclick="submitOrder()" ${cartCount()?'':'disabled'}>${t('submitOrder')}</button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+function refreshCartSheet(){
+  const overlay = document.getElementById('cart-overlay');
+  if(!overlay) return;
+  const note = document.getElementById('customer-note')?.value || '';
+  overlay.remove();
+  if(cartCount()) openCartSheet();
+  else renderCartBar();
+  const noteEl = document.getElementById('customer-note');
+  if(noteEl) noteEl.value = note;
+}
+function toggleLang(){
+  LANG = LANG === 'ar' ? 'en' : 'ar';
+  document.documentElement.setAttribute('lang', LANG);
+  document.documentElement.setAttribute('dir', LANG==='ar' ? 'rtl' : 'ltr');
+  renderMenuScreen();
+}
+
+let submitting = false;
+function submitOrder(){
+  if(submitting || !cartCount()) return;
+  submitting = true;
+  const btn = document.getElementById('submit-order-btn');
+  if(btn){ btn.disabled = true; btn.textContent = t('submitting'); }
+  const note = document.getElementById('customer-note')?.value.trim() || '';
+  const items = Object.entries(cart).map(([id,qty]) => {
+    const item = (menuData.items||[]).find(i=>i.id===id);
+    return {id, name:item.name, price:item.price, qty};
+  });
+  const order = {
+    brand: BRAND, branchId: BRANCH_ID, branchName: BRANCH_NAME, tableNumber: TABLE,
+    items, total: cartTotal(), status: 'new', customerNote: note,
+    createdAt: Date.now(),
+    createdAtLabel: new Date().toLocaleString(LANG==='ar' ? 'ar-OM' : 'en-GB'),
+  };
+  db.collection('menu_orders').add(order).then(ref => {
+    sessionStorage.setItem(ORDER_STORAGE_KEY, ref.id);
+    cart = {};
+    const overlay = document.getElementById('cart-overlay');
+    if(overlay) overlay.remove();
+    trackOrder(ref.id);
+  }).catch(err => {
+    console.error('order submit failed', err);
+    submitting = false;
+    if(btn){ btn.disabled = false; btn.textContent = t('submitOrder'); }
+    alert(t('submitError'));
+  });
+}
+
+const STEP_ORDER = ['new','preparing','ready','served'];
+function trackOrder(orderId){
+  db.collection('menu_orders').doc(orderId).onSnapshot(snap => {
+    if(!snap.exists){ sessionStorage.removeItem(ORDER_STORAGE_KEY); loadMenu(); return; }
+    renderTrackScreen(Object.assign({id:snap.id}, snap.data()));
+  }, err => { console.error('order tracking failed', err); showLoadError(); });
+}
+function renderTrackScreen(order){
+  const stepIdx = STEP_ORDER.indexOf(order.status);
+  const cancelled = order.status === 'cancelled';
+  root.innerHTML = `
+    <div class="track-wrap">
+      <div class="track-icon">${cancelled ? '❌' : '✅'}</div>
+      <h2>${cancelled ? t('orderCancelledMsg') : t('orderSentTitle')}</h2>
+      ${!cancelled ? `<p class="muted">${t('orderSentDesc')}</p>` : ''}
+      ${!cancelled ? `<div class="track-steps">
+        ${STEP_ORDER.map((s,i) => `
+          <div class="track-step ${i<stepIdx?'done':''} ${i===stepIdx?'current':''}">
+            <div class="track-dot">${i<stepIdx?'✓':i+1}</div>
+            <div class="track-label">${t('step'+s.charAt(0).toUpperCase()+s.slice(1))}</div>
+          </div>`).join('')}
+      </div>` : ''}
+      <div class="track-order-summary">
+        <div style="font-weight:700;margin-bottom:8px;">${escapeHtml(order.branchName||'')} — ${t('table')} ${escapeHtml(String(order.tableNumber||''))}</div>
+        ${(order.items||[]).map(it => `<div class="cart-line"><span>${escapeHtml(it.name)} × ${it.qty}</span><span>${formatCurrency(it.price*it.qty)}</span></div>`).join('')}
+        <div class="sheet-total-row"><span>${t('total')}</span><span>${formatCurrency(order.total)}</span></div>
+      </div>
+      <button class="new-order-btn" onclick="startNewOrder()">${t('newOrderBtn')}</button>
+    </div>`;
+}
+function startNewOrder(){
+  sessionStorage.removeItem(ORDER_STORAGE_KEY);
+  submitting = false;
+  loadMenu();
+}
+</script>
+</body>
+</html>
