@@ -865,6 +865,7 @@ const DEFAULT_DATA = {
   nextOrderNumber:1001
 };
 
+const LS_BACKUP_KEY = LS_KEY + '_autobackup';
 let state = load();
 function load(){
   try{
@@ -876,11 +877,24 @@ function load(){
       return data;
     }
   }catch(e){}
+  // main storage missing or corrupted — fall back to the automatic backup copy
+  try{
+    const rawBackup = localStorage.getItem(LS_BACKUP_KEY);
+    if(rawBackup){
+      const data = JSON.parse(rawBackup);
+      data.settings = Object.assign({}, DEFAULT_DATA.settings, data.settings);
+      if(!data.kitchenTickets) data.kitchenTickets = [];
+      try{ localStorage.setItem(LS_KEY, rawBackup); }catch(e){}
+      return data;
+    }
+  }catch(e){}
   return clone(DEFAULT_DATA);
 }
 function save(){
   state._updatedAt = Date.now();
-  localStorage.setItem(LS_KEY, JSON.stringify(state));
+  const json = JSON.stringify(state);
+  localStorage.setItem(LS_KEY, json);
+  try{ localStorage.setItem(LS_BACKUP_KEY, json); }catch(e){}
   if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig) pushCloud(false);
 }
 
@@ -899,7 +913,9 @@ function scheduleCloudRetry(){
   if(cloudRetryTimer) return;
   cloudRetryTimer = setTimeout(()=>{
     cloudRetryTimer = null;
-    if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig && cloudStatus!=='connected') connectFirebase();
+    if(!(state.settings.storageMode==='cloud' && state.settings.firebaseConfig)) return;
+    if(cloudStatus==='connected' && fbDb && fbAuthReady) pushCloud(true);
+    else connectFirebase();
   }, cloudRetryDelay);
   cloudRetryDelay = Math.min(cloudRetryDelay * 2, 60000);
 }
@@ -960,8 +976,13 @@ function subscribeCloud(){
         state._updatedAt = remote.updatedAt;
         if(!state.kitchenTickets) state.kitchenTickets = [];
         state.settings = Object.assign({}, DEFAULT_DATA.settings, state.settings, {firebaseConfig: localFbConfig});
-        localStorage.setItem(LS_KEY, JSON.stringify(state));
+        const json = JSON.stringify(state);
+        localStorage.setItem(LS_KEY, json);
+        try{ localStorage.setItem(LS_BACKUP_KEY, json); }catch(e){}
         renderAll();
+      } else if(!remote.updatedAt || remote.updatedAt < (state._updatedAt||0)){
+        // this device made changes while disconnected — push them now that we're back online
+        pushCloud(true);
       }
     } else {
       pushCloud(true);
@@ -981,11 +1002,15 @@ function pushCloud(immediate){
   if(!fbDb || !fbAuthReady) return;
   const doWrite = ()=>{
     fbDb.collection('posData').doc('store').set({payload: cloudPayload(), updatedAt: state._updatedAt})
-      .catch(err=>{ console.error('cloud push failed', err); cloudStatus='error'; updateCloudStatusUI(); });
+      .catch(err=>{
+        console.error('cloud push failed', err);
+        cloudStatus='error'; updateCloudStatusUI();
+        scheduleCloudRetry();
+      });
   };
   if(immediate){ doWrite(); return; }
   clearTimeout(cloudPushTimer);
-  cloudPushTimer = setTimeout(doWrite, 1200);
+  cloudPushTimer = setTimeout(doWrite, 1000);
 }
 function disconnectCloud(){
   if(cloudUnsub){ cloudUnsub(); cloudUnsub = null; }
