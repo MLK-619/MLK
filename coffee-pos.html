@@ -263,6 +263,8 @@ input:checked + .slider::before{transform:translateX(-20px);}
 .receipt-preview hr{border:none;border-top:1px dashed #999;margin:8px 0;}
 .receipt-line{display:flex;justify-content:space-between;font-size:.8rem;margin:2px 0;}
 @media print{
+  @page{margin:0;size:80mm auto;}
+  body{margin:0;}
   body *{visibility:hidden;}
   #receipt-print,#receipt-print *{visibility:visible;}
   #receipt-print{display:block;position:absolute;top:0;inset-inline-end:0;width:80mm;padding:6px;}
@@ -490,6 +492,8 @@ const T = {
     pay_method_cash:'نقدي', pay_method_card:'بطاقة', pay_method_applepay:'آبل باي', pay_method_talabat:'طلبات', pay_method_split:'مقسوم',
     dinein_table:'صالة - طاولة',
     receipt_success_title:'✅ تم الدفع بنجاح', print_btn:'🖨️ طباعة', new_order_btn:'طلب جديد',
+    quick_print_title:'الطباعة السريعة', quick_print_toggle_label:'طباعة الإيصال تلقائيًا فور إتمام الدفع',
+    quick_print_note:'عند التفعيل، تُطبع الفاتورة مباشرة على طابعة الإيصالات دون الحاجة لضغط زر الطباعة يدويًا في كل مرة.',
     orders_title:'الطلبات', filter_today:'اليوم', filter_week:'آخر 7 أيام', filter_all:'الكل', filter_void:'ملغاة',
     orders_search_placeholder:'🔍 ابحث برقم الطلب أو اسم العميل أو الطاولة',
     th_order_no:'#الطلب', th_time:'الوقت', th_type:'النوع', th_items:'الأصناف', th_total:'الإجمالي',
@@ -663,6 +667,8 @@ const T = {
     pay_method_cash:'Cash', pay_method_card:'Card', pay_method_applepay:'Apple Pay', pay_method_talabat:'Talabat', pay_method_split:'Split',
     dinein_table:'Dine-in - Table',
     receipt_success_title:'✅ Payment Successful', print_btn:'🖨️ Print', new_order_btn:'New Order',
+    quick_print_title:'Quick Print', quick_print_toggle_label:'Automatically print the receipt right after payment',
+    quick_print_note:'When enabled, the receipt prints straight to your receipt printer without needing to press the print button each time.',
     orders_title:'Orders', filter_today:'Today', filter_week:'Last 7 days', filter_all:'All', filter_void:'Voided',
     orders_search_placeholder:'🔍 Search by order #, customer name, or table',
     th_order_no:'Order #', th_time:'Time', th_type:'Type', th_items:'Items', th_total:'Total',
@@ -820,6 +826,7 @@ const DEFAULT_DATA = {
     discountPresets:[10, 15, 20, 25, 50],
     globalDiscountEnabled:false, globalDiscountType:'percent', globalDiscountValue:0,
     alertTone:'classic',
+    quickPrintEnabled:false,
     firebaseConfig:DEFAULT_FIREBASE_CONFIG,
     language:'ar',
     currency:'ر.س',
@@ -2240,6 +2247,7 @@ function openReceiptModal(order){
   document.getElementById('mClose').onclick=closeModal;
   document.getElementById('newOrderBtn').onclick=closeModal;
   document.getElementById('printBtn').onclick=()=>printOrder(order);
+  if(state.settings.quickPrintEnabled) printOrder(order);
 }
 function printOrder(order){
   document.getElementById('receipt-print').innerHTML = receiptHtml(order);
@@ -2858,6 +2866,14 @@ service cloud.firestore {
     </div>
   </div>
   <div class="card" style="margin-top:16px;">
+    <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('quick_print_title')}</div>
+    <div class="toggle" style="margin-bottom:10px;">
+      <label class="switch"><input type="checkbox" id="setQuickPrintEnabled" ${S.quickPrintEnabled?'checked':''}><span class="slider"></span></label>
+      <span>${t('quick_print_toggle_label')}</span>
+    </div>
+    <div style="color:var(--muted);font-size:.78rem;">${t('quick_print_note')}</div>
+  </div>
+  <div class="card" style="margin-top:16px;">
     <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('global_discount_title')}</div>
     <div class="toggle" style="margin-bottom:14px;">
       <label class="switch"><input type="checkbox" id="setGlobalDiscountEnabled" ${S.globalDiscountEnabled?'checked':''}><span class="slider"></span></label>
@@ -2929,6 +2945,7 @@ function saveSettingsForm(){
   S.globalDiscountType = activeGdType ? activeGdType.dataset.gdType : 'percent';
   S.globalDiscountValue = parseFloat(document.getElementById('setGlobalDiscountValue').value)||0;
   S.alertTone = document.getElementById('setAlertTone').value || 'classic';
+  S.quickPrintEnabled = document.getElementById('setQuickPrintEnabled').checked;
   S.branchName = document.getElementById('setBranchName').value;
   S.branchLocation = document.getElementById('setBranchLocation').value;
   const newCount = parseInt(document.getElementById('setTables').value)||S.tablesCount;
