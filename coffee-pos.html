@@ -510,6 +510,7 @@ const T = {
     kpi_held_orders:'الطلبات المعلّقة', top_selling_today:'الأكثر مبيعًا اليوم', pcs_unit:'قطعة',
     no_data_yet:'لا توجد بيانات بعد', recent_orders:'آخر الطلبات', no_orders_yet:'لا توجد طلبات بعد',
     from_date:'من تاريخ', to_date:'إلى تاريخ', print_report_btn:'🖨️ طباعة التقرير',
+    daily_summary_title:'ملخص المبيعات اليومي', print_daily_summary_btn:'🖨️ طباعة الملخص اليومي',
     kpi_total_sales:'إجمالي المبيعات', sales_by_category:'المبيعات حسب الفئة', no_data:'لا توجد بيانات',
     sales_by_payment:'المبيعات حسب طريقة الدفع', top_revenue_items:'الأصناف الأكثر تحقيقًا للإيرادات',
     daily_breakdown_title:'تفصيل المبيعات اليومية حسب طريقة الدفع', th_date:'التاريخ',
@@ -694,6 +695,7 @@ const T = {
     kpi_held_orders:'Held Orders', top_selling_today:'Top Selling Today', pcs_unit:'pcs',
     no_data_yet:'No data yet', recent_orders:'Recent Orders', no_orders_yet:'No orders yet',
     from_date:'From date', to_date:'To date', print_report_btn:'🖨️ Print Report',
+    daily_summary_title:'Daily Sales Summary', print_daily_summary_btn:'🖨️ Print Daily Summary',
     kpi_total_sales:'Total Sales', sales_by_category:'Sales by Category', no_data:'No data',
     sales_by_payment:'Sales by Payment Method', top_revenue_items:'Top Revenue-Generating Items',
     daily_breakdown_title:'Daily Sales Breakdown by Payment Method', th_date:'Date',
@@ -2286,27 +2288,29 @@ function openReceiptModal(order){
     <div class="modal-head"><span class="modal-title">${t('receipt_success_title')}</span><button class="modal-close" id="mClose">✕</button></div>
     <div class="modal-body"><div class="receipt-preview">${receiptHtml(order)}</div></div>
     <div class="modal-foot">
-      <button class="btn btn-outline" id="printBtn">${t('print_btn')}</button>
+      <button class="btn btn-outline" id="printBtn80">🖨️ 80mm</button>
+      <button class="btn btn-outline" id="printBtn58">🖨️ 58mm</button>
       <button class="btn btn-accent btn-lg" id="newOrderBtn">${t('new_order_btn')}</button>
     </div>`;
   openModal(html);
   document.getElementById('mClose').onclick=closeModal;
   document.getElementById('newOrderBtn').onclick=closeModal;
-  document.getElementById('printBtn').onclick=()=>printOrder(order);
+  document.getElementById('printBtn80').onclick=()=>printOrder(order,'thermal80');
+  document.getElementById('printBtn58').onclick=()=>printOrder(order,'thermal58');
   if(state.settings.quickPrintEnabled) printOrder(order);
 }
-function printerClass(){
+function printerClass(forcedType){
   const map = {thermal80:'print-thermal-80', thermal58:'print-thermal-58'};
-  return map[state.settings.printerType] || 'print-thermal-80';
+  return map[forcedType] || map[state.settings.printerType] || 'print-thermal-80';
 }
-function printToDoc(html){
+function printToDoc(html, forcedType){
   const el = document.getElementById('receipt-print');
-  el.className = printerClass();
+  el.className = printerClass(forcedType);
   el.innerHTML = html;
   window.print();
 }
-function printOrder(order){
-  printToDoc(receiptHtml(order));
+function printOrder(order, forcedType){
+  printToDoc(receiptHtml(order), forcedType);
 }
 
 /* ============================================================
@@ -2412,6 +2416,10 @@ function renderOverviewReport(){
   const recent = state.orders.slice(0,6);
   return `
     ${lowStock.length?`<div class="alert-banner">⚠️ ${lowStock.length} ${t('low_stock_alert')}: ${lowStock.map(m=>L(m.name)).join(state.settings.language==='en'?', ':'، ')}</div>`:''}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+      <button class="btn btn-outline btn-sm" id="printDailySummary80">${t('print_daily_summary_btn')} 80mm</button>
+      <button class="btn btn-outline btn-sm" id="printDailySummary58">${t('print_daily_summary_btn')} 58mm</button>
+    </div>
     <div class="kpi-grid">
       <div class="kpi-card"><div class="kpi-label">${t('kpi_today_sales')}</div><div class="kpi-value">${fmt(stats.totalSales)}</div></div>
       <div class="kpi-card"><div class="kpi-label">${t('kpi_orders_count')}</div><div class="kpi-value">${stats.count}</div></div>
@@ -2470,7 +2478,8 @@ function renderDetailedReport(){
         <div class="form-row" style="margin:0;"><label>${t('from_date')}</label><input type="date" id="repFrom" value="${window._reportRange.from}"></div>
         <div class="form-row" style="margin:0;"><label>${t('to_date')}</label><input type="date" id="repTo" value="${window._reportRange.to}"></div>
         <button class="btn btn-accent" id="applyRange">${t('apply')}</button>
-        <button class="btn btn-outline" id="printReport">${t('print_report_btn')}</button>
+        <button class="btn btn-outline" id="printReport80">${t('print_report_btn')} 80mm</button>
+        <button class="btn btn-outline" id="printReport58">${t('print_report_btn')} 58mm</button>
       </div>
     </div>
     <div class="kpi-grid">
@@ -2543,6 +2552,27 @@ function printReportHtml(){
     <hr>
     <div style="font-weight:800;font-size:.82rem;margin-bottom:4px;">${t('top_revenue_items')}</div>
     ${topByRevenue.length?topByRevenue.map(([name,d])=>`<div class="receipt-line"><span>${L(name)}</span><span>${fmt(d.revenue)}</span></div>`).join(''):`<div class="receipt-line"><span>${t('no_data')}</span></div>`}
+    <hr>
+    <div class="r-center" style="font-size:.72rem;">${formatDateTime(Date.now())}</div>`;
+}
+function printDailySummaryHtml(){
+  const S = state.settings;
+  const today = state.orders.filter(o=>isSameDay(o.time, Date.now()));
+  const stats = computeStats(today);
+  const payLabels = {cash:payMethodLabel('cash'),card:payMethodLabel('card'),applepay:payMethodLabel('applepay'),talabat:payMethodLabel('talabat'),split:payMethodLabel('split')};
+  const payEntries = Object.entries(stats.byPayment);
+  return `
+    ${S.logoImage?`<div class="r-center"><img src="${S.logoImage}" style="height:44px;width:44px;object-fit:contain;"></div>`:''}
+    <div class="r-center" style="font-weight:800;font-size:1.05rem;">${S.shopName}</div>
+    ${S.branchName?`<div class="r-center" style="font-size:.78rem;font-weight:700;">${L(S.branchName)}</div>`:''}
+    <div class="r-center" style="font-weight:800;font-size:.9rem;margin-top:6px;">${t('daily_summary_title')}</div>
+    <div class="r-center" style="font-size:.75rem;">${formatDateShort(Date.now())}</div>
+    <hr>
+    <div class="receipt-line" style="font-weight:800;font-size:.95rem;"><span>${t('kpi_total_sales')}</span><span>${fmt(stats.totalSales)}</span></div>
+    <div class="receipt-line"><span>${t('kpi_orders_count')}</span><span>${stats.count}</span></div>
+    <hr>
+    <div style="font-weight:800;font-size:.82rem;margin-bottom:4px;">${t('sales_by_payment')}</div>
+    ${payEntries.length?payEntries.map(([k,val])=>`<div class="receipt-line"><span>${payLabels[k]||k}</span><span>${fmt(val)}</span></div>`).join(''):`<div class="receipt-line"><span>${t('no_data')}</span></div>`}
     <hr>
     <div class="r-center" style="font-size:.72rem;">${formatDateTime(Date.now())}</div>`;
 }
@@ -3138,8 +3168,14 @@ function attachViewHandlers(){
     window._reportRange = {from:document.getElementById('repFrom').value, to:document.getElementById('repTo').value};
     renderAll();
   });
-  const printRep = root.querySelector('#printReport');
-  if(printRep) printRep.addEventListener('click', ()=> printToDoc(printReportHtml()));
+  const printRep80 = root.querySelector('#printReport80');
+  if(printRep80) printRep80.addEventListener('click', ()=> printToDoc(printReportHtml(), 'thermal80'));
+  const printRep58 = root.querySelector('#printReport58');
+  if(printRep58) printRep58.addEventListener('click', ()=> printToDoc(printReportHtml(), 'thermal58'));
+  const printDailySum80 = root.querySelector('#printDailySummary80');
+  if(printDailySum80) printDailySum80.addEventListener('click', ()=> printToDoc(printDailySummaryHtml(), 'thermal80'));
+  const printDailySum58 = root.querySelector('#printDailySummary58');
+  if(printDailySum58) printDailySum58.addEventListener('click', ()=> printToDoc(printDailySummaryHtml(), 'thermal58'));
 
   // Menu
   const addCatBtn = root.querySelector('#addCatBtn'); if(addCatBtn) addCatBtn.addEventListener('click', ()=>openCategoryModal());
