@@ -264,10 +264,8 @@ input:checked + .slider::before{transform:translateX(-20px);}
 .receipt-line{display:flex;justify-content:space-between;font-size:.8rem;margin:2px 0;}
 @page thermal80{margin:0;size:80mm auto;}
 @page thermal58{margin:0;size:58mm auto;}
-@page regularA4{margin:10mm;size:A4;}
 #receipt-print.print-thermal-80{page:thermal80;width:80mm;}
 #receipt-print.print-thermal-58{page:thermal58;width:58mm;font-size:.72rem;}
-#receipt-print.print-regular{page:regularA4;width:190mm;font-size:1rem;}
 @media print{
   body{margin:0;}
   body *{visibility:hidden;}
@@ -499,7 +497,7 @@ const T = {
     receipt_success_title:'✅ تم الدفع بنجاح', print_btn:'🖨️ طباعة', new_order_btn:'طلب جديد',
     quick_print_title:'الطباعة السريعة', quick_print_toggle_label:'طباعة الإيصال تلقائيًا فور إتمام الدفع',
     quick_print_note:'عند التفعيل، تُطبع الفاتورة مباشرة على طابعة الإيصالات دون الحاجة لضغط زر الطباعة يدويًا في كل مرة.',
-    printer_type_label:'نوع الطابعة', printer_type_thermal80:'حرارية 80 مم', printer_type_thermal58:'حرارية 58 مم', printer_type_regular:'طابعة عادية (A4)',
+    printer_type_label:'نوع الطابعة', printer_type_thermal80:'حرارية 80 مم', printer_type_thermal58:'حرارية 58 مم',
     printer_type_note:'يحدد هذا حجم الورق عند طباعة الفاتورة وطباعة التقارير (المبيعات اليومية) — اختر النوع المطابق لطابعتك الفعلية.',
     orders_title:'الطلبات', filter_today:'اليوم', filter_week:'آخر 7 أيام', filter_all:'الكل', filter_void:'ملغاة',
     orders_search_placeholder:'🔍 ابحث برقم الطلب أو اسم العميل أو الطاولة',
@@ -536,6 +534,7 @@ const T = {
     settings_title:'الإعدادات', shop_data_title:'بيانات المحل', shop_name_label:'اسم المحل',
     logo_emoji_label:'الشعار (إيموجي)', upload_logo_label:'أو ارفع صورة شعار (يُفضّل شعار بخلفية شفافة)',
     logo_upload_note:'عند رفع صورة، تُستخدم بدل الإيموجي في شاشة الدخول والشريط العلوي والفاتورة.',
+    product_image_label:'صورة المنتج (اختياري)', product_image_note:'عند رفع صورة، تظهر بدل الإيموجي في المنيو ونقطة البيع وصفحة طلب الزبائن.',
     address_label:'العنوان', phone_label:'الهاتف', receipt_footer_label:'نص أسفل الفاتورة',
     financial_settings_title:'إعدادات مالية وتشغيلية', currency_label:'العملة',
     other_currency_option:'أخرى (تحديد يدوي)', custom_currency_label:'رمز العملة المخصص',
@@ -593,7 +592,13 @@ const T = {
     customer_thanks_title:'✅ تم إرسال طلبك!', customer_thanks_sub:'سيتم تحضيره قريبًا، يمكنك المتابعة مع الكاشير',
     customer_order_ref:'رقم الطلب', customer_new_order_btn:'إرسال طلب جديد',
     toast_customer_order_offline:'تعذّر إرسال الطلب، تحقق من الاتصال بالإنترنت وحاول مرة أخرى',
-    toast_customer_order_failed:'حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى'
+    toast_customer_order_failed:'حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى',
+    customer_details_title:'بياناتك', customer_name_label:'الاسم', customer_name_placeholder:'اكتب اسمك',
+    customer_table_label:'رقم الطاولة', customer_table_placeholder:'مثال: 5',
+    customer_phone_label:'رقم الجوال', customer_phone_placeholder:'05xxxxxxxx',
+    customer_notes_label:'ملاحظات (اختياري)', customer_notes_placeholder:'مثال: بدون سكر',
+    toast_fill_required_fields:'الرجاء تعبئة الاسم ورقم الطاولة ورقم الجوال قبل الإرسال',
+    incoming_order_name:'الاسم', incoming_order_table:'الطاولة', incoming_order_phone:'الجوال'
   },
   en:{
     cancel:'Cancel', save:'Save', edit:'Edit', delete:'Delete', apply:'Apply', logout:'Logout',
@@ -676,7 +681,7 @@ const T = {
     receipt_success_title:'✅ Payment Successful', print_btn:'🖨️ Print', new_order_btn:'New Order',
     quick_print_title:'Quick Print', quick_print_toggle_label:'Automatically print the receipt right after payment',
     quick_print_note:'When enabled, the receipt prints straight to your receipt printer without needing to press the print button each time.',
-    printer_type_label:'Printer Type', printer_type_thermal80:'Thermal 80mm', printer_type_thermal58:'Thermal 58mm', printer_type_regular:'Regular Printer (A4)',
+    printer_type_label:'Printer Type', printer_type_thermal80:'Thermal 80mm', printer_type_thermal58:'Thermal 58mm',
     printer_type_note:'This controls the paper size used when printing receipts and reports (daily sales) — pick whichever matches your actual printer.',
     orders_title:'Orders', filter_today:'Today', filter_week:'Last 7 days', filter_all:'All', filter_void:'Voided',
     orders_search_placeholder:'🔍 Search by order #, customer name, or table',
@@ -713,6 +718,7 @@ const T = {
     settings_title:'Settings', shop_data_title:'Shop Info', shop_name_label:'Shop name',
     logo_emoji_label:'Logo (emoji)', upload_logo_label:'Or upload a logo image (transparent background preferred)',
     logo_upload_note:'Once uploaded, the image replaces the emoji on the login screen, top bar, and receipt.',
+    product_image_label:'Product Image (optional)', product_image_note:'Once uploaded, the image replaces the emoji icon in the menu, POS, and the customer order page.',
     address_label:'Address', phone_label:'Phone', receipt_footer_label:'Receipt footer text',
     financial_settings_title:'Financial & Operational Settings', currency_label:'Currency',
     other_currency_option:'Other (manual)', custom_currency_label:'Custom currency symbol',
@@ -770,7 +776,13 @@ const T = {
     customer_thanks_title:'✅ Order Sent!', customer_thanks_sub:'It will be prepared shortly, follow up with the cashier',
     customer_order_ref:'Order Reference', customer_new_order_btn:'Send Another Order',
     toast_customer_order_offline:'Could not send your order, check your internet connection and try again',
-    toast_customer_order_failed:'Something went wrong sending your order, please try again'
+    toast_customer_order_failed:'Something went wrong sending your order, please try again',
+    customer_details_title:'Your Details', customer_name_label:'Name', customer_name_placeholder:'Your name',
+    customer_table_label:'Table Number', customer_table_placeholder:'e.g. 5',
+    customer_phone_label:'Mobile Number', customer_phone_placeholder:'05xxxxxxxx',
+    customer_notes_label:'Notes (optional)', customer_notes_placeholder:'e.g. no sugar',
+    toast_fill_required_fields:'Please fill in your name, table number, and mobile number before submitting',
+    incoming_order_name:'Name', incoming_order_table:'Table', incoming_order_phone:'Mobile'
   }
 };
 function t(key){ const lang=(state&&state.settings&&state.settings.language)||'ar'; return (T[lang]&&T[lang][key]!==undefined)?T[lang][key]:(T.ar[key]||key); }
@@ -1142,7 +1154,8 @@ function receiveIncomingOrder(fid){
   if(!order) return;
   cart = freshCart();
   order.items.forEach(it=>{ cart.items.push(Object.assign({uid:uid()}, it)); });
-  if(order.tableNote) cart.note = order.tableNote;
+  cart.customer = {name: order.customerName||'', phone: order.phone||''};
+  cart.note = [order.table?(t('incoming_order_table')+' '+order.table):'', order.notes].filter(Boolean).join(' · ');
   saveCart();
   fbDb.collection('incomingOrders').doc(fid).update({status:'received'}).catch(()=>{});
   currentView = 'pos';
@@ -1165,9 +1178,12 @@ function renderIncomingOrderCard(o){
   return `
   <div class="kitchen-ticket ${mins>=5?'warn':'ok'}">
     <div class="kitchen-ticket-head">
-      <span class="kitchen-ticket-order">📥</span>
-      <span>${o.tableNote?L(o.tableNote):''}</span>
+      <span class="kitchen-ticket-order">📥 ${o.customerName||''}</span>
+      <span>🍽️ ${o.table||''}</span>
       <span class="kitchen-ticket-time">${mins} ${t('minutes_ago_suffix')}</span>
+    </div>
+    <div class="kitchen-ticket-mods" style="font-size:.78rem;color:var(--muted);">
+      📱 ${o.phone||''}${o.notes?' · '+t('note_prefix')+': '+o.notes:''}
     </div>
     <div class="kitchen-ticket-items">
       ${o.items.map(it=>{
@@ -1192,7 +1208,7 @@ function renderIncomingOrderCard(o){
 /* ============================================================
    CUSTOMER SELF-ORDER PAGE (opened via ?order=1 from the QR code)
    ============================================================ */
-let custCart = { items: [], note: '' };
+let custCart = { items: [], name: '', table: '', phone: '', notes: '' };
 let custCategory = null;
 let custDataReady = false;
 let custOrderConfirmation = null;
@@ -1231,19 +1247,25 @@ function openCustomerProduct(productId){
 }
 function submitCustomerOrder(){
   if(!custCart.items.length || custSubmitting) return;
+  if(!custCart.name.trim() || !custCart.table.trim() || !custCart.phone.trim()){
+    showToast(t('toast_fill_required_fields'));
+    return;
+  }
   if(!(fbDb && fbAuthReady)){ showToast(t('toast_customer_order_offline')); return; }
   custSubmitting = true;
-  const noteEl = document.getElementById('custNoteInput');
   const payload = {
     items: custCart.items.map(it=>({productId:it.productId, name:it.name, icon:it.icon, size:it.size, milk:it.milk, sugar:it.sugar, shots:it.shots, syrup:it.syrup, note:it.note, qty:it.qty, unitPrice:it.unitPrice})),
-    tableNote: noteEl ? noteEl.value.trim() : '',
+    customerName: custCart.name.trim(),
+    table: custCart.table.trim(),
+    phone: custCart.phone.trim(),
+    notes: custCart.notes.trim(),
     status: 'pending',
     createdAt: Date.now()
   };
   fbDb.collection('incomingOrders').add(payload).then(ref=>{
     custSubmitting = false;
     custOrderConfirmation = { ref: ref.id.slice(-5).toUpperCase(), time: payload.createdAt };
-    custCart = { items: [], note: '' };
+    custCart = { items: [], name: '', table: '', phone: '', notes: '' };
     renderCustomerApp();
   }).catch(err=>{
     console.error('submit customer order failed', err);
@@ -1290,10 +1312,14 @@ function renderCustomerApp(){
       </div>
       <div class="cart-items">${custCart.items.length ? custCart.items.map(it=>renderCustCartItem(it)).join('') : `<div class="cart-empty">${t('customer_cart_empty')}</div>`}</div>
       ${custCart.items.length ? `
-      <div class="form-row" style="margin-top:10px;"><input id="custNoteInput" placeholder="${t('customer_note_placeholder')}" value="${custCart.note||''}"></div>
       <div class="cart-summary">
         <div class="sum-row total"><span>${t('total_label')}</span><span>${fmt(custCartSubtotal())}</span></div>
       </div>
+      <div class="modal-section-title" style="margin-top:14px;">${t('customer_details_title')}</div>
+      <div class="form-row"><label>${t('customer_name_label')}</label><input id="custNameInput" placeholder="${t('customer_name_placeholder')}" value="${custCart.name||''}"></div>
+      <div class="form-row"><label>${t('customer_table_label')}</label><input id="custTableInput" placeholder="${t('customer_table_placeholder')}" value="${custCart.table||''}"></div>
+      <div class="form-row"><label>${t('customer_phone_label')}</label><input id="custPhoneInput" type="tel" placeholder="${t('customer_phone_placeholder')}" value="${custCart.phone||''}"></div>
+      <div class="form-row"><label>${t('customer_notes_label')}</label><input id="custNotesInput" placeholder="${t('customer_notes_placeholder')}" value="${custCart.notes||''}"></div>
       <button class="btn btn-accent btn-lg" id="custSubmitBtn" style="width:100%;margin-top:10px;">${t('customer_submit_btn')} · ${fmt(custCartSubtotal())}</button>
       ` : ''}
     </div>`;
@@ -1326,8 +1352,14 @@ function attachCustomerHandlers(){
   root.querySelectorAll('[data-cust-remove]').forEach(b=>b.addEventListener('click', ()=>removeCustCartItem(b.dataset.custRemove)));
   const submitBtn = root.querySelector('#custSubmitBtn');
   if(submitBtn) submitBtn.addEventListener('click', submitCustomerOrder);
-  const noteInput = root.querySelector('#custNoteInput');
-  if(noteInput) noteInput.addEventListener('input', e=>{ custCart.note = e.target.value; });
+  const nameInput = root.querySelector('#custNameInput');
+  if(nameInput) nameInput.addEventListener('input', e=>{ custCart.name = e.target.value; });
+  const tableInput = root.querySelector('#custTableInput');
+  if(tableInput) tableInput.addEventListener('input', e=>{ custCart.table = e.target.value; });
+  const phoneInput = root.querySelector('#custPhoneInput');
+  if(phoneInput) phoneInput.addEventListener('input', e=>{ custCart.phone = e.target.value; });
+  const notesInput = root.querySelector('#custNotesInput');
+  if(notesInput) notesInput.addEventListener('input', e=>{ custCart.notes = e.target.value; });
 }
 
 /* current session */
@@ -1597,11 +1629,15 @@ function renderPOS(){
     </aside>
   </div>`;
 }
+function productIconMarkup(p){
+  if(p.image) return `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" alt="">`;
+  return p.icon;
+}
 function renderProductCards(products){
   if(!products.length) return `<div class="cart-empty">${t('no_matching_items')}</div>`;
   return products.map(p=>`
     <button class="product-card ${!p.available?'unavailable':''}" data-product="${p.id}" data-unavail="${t('unavailable_overlay')}" ${!p.available?'disabled':''}>
-      <div class="product-ic">${p.icon}</div>
+      <div class="product-ic">${productIconMarkup(p)}</div>
       <div class="product-name">${L(p.name)}</div>
       <div class="product-price">${fmt(p.price)}</div>
     </button>`).join('');
@@ -1628,7 +1664,7 @@ function renderCartPanel(){
         ${cart.orderType==='delivery' ? `<button class="btn btn-sm btn-outline" id="custBtn">👤 ${cart.customer.name||t('customer_info_btn')}</button>`:''}
         ${cart.items.length ? `<button class="btn btn-sm btn-outline" id="clearCartBtn">${t('clear_btn')}</button>`:''}
       </div>
-      ${cart.note ? `<div class="table-badge" style="margin-top:8px;">📥 ${t('incoming_order_table_note')}: ${cart.note}</div>` : ''}
+      ${cart.customer && cart.customer.name ? `<div class="table-badge" style="margin-top:8px;">📥 ${cart.customer.name}${cart.customer.phone?' · '+cart.customer.phone:''}${cart.note?' · '+cart.note:''}</div>` : ''}
     </div>
     <div class="cart-items">${itemsHtml}</div>
     <div class="cart-summary">
@@ -2260,7 +2296,7 @@ function openReceiptModal(order){
   if(state.settings.quickPrintEnabled) printOrder(order);
 }
 function printerClass(){
-  const map = {thermal80:'print-thermal-80', thermal58:'print-thermal-58', regular:'print-regular'};
+  const map = {thermal80:'print-thermal-80', thermal58:'print-thermal-58'};
   return map[state.settings.printerType] || 'print-thermal-80';
 }
 function printToDoc(html){
@@ -2536,7 +2572,7 @@ function renderMenu(){
       <div class="product-grid">
         ${state.products.filter(p=>p.cat===c.id).map(p=>`
           <div class="product-card" data-edit-prod="${p.id}" style="cursor:pointer;">
-            <div class="product-ic">${p.icon}</div>
+            <div class="product-ic">${productIconMarkup(p)}</div>
             <div class="product-name">${L(p.name)}</div>
             <div class="product-price">${fmt(p.price)}</div>
             <span class="tag ${p.available?'ok':'bad'}" style="position:absolute;top:8px;inset-inline-end:8px;">${p.available?t('avail_yes'):t('avail_no')}</span>
@@ -2546,7 +2582,7 @@ function renderMenu(){
 }
 function openProductModal(product){
   const isNew = !product;
-  const p = product ? clone(product) : {id:uid(), cat:state.categories[0].id, name:'', price:0, icon:'☕', available:true, recipe:[]};
+  const p = product ? clone(product) : {id:uid(), cat:state.categories[0].id, name:'', price:0, icon:'☕', image:'', available:true, recipe:[]};
   function html(){
     return `
     <div class="modal-head"><span class="modal-title">${isNew?t('product_new_title'):t('product_edit_title')}</span><button class="modal-close" id="mClose">✕</button></div>
@@ -2557,6 +2593,15 @@ function openProductModal(product){
         <div class="form-row"><label>${t('base_price_label')}</label><input type="number" id="pPrice" value="${p.price}"></div>
         <div class="form-row"><label>${t('category_label')}</label><select id="pCat">${state.categories.map(c=>`<option value="${c.id}" ${c.id===p.cat?'selected':''}>${L(c.name)}</option>`).join('')}</select></div>
       </div>
+      <div class="form-row">
+        <label>${t('product_image_label')}</label>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <img src="${p.image||''}" class="logo-upload-preview" style="${p.image?'':'display:none;'}" id="prodImagePreview">
+          <input type="file" accept="image/*" id="pImageFile" style="flex:1;">
+          ${p.image?`<button type="button" class="btn btn-sm btn-outline" id="removeProdImageBtn">${t('delete')}</button>`:''}
+        </div>
+        <div style="color:var(--muted);font-size:.75rem;margin-top:4px;">${t('product_image_note')}</div>
+      </div>
       <div class="toggle" style="margin-bottom:14px;">
         <label class="switch"><input type="checkbox" id="pAvail" ${p.available?'checked':''}><span class="slider"></span></label>
         <span>${t('available_in_menu')}</span>
@@ -2566,23 +2611,51 @@ function openProductModal(product){
     <div class="modal-foot"><button class="btn btn-accent btn-lg" id="saveProd">${t('save')}</button></div>`;
   }
   openModal(html());
-  document.getElementById('mClose').onclick=closeModal;
-  document.getElementById('saveProd').onclick=()=>{
-    p.name = document.getElementById('pName').value.trim() || t('default_unnamed_item');
-    p.icon = document.getElementById('pIcon').value.trim() || '☕';
-    p.price = parseFloat(document.getElementById('pPrice').value)||0;
-    p.cat = document.getElementById('pCat').value;
-    p.available = document.getElementById('pAvail').checked;
-    if(isNew) state.products.push(p);
-    else Object.assign(state.products.find(x=>x.id===p.id), p);
-    save(); closeModal(); renderAll();
-    showToast(t('toast_saved'));
-  };
-  const delBtn = document.getElementById('delProd');
-  if(delBtn) delBtn.onclick=()=>{
-    state.products = state.products.filter(x=>x.id!==p.id);
-    save(); closeModal(); renderAll();
-  };
+  bindModal();
+  function bindModal(){
+    document.getElementById('mClose').onclick=closeModal;
+    document.getElementById('saveProd').onclick=()=>{
+      p.name = document.getElementById('pName').value.trim() || t('default_unnamed_item');
+      p.icon = document.getElementById('pIcon').value.trim() || '☕';
+      p.price = parseFloat(document.getElementById('pPrice').value)||0;
+      p.cat = document.getElementById('pCat').value;
+      p.available = document.getElementById('pAvail').checked;
+      if(isNew) state.products.push(p);
+      else Object.assign(state.products.find(x=>x.id===p.id), p);
+      save(); closeModal(); renderAll();
+      showToast(t('toast_saved'));
+    };
+    document.getElementById('pImageFile').addEventListener('change', e=>{
+      const file = e.target.files[0]; if(!file) return;
+      if(!file.type.startsWith('image/')){ showToast(t('toast_pick_image')); return; }
+      const reader = new FileReader();
+      reader.onload = ev=>{
+        const img = new Image();
+        img.onload = ()=>{
+          const maxDim = 160;
+          let w=img.width, h=img.height;
+          if(w>maxDim || h>maxDim){
+            if(w>=h){ h=Math.round(h*maxDim/w); w=maxDim; }
+            else { w=Math.round(w*maxDim/h); h=maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width=w; canvas.height=h;
+          canvas.getContext('2d').drawImage(img,0,0,w,h);
+          p.image = canvas.toDataURL('image/jpeg', 0.7);
+          openModal(html()); bindModal();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    const removeImgBtn = document.getElementById('removeProdImageBtn');
+    if(removeImgBtn) removeImgBtn.onclick=()=>{ p.image=''; openModal(html()); bindModal(); };
+    const delBtn = document.getElementById('delProd');
+    if(delBtn) delBtn.onclick=()=>{
+      state.products = state.products.filter(x=>x.id!==p.id);
+      save(); closeModal(); renderAll();
+    };
+  }
 }
 function openCategoryModal(cat){
   const isNew = !cat;
@@ -2889,9 +2962,8 @@ service cloud.firestore {
     <div class="form-row">
       <label>${t('printer_type_label')}</label>
       <select id="setPrinterType">
-        <option value="thermal80" ${(S.printerType||'thermal80')==='thermal80'?'selected':''}>${t('printer_type_thermal80')}</option>
+        <option value="thermal80" ${(S.printerType||'thermal80')!=='thermal58'?'selected':''}>${t('printer_type_thermal80')}</option>
         <option value="thermal58" ${S.printerType==='thermal58'?'selected':''}>${t('printer_type_thermal58')}</option>
-        <option value="regular" ${S.printerType==='regular'?'selected':''}>${t('printer_type_regular')}</option>
       </select>
     </div>
     <div style="color:var(--muted);font-size:.78rem;margin-bottom:14px;">${t('printer_type_note')}</div>
@@ -3159,7 +3231,7 @@ function attachViewHandlers(){
     const src = canvas ? canvas.toDataURL('image/png') : (img ? img.src : '');
     if(!src){ showToast(t('customer_offline_note')); return; }
     const el = document.getElementById('receipt-print');
-    el.className = 'print-regular';
+    el.className = printerClass();
     el.innerHTML = `
       <div style="text-align:center;padding:20px;">
         ${state.settings.logoImage?`<img src="${state.settings.logoImage}" style="height:50px;">`:''}
