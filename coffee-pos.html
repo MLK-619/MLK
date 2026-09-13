@@ -262,12 +262,17 @@ input:checked + .slider::before{transform:translateX(-20px);}
 .receipt-preview .r-center{text-align:center;}
 .receipt-preview hr{border:none;border-top:1px dashed #999;margin:8px 0;}
 .receipt-line{display:flex;justify-content:space-between;font-size:.8rem;margin:2px 0;}
+@page thermal80{margin:0;size:80mm auto;}
+@page thermal58{margin:0;size:58mm auto;}
+@page regularA4{margin:10mm;size:A4;}
+#receipt-print.print-thermal-80{page:thermal80;width:80mm;}
+#receipt-print.print-thermal-58{page:thermal58;width:58mm;font-size:.72rem;}
+#receipt-print.print-regular{page:regularA4;width:190mm;font-size:1rem;}
 @media print{
-  @page{margin:0;size:80mm auto;}
   body{margin:0;}
   body *{visibility:hidden;}
   #receipt-print,#receipt-print *{visibility:visible;}
-  #receipt-print{display:block;position:absolute;top:0;inset-inline-end:0;width:80mm;padding:6px;}
+  #receipt-print{display:block;position:absolute;top:0;inset-inline-end:0;padding:6px;}
 }
 
 /* ===== Kitchen display ===== */
@@ -494,6 +499,8 @@ const T = {
     receipt_success_title:'✅ تم الدفع بنجاح', print_btn:'🖨️ طباعة', new_order_btn:'طلب جديد',
     quick_print_title:'الطباعة السريعة', quick_print_toggle_label:'طباعة الإيصال تلقائيًا فور إتمام الدفع',
     quick_print_note:'عند التفعيل، تُطبع الفاتورة مباشرة على طابعة الإيصالات دون الحاجة لضغط زر الطباعة يدويًا في كل مرة.',
+    printer_type_label:'نوع الطابعة', printer_type_thermal80:'حرارية 80 مم', printer_type_thermal58:'حرارية 58 مم', printer_type_regular:'طابعة عادية (A4)',
+    printer_type_note:'يحدد هذا حجم الورق عند طباعة الفاتورة وطباعة التقارير (المبيعات اليومية) — اختر النوع المطابق لطابعتك الفعلية.',
     orders_title:'الطلبات', filter_today:'اليوم', filter_week:'آخر 7 أيام', filter_all:'الكل', filter_void:'ملغاة',
     orders_search_placeholder:'🔍 ابحث برقم الطلب أو اسم العميل أو الطاولة',
     th_order_no:'#الطلب', th_time:'الوقت', th_type:'النوع', th_items:'الأصناف', th_total:'الإجمالي',
@@ -669,6 +676,8 @@ const T = {
     receipt_success_title:'✅ Payment Successful', print_btn:'🖨️ Print', new_order_btn:'New Order',
     quick_print_title:'Quick Print', quick_print_toggle_label:'Automatically print the receipt right after payment',
     quick_print_note:'When enabled, the receipt prints straight to your receipt printer without needing to press the print button each time.',
+    printer_type_label:'Printer Type', printer_type_thermal80:'Thermal 80mm', printer_type_thermal58:'Thermal 58mm', printer_type_regular:'Regular Printer (A4)',
+    printer_type_note:'This controls the paper size used when printing receipts and reports (daily sales) — pick whichever matches your actual printer.',
     orders_title:'Orders', filter_today:'Today', filter_week:'Last 7 days', filter_all:'All', filter_void:'Voided',
     orders_search_placeholder:'🔍 Search by order #, customer name, or table',
     th_order_no:'Order #', th_time:'Time', th_type:'Type', th_items:'Items', th_total:'Total',
@@ -827,6 +836,7 @@ const DEFAULT_DATA = {
     globalDiscountEnabled:false, globalDiscountType:'percent', globalDiscountValue:0,
     alertTone:'classic',
     quickPrintEnabled:false,
+    printerType:'thermal80',
     firebaseConfig:DEFAULT_FIREBASE_CONFIG,
     language:'ar',
     currency:'ر.س',
@@ -2249,9 +2259,18 @@ function openReceiptModal(order){
   document.getElementById('printBtn').onclick=()=>printOrder(order);
   if(state.settings.quickPrintEnabled) printOrder(order);
 }
-function printOrder(order){
-  document.getElementById('receipt-print').innerHTML = receiptHtml(order);
+function printerClass(){
+  const map = {thermal80:'print-thermal-80', thermal58:'print-thermal-58', regular:'print-regular'};
+  return map[state.settings.printerType] || 'print-thermal-80';
+}
+function printToDoc(html){
+  const el = document.getElementById('receipt-print');
+  el.className = printerClass();
+  el.innerHTML = html;
   window.print();
+}
+function printOrder(order){
+  printToDoc(receiptHtml(order));
 }
 
 /* ============================================================
@@ -2867,6 +2886,15 @@ service cloud.firestore {
   </div>
   <div class="card" style="margin-top:16px;">
     <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('quick_print_title')}</div>
+    <div class="form-row">
+      <label>${t('printer_type_label')}</label>
+      <select id="setPrinterType">
+        <option value="thermal80" ${(S.printerType||'thermal80')==='thermal80'?'selected':''}>${t('printer_type_thermal80')}</option>
+        <option value="thermal58" ${S.printerType==='thermal58'?'selected':''}>${t('printer_type_thermal58')}</option>
+        <option value="regular" ${S.printerType==='regular'?'selected':''}>${t('printer_type_regular')}</option>
+      </select>
+    </div>
+    <div style="color:var(--muted);font-size:.78rem;margin-bottom:14px;">${t('printer_type_note')}</div>
     <div class="toggle" style="margin-bottom:10px;">
       <label class="switch"><input type="checkbox" id="setQuickPrintEnabled" ${S.quickPrintEnabled?'checked':''}><span class="slider"></span></label>
       <span>${t('quick_print_toggle_label')}</span>
@@ -2946,6 +2974,7 @@ function saveSettingsForm(){
   S.globalDiscountValue = parseFloat(document.getElementById('setGlobalDiscountValue').value)||0;
   S.alertTone = document.getElementById('setAlertTone').value || 'classic';
   S.quickPrintEnabled = document.getElementById('setQuickPrintEnabled').checked;
+  S.printerType = document.getElementById('setPrinterType').value || 'thermal80';
   S.branchName = document.getElementById('setBranchName').value;
   S.branchLocation = document.getElementById('setBranchLocation').value;
   const newCount = parseInt(document.getElementById('setTables').value)||S.tablesCount;
@@ -3038,10 +3067,7 @@ function attachViewHandlers(){
     renderAll();
   });
   const printRep = root.querySelector('#printReport');
-  if(printRep) printRep.addEventListener('click', ()=>{
-    document.getElementById('receipt-print').innerHTML = printReportHtml();
-    window.print();
-  });
+  if(printRep) printRep.addEventListener('click', ()=> printToDoc(printReportHtml()));
 
   // Menu
   const addCatBtn = root.querySelector('#addCatBtn'); if(addCatBtn) addCatBtn.addEventListener('click', ()=>openCategoryModal());
@@ -3132,7 +3158,9 @@ function attachViewHandlers(){
     const img = box && box.querySelector('img');
     const src = canvas ? canvas.toDataURL('image/png') : (img ? img.src : '');
     if(!src){ showToast(t('customer_offline_note')); return; }
-    document.getElementById('receipt-print').innerHTML = `
+    const el = document.getElementById('receipt-print');
+    el.className = 'print-regular';
+    el.innerHTML = `
       <div style="text-align:center;padding:20px;">
         ${state.settings.logoImage?`<img src="${state.settings.logoImage}" style="height:50px;">`:''}
         <div style="font-weight:800;font-size:1.1rem;margin:8px 0;">${state.settings.shopName}</div>
