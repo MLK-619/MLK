@@ -393,6 +393,30 @@
     .toolbar{flex-direction:column;align-items:stretch;}
     .toolbar-right{justify-content:stretch;}
     .toolbar-right button, .toolbar-right select{flex:1;}
+
+    /* جداول الإدخال تتحول إلى بطاقات عمودية على الهاتف بدل السحب الأفقي */
+    table.cards-mobile{border-collapse:separate;border-spacing:0;}
+    table.cards-mobile thead{display:none;}
+    table.cards-mobile, table.cards-mobile tbody, table.cards-mobile tr{display:block;width:100%;}
+    table.cards-mobile tr{
+      background:var(--card2);border:1px solid var(--border);border-radius:12px;
+      padding:10px 12px;margin-bottom:12px;
+    }
+    table.cards-mobile tr:last-child{margin-bottom:0;}
+    table.cards-mobile td{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:7px 2px;border:none;border-bottom:1px dashed var(--border);
+      text-align:end;font-size:.85rem;
+    }
+    table.cards-mobile td:last-child{border-bottom:none;}
+    table.cards-mobile td[data-label]::before{
+      content:attr(data-label);font-size:.72rem;color:var(--muted);font-weight:700;
+      flex:none;text-align:start;
+    }
+    table.cards-mobile td:not([data-label]):empty{display:none;}
+    table.cards-mobile td input, table.cards-mobile td select{width:auto;max-width:62%;flex:1;}
+    table.cards-mobile td .row-total{min-width:0;}
+    .table-scroll:has(table.cards-mobile)::after{display:none;}
   }
 
   @media print{
@@ -567,7 +591,7 @@
           </div></div>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:16%" data-i18n="thBranchName">اسم الفرع</th>
                 <th style="width:14%" data-i18n="thLocation">الموقع</th>
@@ -604,7 +628,7 @@
             <div class="section">
               <h2><span class="icon">👥</span> <span data-i18n="subtabSalaries">الرواتب</span> <span class="badge">Salaries</span></h2>
               <div class="table-scroll">
-              <table>
+              <table class="cards-mobile">
                 <thead><tr>
                   <th style="width:4%">#</th>
                   <th style="width:14%" data-i18n="thEmployee">الموظف</th>
@@ -630,7 +654,7 @@
             <div class="section">
               <h2><span class="icon">🏢</span> <span data-i18n="subtabRents">الإيجارات</span> <span class="badge">Rents</span></h2>
               <div class="table-scroll">
-              <table>
+              <table class="cards-mobile">
                 <thead><tr>
                   <th style="width:26%" data-i18n="thBranch">الفرع</th>
                   <th style="width:20%" data-i18n="thMonthlyRent">الإيجار الشهري</th>
@@ -649,7 +673,7 @@
             <div class="section">
               <h2><span class="icon">🛒</span> <span data-i18n="subtabPurchases">المشتريات</span> <span class="badge">Purchases</span></h2>
               <div class="table-scroll">
-              <table>
+              <table class="cards-mobile">
                 <thead><tr>
                   <th style="width:4%">#</th>
                   <th style="width:16%" data-i18n="thItemName">اسم الصنف</th>
@@ -675,7 +699,7 @@
             <div class="section">
               <h2><span class="icon">🔌</span> <span data-i18n="subtabOther">مصاريف أخرى</span> <span class="badge">Other</span></h2>
               <div class="table-scroll">
-              <table>
+              <table class="cards-mobile">
                 <thead><tr>
                   <th style="width:4%">#</th>
                   <th style="width:15%" data-i18n="thCategory">البند</th>
@@ -700,7 +724,7 @@
             <div class="section">
               <h2><span class="icon">🏠</span> <span data-i18n="subtabHousingRent">إيجار السكن</span> <span class="badge">Housing Rent</span></h2>
               <div class="table-scroll">
-              <table>
+              <table class="cards-mobile">
                 <thead><tr>
                   <th style="width:4%">#</th>
                   <th style="width:16%" data-i18n="thCategory">البند</th>
@@ -731,7 +755,7 @@
           <p class="subtitle" data-i18n="cashPurchasesSubtitle">تسجيل المشتريات النقدية لكل فرع — لا تُحتسب ضمن التكاليف التشغيلية</p>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:19%" data-i18n="thItemName">اسم الصنف</th>
                 <th style="width:16%" data-i18n="thBranch">الفرع</th>
@@ -756,7 +780,7 @@
           <p class="subtitle" data-i18n="capitalSubtitle">المبالغ اللي جُمعت لتمويل المحل (للمالك فقط)</p>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:20%" data-i18n="thAmount">المبلغ</th>
                 <th style="width:20%" data-i18n="thBranch">الفرع</th>
@@ -779,7 +803,7 @@
           <p class="subtitle" id="stock-subtitle">يمكن لأي مستخدم إضافة وتعديل المواد والكمية والتاريخ</p>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:18%" data-i18n="thMaterialName">اسم المادة</th>
                 <th style="width:14%" data-i18n="thBranch">الفرع</th>
@@ -808,7 +832,7 @@
           </div>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:24%" data-i18n="thMaterialName">اسم المادة</th>
                 <th style="width:13%" data-i18n="thQuantity">الكمية المتوفرة</th>
@@ -831,7 +855,7 @@
           <div id="sales-month-nav"></div>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:8%" data-i18n="thEntryType">نوع الإدخال</th>
                 <th style="width:9%" data-i18n="thSaleDate">التاريخ</th>
@@ -878,7 +902,7 @@
           <p class="subtitle" data-i18n="systemSalesSubtitle">رقم مرجعي يُدخل يدوياً من نظام الكاشير/الجهاز لكل فرع، لأغراض المقارنة في التقرير فقط — لا يُحتسب ضمن التكاليف أو المبيعات الفعلية ولا يؤثر على أي حسابات.</p>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:10%" data-i18n="thBranch">الفرع</th>
                 <th style="width:9%" data-i18n="thDate">التاريخ</th>
@@ -973,7 +997,7 @@
           </div>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:13%" data-i18n="thCompanyName">اسم الشركة</th>
                 <th style="width:10%" data-i18n="thContact">رقم التواصل</th>
@@ -1195,7 +1219,7 @@
           </div></div>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:20%" data-i18n="thTime">الوقت</th>
                 <th style="width:16%" data-i18n="thUser">المستخدم</th>
@@ -1217,7 +1241,7 @@
           </div></div>
           <div class="section">
             <div class="table-scroll">
-            <table>
+            <table class="cards-mobile">
               <thead><tr>
                 <th style="width:14%" data-i18n="labelUsername">اسم المستخدم</th>
                 <th style="width:14%" data-i18n="labelPassword">كلمة المرور</th>
@@ -2676,18 +2700,18 @@ function renderBranches(){
     const sales = totalSales(b.id, 'all');
     const expenses = totalExpenses(b.id);
     return `<tr data-id="${b.id}">
-      <td><input type="text" value="${escapeHtml(b.name)}" placeholder="${t('placeholderBranchName')}" oninput="updateBranch('${b.id}','name',this.value)" ${perms.editBranches?'':'readonly'}></td>
-      <td><input type="text" value="${escapeHtml(b.location)}" placeholder="${t('placeholderLocation')}" oninput="updateBranch('${b.id}','location',this.value)" ${perms.editBranches?'':'readonly'}></td>
-      <td><input type="text" value="${escapeHtml(b.type)}" placeholder="${t('placeholderActivityType')}" oninput="updateBranch('${b.id}','type',this.value)" ${perms.editBranches?'':'readonly'}></td>
-      <td><input type="number" min="0" value="${b.employees}" oninput="updateBranch('${b.id}','employees',this.value)" ${perms.editBranches?'':'readonly'}></td>
-      <td><input type="number" min="0" step="any" value="${b.rent}" oninput="updateBranch('${b.id}','rent',this.value); refreshBranchRow('${b.id}');" ${perms.editBranches?'':'readonly'}></td>
-      <td>
+      <td data-label="${t('thBranchName')}"><input type="text" value="${escapeHtml(b.name)}" placeholder="${t('placeholderBranchName')}" oninput="updateBranch('${b.id}','name',this.value)" ${perms.editBranches?'':'readonly'}></td>
+      <td data-label="${t('thLocation')}"><input type="text" value="${escapeHtml(b.location)}" placeholder="${t('placeholderLocation')}" oninput="updateBranch('${b.id}','location',this.value)" ${perms.editBranches?'':'readonly'}></td>
+      <td data-label="${t('thActivityType')}"><input type="text" value="${escapeHtml(b.type)}" placeholder="${t('placeholderActivityType')}" oninput="updateBranch('${b.id}','type',this.value)" ${perms.editBranches?'':'readonly'}></td>
+      <td data-label="${t('thEmployees')}"><input type="number" min="0" value="${b.employees}" oninput="updateBranch('${b.id}','employees',this.value)" ${perms.editBranches?'':'readonly'}></td>
+      <td data-label="${t('thMonthlyRent')}"><input type="number" min="0" step="any" value="${b.rent}" oninput="updateBranch('${b.id}','rent',this.value); refreshBranchRow('${b.id}');" ${perms.editBranches?'':'readonly'}></td>
+      <td data-label="${t('thStatus')}">
         <select onchange="updateBranch('${b.id}','status',this.value);" ${perms.editBranches?'':'disabled'}>
           ${BRANCH_STATUS_KEYS.map(k=>`<option value="${k}" ${b.status===k?'selected':''}>${statusLabel(k)}</option>`).join('')}
         </select>
       </td>
-      <td class="row-total branch-sales-cell">${formatCurrency(sales)}</td>
-      <td class="row-total branch-expenses-cell" style="color:${expenses>sales?'var(--danger)':'var(--accent)'}">${formatCurrency(expenses)}</td>
+      <td data-label="${t('thSales')}" class="row-total branch-sales-cell">${formatCurrency(sales)}</td>
+      <td data-label="${t('thExpenses')}" class="row-total branch-expenses-cell" style="color:${expenses>sales?'var(--danger)':'var(--accent)'}">${formatCurrency(expenses)}</td>
       <td><button class="del-btn" ${perms.editBranches?'':'disabled'} onclick="removeBranch('${b.id}')">✕</button></td>
     </tr>`;
   }).join('');
@@ -2763,14 +2787,14 @@ function renderSalaries(){
   const rows = (scope ? state.salaries.filter(s=>s.branchId===scope) : state.salaries).filter(s=>matchesPeriod(s.date,'month'));
   document.getElementById('salaries-body').innerHTML = rows.map((s,i) => `
     <tr data-id="${s.id}">
-      <td class="row-num">${i+1}</td>
-      <td><input type="text" value="${escapeHtml(s.employee)}" placeholder="${t('thEmployee')}" oninput="updateSalary('${s.id}','employee',this.value)"></td>
-      <td><select onchange="updateSalary('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
-      <td><input type="date" value="${s.date||''}" onchange="updateSalary('${s.id}','date',this.value)"></td>
-      <td><input type="number" min="0" step="any" value="${s.base}" oninput="updateSalary('${s.id}','base',this.value); renderSalariesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${s.allowance}" oninput="updateSalary('${s.id}','allowance',this.value); renderSalariesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${s.advance}" oninput="updateSalary('${s.id}','advance',this.value); renderSalariesTotals();"></td>
-      <td class="row-total">${formatCurrency(salaryTotal(s))}</td>
+      <td class="row-num" data-label="#">${i+1}</td>
+      <td data-label="${t('thEmployee')}"><input type="text" value="${escapeHtml(s.employee)}" placeholder="${t('thEmployee')}" oninput="updateSalary('${s.id}','employee',this.value)"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateSalary('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
+      <td data-label="${t('thDate')}"><input type="date" value="${s.date||''}" onchange="updateSalary('${s.id}','date',this.value)"></td>
+      <td data-label="${t('thBaseSalary')}"><input type="number" min="0" step="any" value="${s.base}" oninput="updateSalary('${s.id}','base',this.value); renderSalariesTotals();"></td>
+      <td data-label="${t('thAllowances')}"><input type="number" min="0" step="any" value="${s.allowance}" oninput="updateSalary('${s.id}','allowance',this.value); renderSalariesTotals();"></td>
+      <td data-label="${t('thAdvances')}"><input type="number" min="0" step="any" value="${s.advance}" oninput="updateSalary('${s.id}','advance',this.value); renderSalariesTotals();"></td>
+      <td data-label="${t('thTotal')}" class="row-total">${formatCurrency(salaryTotal(s))}</td>
       <td>
         <button class="copy-btn" title="${t('btnCopyToMonth')}" onclick="copyEntryToMonth('salaries','${s.id}','renderSalaries')">📋</button>
         <button class="del-btn" onclick="removeSalary('${s.id}')">✕</button>
@@ -2803,10 +2827,10 @@ function renderRents(){
   document.getElementById('rents-body').innerHTML = branches.map(b => {
     const rd = state.rentDue[b.id] || {dueDate:'', paid:'unpaid'};
     return `<tr>
-      <td>${escapeHtml(b.name)||'—'}</td>
-      <td class="row-total">${formatCurrency(num(b.rent))}</td>
-      <td><input type="date" value="${rd.dueDate}" onchange="updateRentDue('${b.id}','dueDate',this.value)"></td>
-      <td><select onchange="updateRentDue('${b.id}','paid',this.value)">
+      <td data-label="${t('thBranch')}">${escapeHtml(b.name)||'—'}</td>
+      <td data-label="${t('thMonthlyRent')}" class="row-total">${formatCurrency(num(b.rent))}</td>
+      <td data-label="${t('thDueDate')}"><input type="date" value="${rd.dueDate}" onchange="updateRentDue('${b.id}','dueDate',this.value)"></td>
+      <td data-label="${t('thPaymentStatus')}"><select onchange="updateRentDue('${b.id}','paid',this.value)">
         <option value="unpaid" ${rd.paid==='unpaid'?'selected':''}>${t('paidUnpaid')}</option>
         <option value="paid" ${rd.paid==='paid'?'selected':''}>${t('paidPaid')}</option>
       </select></td>
@@ -2840,14 +2864,14 @@ function renderPurchases(){
   const rows = (scope ? state.purchases.filter(p=>p.branchId===scope) : state.purchases).filter(p=>matchesPeriod(p.date,'month'));
   document.getElementById('purchases-body').innerHTML = rows.map((p,i) => `
     <tr data-id="${p.id}">
-      <td class="row-num">${i+1}</td>
-      <td><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updatePurchase('${p.id}','item',this.value)"></td>
-      <td><select onchange="updatePurchase('${p.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(p.branchId)}</select></td>
-      <td><input type="date" value="${p.date||''}" onchange="updatePurchase('${p.id}','date',this.value)"></td>
-      <td><input type="text" value="${escapeHtml(p.company)}" placeholder="${t('placeholderCompanyName')}" oninput="updatePurchase('${p.id}','company',this.value)"></td>
-      <td><input type="number" min="0" step="any" value="${p.price}" oninput="updatePurchase('${p.id}','price',this.value); renderPurchasesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${p.qty}" oninput="updatePurchase('${p.id}','qty',this.value); renderPurchasesTotals();"></td>
-      <td class="row-total">${formatCurrency(purchaseTotal(p))}</td>
+      <td class="row-num" data-label="#">${i+1}</td>
+      <td data-label="${t('thItemName')}"><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updatePurchase('${p.id}','item',this.value)"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updatePurchase('${p.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(p.branchId)}</select></td>
+      <td data-label="${t('thDate')}"><input type="date" value="${p.date||''}" onchange="updatePurchase('${p.id}','date',this.value)"></td>
+      <td data-label="${t('thCompanyName')}"><input type="text" value="${escapeHtml(p.company)}" placeholder="${t('placeholderCompanyName')}" oninput="updatePurchase('${p.id}','company',this.value)"></td>
+      <td data-label="${t('thUnitPrice')}"><input type="number" min="0" step="any" value="${p.price}" oninput="updatePurchase('${p.id}','price',this.value); renderPurchasesTotals();"></td>
+      <td data-label="${t('thQty')}"><input type="number" min="0" step="any" value="${p.qty}" oninput="updatePurchase('${p.id}','qty',this.value); renderPurchasesTotals();"></td>
+      <td data-label="${t('thTotal')}" class="row-total">${formatCurrency(purchaseTotal(p))}</td>
       <td>
         <button class="copy-btn" title="${t('btnCopyToMonth')}" onclick="copyEntryToMonth('purchases','${p.id}','renderPurchases')">📋</button>
         <button class="del-btn" onclick="removePurchase('${p.id}')">✕</button>
@@ -2893,12 +2917,12 @@ function renderCashPurchases(){
   const rows = scope ? state.cashPurchases.filter(p=>p.branchId===scope) : state.cashPurchases;
   document.getElementById('cash-purchases-body').innerHTML = rows.map(p => `
     <tr data-id="${p.id}">
-      <td><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updateCashPurchase('${p.id}','item',this.value)"></td>
-      <td><select onchange="updateCashPurchase('${p.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(p.branchId)}</select></td>
-      <td><input type="date" value="${p.date||''}" onchange="updateCashPurchase('${p.id}','date',this.value)"></td>
-      <td><input type="number" min="0" step="any" value="${p.price}" oninput="updateCashPurchase('${p.id}','price',this.value); renderCashPurchasesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${p.qty}" oninput="updateCashPurchase('${p.id}','qty',this.value); renderCashPurchasesTotals();"></td>
-      <td class="row-total">${formatCurrency(purchaseTotal(p))}</td>
+      <td data-label="${t('thItemName')}"><input type="text" value="${escapeHtml(p.item)}" placeholder="${t('placeholderItemName')}" oninput="updateCashPurchase('${p.id}','item',this.value)"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateCashPurchase('${p.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(p.branchId)}</select></td>
+      <td data-label="${t('thDate')}"><input type="date" value="${p.date||''}" onchange="updateCashPurchase('${p.id}','date',this.value)"></td>
+      <td data-label="${t('thUnitPrice')}"><input type="number" min="0" step="any" value="${p.price}" oninput="updateCashPurchase('${p.id}','price',this.value); renderCashPurchasesTotals();"></td>
+      <td data-label="${t('thQty')}"><input type="number" min="0" step="any" value="${p.qty}" oninput="updateCashPurchase('${p.id}','qty',this.value); renderCashPurchasesTotals();"></td>
+      <td data-label="${t('thTotal')}" class="row-total">${formatCurrency(purchaseTotal(p))}</td>
       <td><button class="del-btn" onclick="removeCashPurchase('${p.id}')">✕</button></td>
     </tr>`).join('');
   renderCashPurchasesTotals();
@@ -2940,10 +2964,10 @@ function renderCapital(){
   const rows = scope ? state.capital.filter(c=>c.branchId===scope) : state.capital;
   document.getElementById('capital-body').innerHTML = rows.map(c => `
     <tr data-id="${c.id}">
-      <td><input type="number" min="0" step="any" value="${c.amount}" oninput="updateCapital('${c.id}','amount',this.value); renderCapitalTotal();"></td>
-      <td><select onchange="updateCapital('${c.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(c.branchId)}</select></td>
-      <td><input type="date" value="${c.date||''}" onchange="updateCapital('${c.id}','date',this.value)"></td>
-      <td><input type="text" value="${escapeHtml(c.note)}" placeholder="${t('thNote')}" oninput="updateCapital('${c.id}','note',this.value)"></td>
+      <td data-label="${t('thAmount')}"><input type="number" min="0" step="any" value="${c.amount}" oninput="updateCapital('${c.id}','amount',this.value); renderCapitalTotal();"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateCapital('${c.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(c.branchId)}</select></td>
+      <td data-label="${t('thDate')}"><input type="date" value="${c.date||''}" onchange="updateCapital('${c.id}','date',this.value)"></td>
+      <td data-label="${t('thNote')}"><input type="text" value="${escapeHtml(c.note)}" placeholder="${t('thNote')}" oninput="updateCapital('${c.id}','note',this.value)"></td>
       <td><button class="del-btn" onclick="removeCapital('${c.id}')">✕</button></td>
     </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted);">${t('noData')}</td></tr>`;
   renderCapitalTotal();
@@ -2983,17 +3007,17 @@ function renderSystemSales(){
   const rows = scope ? state.systemSales.filter(s=>s.branchId===scope) : state.systemSales;
   document.getElementById('system-sales-body').innerHTML = rows.map(s => `
     <tr data-id="${s.id}">
-      <td><select onchange="updateSystemSales('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
-      <td><input type="date" value="${s.date||''}" onchange="updateSystemSales('${s.id}','date',this.value)"></td>
-      <td><input type="number" min="0" step="any" value="${s.cash}" oninput="updateSystemSales('${s.id}','cash',this.value); renderSystemSalesTotal();"></td>
-      <td><input type="number" min="0" step="any" value="${s.visa}" oninput="updateSystemSales('${s.id}','visa',this.value); renderSystemSalesTotal();"></td>
-      <td><input type="number" min="0" step="any" value="${s.talabat}" oninput="updateSystemSales('${s.id}','talabat',this.value); renderSystemSalesTotal();"></td>
-      <td><input type="number" min="0" step="any" value="${s.zad}" oninput="updateSystemSales('${s.id}','zad',this.value); renderSystemSalesTotal();"></td>
-      <td><input type="number" min="0" step="any" value="${s.snoonu}" oninput="updateSystemSales('${s.id}','snoonu',this.value); renderSystemSalesTotal();"></td>
-      <td><input type="number" min="0" step="any" value="${s.tmdone}" oninput="updateSystemSales('${s.id}','tmdone',this.value); renderSystemSalesTotal();"></td>
-      <td><input type="number" min="0" step="any" value="${s.other}" oninput="updateSystemSales('${s.id}','other',this.value); renderSystemSalesTotal();"></td>
-      <td class="row-total">${formatCurrency(systemSaleTotal(s))}</td>
-      <td><input type="text" value="${escapeHtml(s.note)}" placeholder="${t('thNote')}" oninput="updateSystemSales('${s.id}','note',this.value)"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateSystemSales('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
+      <td data-label="${t('thDate')}"><input type="date" value="${s.date||''}" onchange="updateSystemSales('${s.id}','date',this.value)"></td>
+      <td data-label="${t('thCash')}"><input type="number" min="0" step="any" value="${s.cash}" oninput="updateSystemSales('${s.id}','cash',this.value); renderSystemSalesTotal();"></td>
+      <td data-label="${t('thVisa')}"><input type="number" min="0" step="any" value="${s.visa}" oninput="updateSystemSales('${s.id}','visa',this.value); renderSystemSalesTotal();"></td>
+      <td data-label="${t('thTalabat')}"><input type="number" min="0" step="any" value="${s.talabat}" oninput="updateSystemSales('${s.id}','talabat',this.value); renderSystemSalesTotal();"></td>
+      <td data-label="${t('thZad')}"><input type="number" min="0" step="any" value="${s.zad}" oninput="updateSystemSales('${s.id}','zad',this.value); renderSystemSalesTotal();"></td>
+      <td data-label="${t('thSnoonu')}"><input type="number" min="0" step="any" value="${s.snoonu}" oninput="updateSystemSales('${s.id}','snoonu',this.value); renderSystemSalesTotal();"></td>
+      <td data-label="${t('thTmdone')}"><input type="number" min="0" step="any" value="${s.tmdone}" oninput="updateSystemSales('${s.id}','tmdone',this.value); renderSystemSalesTotal();"></td>
+      <td data-label="${t('thOther')}"><input type="number" min="0" step="any" value="${s.other}" oninput="updateSystemSales('${s.id}','other',this.value); renderSystemSalesTotal();"></td>
+      <td data-label="${t('thTotal')}" class="row-total">${formatCurrency(systemSaleTotal(s))}</td>
+      <td data-label="${t('thNote')}"><input type="text" value="${escapeHtml(s.note)}" placeholder="${t('thNote')}" oninput="updateSystemSales('${s.id}','note',this.value)"></td>
       <td><button class="del-btn" onclick="removeSystemSales('${s.id}')">✕</button></td>
     </tr>`).join('') || `<tr><td colspan="12" style="color:var(--muted);">${t('noData')}</td></tr>`;
   renderSystemSalesTotal();
@@ -3035,13 +3059,13 @@ function renderOtherExpenses(){
   const rows = (scope ? state.otherExpenses.filter(o=>o.branchId===scope) : state.otherExpenses).filter(o=>matchesPeriod(o.date,'month'));
   document.getElementById('other-body').innerHTML = rows.map((o,i) => `
     <tr data-id="${o.id}">
-      <td class="row-num">${i+1}</td>
-      <td><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.concat(state.settings.customExpenseCategories).map(c=>`<option value="${escapeHtml(c)}" ${o.category===c?'selected':''}>${escapeHtml(categoryLabel(c))}</option>`).join('')}</select></td>
-      <td><select onchange="updateOtherExpense('${o.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(o.branchId)}</select></td>
-      <td><input type="date" value="${o.date||''}" onchange="updateOtherExpense('${o.id}','date',this.value)"></td>
-      <td><input type="number" min="0" step="any" value="${o.qty ?? 1}" oninput="updateOtherExpense('${o.id}','qty',this.value); renderOtherTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${o.unitPrice ?? 0}" oninput="updateOtherExpense('${o.id}','unitPrice',this.value); renderOtherTotals();"></td>
-      <td class="row-total">${formatCurrency(otherExpenseTotal(o))}</td>
+      <td class="row-num" data-label="#">${i+1}</td>
+      <td data-label="${t('thCategory')}"><select onchange="updateOtherExpense('${o.id}','category',this.value)">${EXPENSE_CATEGORIES.concat(state.settings.customExpenseCategories).map(c=>`<option value="${escapeHtml(c)}" ${o.category===c?'selected':''}>${escapeHtml(categoryLabel(c))}</option>`).join('')}</select></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateOtherExpense('${o.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(o.branchId)}</select></td>
+      <td data-label="${t('thDate')}"><input type="date" value="${o.date||''}" onchange="updateOtherExpense('${o.id}','date',this.value)"></td>
+      <td data-label="${t('thQty')}"><input type="number" min="0" step="any" value="${o.qty ?? 1}" oninput="updateOtherExpense('${o.id}','qty',this.value); renderOtherTotals();"></td>
+      <td data-label="${t('thUnitPrice')}"><input type="number" min="0" step="any" value="${o.unitPrice ?? 0}" oninput="updateOtherExpense('${o.id}','unitPrice',this.value); renderOtherTotals();"></td>
+      <td data-label="${t('thTotal')}" class="row-total">${formatCurrency(otherExpenseTotal(o))}</td>
       <td>
         <button class="copy-btn" title="${t('btnCopyToMonth')}" onclick="copyEntryToMonth('otherExpenses','${o.id}','renderOtherExpenses')">📋</button>
         <button class="del-btn" onclick="removeOtherExpense('${o.id}')">✕</button>
@@ -3090,12 +3114,12 @@ function renderHousingRent(){
   const rows = (scope ? state.housingRent.filter(h=>h.branchId===scope) : state.housingRent).filter(h=>matchesPeriod(h.date,'month'));
   document.getElementById('housing-rent-body').innerHTML = rows.map((h,i) => `
     <tr data-id="${h.id}">
-      <td class="row-num">${i+1}</td>
-      <td><select onchange="updateHousingRent('${h.id}','category',this.value)">${HOUSING_RENT_CATEGORIES.concat(state.settings.customHousingRentCategories).map(c=>`<option value="${escapeHtml(c)}" ${(h.category||'housingRent')===c?'selected':''}>${escapeHtml(housingRentCategoryLabel(c))}</option>`).join('')}</select></td>
-      <td><input type="number" min="0" step="any" value="${h.amount}" oninput="updateHousingRent('${h.id}','amount',this.value); renderHousingRentTotals();"></td>
-      <td><select onchange="updateHousingRent('${h.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(h.branchId)}</select></td>
-      <td><input type="date" value="${h.date||''}" onchange="updateHousingRent('${h.id}','date',this.value)"></td>
-      <td><input type="text" value="${escapeHtml(h.note)}" placeholder="${t('thNote')}" oninput="updateHousingRent('${h.id}','note',this.value)"></td>
+      <td class="row-num" data-label="#">${i+1}</td>
+      <td data-label="${t('thCategory')}"><select onchange="updateHousingRent('${h.id}','category',this.value)">${HOUSING_RENT_CATEGORIES.concat(state.settings.customHousingRentCategories).map(c=>`<option value="${escapeHtml(c)}" ${(h.category||'housingRent')===c?'selected':''}>${escapeHtml(housingRentCategoryLabel(c))}</option>`).join('')}</select></td>
+      <td data-label="${t('thAmount')}"><input type="number" min="0" step="any" value="${h.amount}" oninput="updateHousingRent('${h.id}','amount',this.value); renderHousingRentTotals();"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateHousingRent('${h.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(h.branchId)}</select></td>
+      <td data-label="${t('thDate')}"><input type="date" value="${h.date||''}" onchange="updateHousingRent('${h.id}','date',this.value)"></td>
+      <td data-label="${t('thNote')}"><input type="text" value="${escapeHtml(h.note)}" placeholder="${t('thNote')}" oninput="updateHousingRent('${h.id}','note',this.value)"></td>
       <td>
         <button class="copy-btn" title="${t('btnCopyToMonth')}" onclick="copyEntryToMonth('housingRent','${h.id}','renderHousingRent')">📋</button>
         <button class="del-btn" onclick="removeHousingRent('${h.id}')">✕</button>
@@ -3156,15 +3180,15 @@ function renderStock(){
   const rows = state.stock.filter(i => (i.brand || 'aventus') === BRAND).filter(i => !scope || i.branchId===scope);
   document.getElementById('stock-body').innerHTML = rows.map(i => `
     <tr data-id="${i.id}">
-      <td><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateStockItem('${i.id}','name',this.value)"></td>
-      <td><select onchange="updateStockItem('${i.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(i.branchId)}</select></td>
-      <td><input type="number" min="0" step="any" value="${i.quantity}" oninput="updateStockItem('${i.id}','quantity',this.value)"></td>
-      <td style="display:flex;gap:6px;">
+      <td data-label="${t('thMaterialName')}"><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateStockItem('${i.id}','name',this.value)"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateStockItem('${i.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(i.branchId)}</select></td>
+      <td data-label="${t('thQuantity')}"><input type="number" min="0" step="any" value="${i.quantity}" oninput="updateStockItem('${i.id}','quantity',this.value)"></td>
+      <td data-label="${t('thDispense')}" style="display:flex;gap:6px;">
         <input type="number" class="stock-dispense-input" min="0" step="any" placeholder="0" style="min-width:70px;">
         <button onclick="dispenseStockItem('${i.id}')">${t('btnDispense')}</button>
       </td>
-      <td><input type="date" value="${i.date}" onchange="updateStockItem('${i.id}','date',this.value)"></td>
-      <td>${i.lastUpdated ? escapeHtml(new Date(i.lastUpdated).toLocaleString(LANG === 'ar' ? 'ar-OM' : 'en-GB')) : t('noLastUpdate')}</td>
+      <td data-label="${t('thDate')}"><input type="date" value="${i.date}" onchange="updateStockItem('${i.id}','date',this.value)"></td>
+      <td data-label="${t('thLastUpdated')}">${i.lastUpdated ? escapeHtml(new Date(i.lastUpdated).toLocaleString(LANG === 'ar' ? 'ar-OM' : 'en-GB')) : t('noLastUpdate')}</td>
       <td><button class="del-btn" onclick="removeStockItem('${i.id}')">✕</button></td>
     </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted);">${t('noData')}</td></tr>`;
   renderAddBranchPicker('stock-branch-picker', 'stock');
@@ -3212,14 +3236,14 @@ function renderMainStore(){
   renderMainStoreLogo();
   document.getElementById('main-store-body').innerHTML = state.mainStore.map(i => `
     <tr data-id="${i.id}">
-      <td><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateMainStoreItem('${i.id}','name',this.value)"></td>
-      <td><input type="number" min="0" step="any" value="${i.quantity}" oninput="updateMainStoreItem('${i.id}','quantity',this.value)"></td>
-      <td style="display:flex;gap:6px;">
+      <td data-label="${t('thMaterialName')}"><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateMainStoreItem('${i.id}','name',this.value)"></td>
+      <td data-label="${t('thQuantity')}"><input type="number" min="0" step="any" value="${i.quantity}" oninput="updateMainStoreItem('${i.id}','quantity',this.value)"></td>
+      <td data-label="${t('thDispense')}" style="display:flex;gap:6px;">
         <input type="number" class="stock-dispense-input" min="0" step="any" placeholder="0" style="min-width:70px;">
         <button onclick="dispenseMainStoreItem('${i.id}')">${t('btnDispense')}</button>
       </td>
-      <td><input type="date" value="${i.date}" onchange="updateMainStoreItem('${i.id}','date',this.value)"></td>
-      <td>${i.lastUpdated ? escapeHtml(new Date(i.lastUpdated).toLocaleString(LANG === 'ar' ? 'ar-OM' : 'en-GB')) : t('noLastUpdate')}</td>
+      <td data-label="${t('thDate')}"><input type="date" value="${i.date}" onchange="updateMainStoreItem('${i.id}','date',this.value)"></td>
+      <td data-label="${t('thLastUpdated')}">${i.lastUpdated ? escapeHtml(new Date(i.lastUpdated).toLocaleString(LANG === 'ar' ? 'ar-OM' : 'en-GB')) : t('noLastUpdate')}</td>
       <td><button class="del-btn" onclick="removeMainStoreItem('${i.id}')">✕</button></td>
     </tr>`).join('') || `<tr><td colspan="6" style="color:var(--muted);">${t('noData')}</td></tr>`;
 }
@@ -3268,20 +3292,20 @@ function renderSales(){
     const entryType = s.entryType || 'monthly';
     return `
     <tr data-id="${s.id}">
-      <td><select onchange="setSaleEntryType('${s.id}', this.value)">
+      <td data-label="${t('thEntryType')}"><select onchange="setSaleEntryType('${s.id}', this.value)">
         <option value="monthly" ${entryType==='monthly'?'selected':''}>${t('optionMonthly')}</option>
         <option value="daily" ${entryType==='daily'?'selected':''}>${t('optionDaily')}</option>
       </select></td>
-      <td><input type="${entryType==='daily'?'date':'month'}" value="${s.date}" onchange="updateSale('${s.id}','date',this.value)"></td>
-      <td><select onchange="updateSale('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
-      <td><input type="number" min="0" step="any" value="${s.cash}" oninput="updateSale('${s.id}','cash',this.value); renderSalesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${s.visa}" oninput="updateSale('${s.id}','visa',this.value); renderSalesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${s.talabat}" oninput="updateSale('${s.id}','talabat',this.value); renderSalesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${s.zad}" oninput="updateSale('${s.id}','zad',this.value); renderSalesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${s.snoonu ?? 0}" oninput="updateSale('${s.id}','snoonu',this.value); renderSalesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${s.tmdone ?? 0}" oninput="updateSale('${s.id}','tmdone',this.value); renderSalesTotals();"></td>
-      <td><input type="number" min="0" step="any" value="${s.other}" oninput="updateSale('${s.id}','other',this.value); renderSalesTotals();"></td>
-      <td class="row-total">${formatCurrency(saleTotal(s))}</td>
+      <td data-label="${t('thSaleDate')}"><input type="${entryType==='daily'?'date':'month'}" value="${s.date}" onchange="updateSale('${s.id}','date',this.value)"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateSale('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
+      <td data-label="${t('thCash')}"><input type="number" min="0" step="any" value="${s.cash}" oninput="updateSale('${s.id}','cash',this.value); renderSalesTotals();"></td>
+      <td data-label="${t('thVisa')}"><input type="number" min="0" step="any" value="${s.visa}" oninput="updateSale('${s.id}','visa',this.value); renderSalesTotals();"></td>
+      <td data-label="${t('thTalabat')}"><input type="number" min="0" step="any" value="${s.talabat}" oninput="updateSale('${s.id}','talabat',this.value); renderSalesTotals();"></td>
+      <td data-label="${t('thZad')}"><input type="number" min="0" step="any" value="${s.zad}" oninput="updateSale('${s.id}','zad',this.value); renderSalesTotals();"></td>
+      <td data-label="${t('thSnoonu')}"><input type="number" min="0" step="any" value="${s.snoonu ?? 0}" oninput="updateSale('${s.id}','snoonu',this.value); renderSalesTotals();"></td>
+      <td data-label="${t('thTmdone')}"><input type="number" min="0" step="any" value="${s.tmdone ?? 0}" oninput="updateSale('${s.id}','tmdone',this.value); renderSalesTotals();"></td>
+      <td data-label="${t('thOther')}"><input type="number" min="0" step="any" value="${s.other}" oninput="updateSale('${s.id}','other',this.value); renderSalesTotals();"></td>
+      <td data-label="${t('thTotal')}" class="row-total">${formatCurrency(saleTotal(s))}</td>
       <td><button class="del-btn" onclick="removeSale('${s.id}')">✕</button></td>
     </tr>`;
   }).join('');
@@ -3417,16 +3441,16 @@ function renderSuppliers(){
     const remaining = num(s.invoiceValue) - num(s.paid);
     const status = supplierStatus(s);
     return `<tr data-id="${s.id}">
-      <td><input type="text" value="${escapeHtml(s.company)}" placeholder="${t('placeholderCompany')}" oninput="updateSupplier('${s.id}','company',this.value)"></td>
-      <td><input type="tel" value="${escapeHtml(s.contact)}" placeholder="${t('placeholderContact')}" oninput="updateSupplier('${s.id}','contact',this.value)"></td>
-      <td><input type="text" value="${escapeHtml(s.materialType)}" placeholder="${t('placeholderMaterialType')}" oninput="updateSupplier('${s.id}','materialType',this.value)"></td>
-      <td><select onchange="updateSupplier('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
-      <td><input type="number" min="0" step="any" value="${s.invoiceValue}" oninput="updateSupplier('${s.id}','invoiceValue',this.value); refreshSupplierRow('${s.id}');"></td>
-      <td><input type="number" min="0" step="any" value="${s.paid}" oninput="updateSupplier('${s.id}','paid',this.value); refreshSupplierRow('${s.id}');"></td>
-      <td class="row-total supplier-remaining-cell" style="color:${remaining>0?'var(--danger)':'var(--accent)'}">${formatCurrency(remaining)}</td>
-      <td><input type="date" value="${s.dueDate}" onchange="updateSupplier('${s.id}','dueDate',this.value); refreshSupplierRow('${s.id}');"></td>
-      <td class="supplier-status-cell">${badge(status.label, status.type)}</td>
-      <td style="text-align:center;"><input type="checkbox" style="width:auto;" ${s.dailyPurchases?'checked':''} onchange="toggleSupplierDaily('${s.id}', this.checked)" title="${t('thDailyPurchases')}"></td>
+      <td data-label="${t('thCompanyName')}"><input type="text" value="${escapeHtml(s.company)}" placeholder="${t('placeholderCompany')}" oninput="updateSupplier('${s.id}','company',this.value)"></td>
+      <td data-label="${t('thContact')}"><input type="tel" value="${escapeHtml(s.contact)}" placeholder="${t('placeholderContact')}" oninput="updateSupplier('${s.id}','contact',this.value)"></td>
+      <td data-label="${t('thMaterialType')}"><input type="text" value="${escapeHtml(s.materialType)}" placeholder="${t('placeholderMaterialType')}" oninput="updateSupplier('${s.id}','materialType',this.value)"></td>
+      <td data-label="${t('thBranch')}"><select onchange="updateSupplier('${s.id}','branchId',this.value)" ${scope?'disabled':''}>${branchOptions(s.branchId)}</select></td>
+      <td data-label="${t('thInvoiceValue')}"><input type="number" min="0" step="any" value="${s.invoiceValue}" oninput="updateSupplier('${s.id}','invoiceValue',this.value); refreshSupplierRow('${s.id}');"></td>
+      <td data-label="${t('thPaid')}"><input type="number" min="0" step="any" value="${s.paid}" oninput="updateSupplier('${s.id}','paid',this.value); refreshSupplierRow('${s.id}');"></td>
+      <td data-label="${t('thRemaining')}" class="row-total supplier-remaining-cell" style="color:${remaining>0?'var(--danger)':'var(--accent)'}">${formatCurrency(remaining)}</td>
+      <td data-label="${t('thDueDate')}"><input type="date" value="${s.dueDate}" onchange="updateSupplier('${s.id}','dueDate',this.value); refreshSupplierRow('${s.id}');"></td>
+      <td data-label="${t('thStatusShort')}" class="supplier-status-cell">${badge(status.label, status.type)}</td>
+      <td data-label="${t('thDailyPurchases')}" style="text-align:center;"><input type="checkbox" style="width:auto;" ${s.dailyPurchases?'checked':''} onchange="toggleSupplierDaily('${s.id}', this.checked)" title="${t('thDailyPurchases')}"></td>
       <td><button class="del-btn" ${perms.deleteInvoice?'':'disabled title="'+t('titleOwnerOnly')+'"'} onclick="removeSupplier('${s.id}')">✕</button></td>
     </tr>`;
   }).join('');
@@ -3682,7 +3706,7 @@ function clearAuditLog(){
 }
 function renderAuditLog(){
   document.getElementById('auditlog-body').innerHTML = state.auditLog.map(l => `
-    <tr><td>${escapeHtml(l.time)}</td><td>${escapeHtml(l.user)}</td><td>${escapeHtml(roleLabel(l.role))}</td><td>${escapeHtml(t(l.key))}</td></tr>
+    <tr><td data-label="${t('thTime')}">${escapeHtml(l.time)}</td><td data-label="${t('thUser')}">${escapeHtml(l.user)}</td><td data-label="${t('thRoleCol')}">${escapeHtml(roleLabel(l.role))}</td><td data-label="${t('thOperation')}">${escapeHtml(t(l.key))}</td></tr>
   `).join('') || `<tr><td colspan="4" style="color:var(--muted);">${t('noLogsYet')}</td></tr>`;
 }
 
@@ -3741,18 +3765,18 @@ function removeUser(id){
 function renderUsers(){
   document.getElementById('users-body').innerHTML = state.users.map(u => `
     <tr data-id="${u.id}">
-      <td><input type="text" class="user-username-input" value="${escapeHtml(u.username)}" placeholder="${t('labelUsername')}"></td>
-      <td><input type="text" class="user-password-input" value="${escapeHtml(u.password)}" placeholder="${t('labelPassword')}"></td>
-      <td><select onchange="updateUser('${u.id}','role',this.value)">
+      <td data-label="${t('labelUsername')}"><input type="text" class="user-username-input" value="${escapeHtml(u.username)}" placeholder="${t('labelUsername')}"></td>
+      <td data-label="${t('labelPassword')}"><input type="text" class="user-password-input" value="${escapeHtml(u.password)}" placeholder="${t('labelPassword')}"></td>
+      <td data-label="${t('labelRole')}"><select onchange="updateUser('${u.id}','role',this.value)">
         ${['owner','manager','accountant','staff','operationsManager','viewer'].map(r=>`<option value="${r}" ${u.role===r?'selected':''}>${t('role'+r.charAt(0).toUpperCase()+r.slice(1))}</option>`).join('')}
       </select></td>
-      <td><select onchange="updateUser('${u.id}','branchId',this.value)">${branchOptionsWithAll(u.branchId)}</select></td>
-      <td><select onchange="updateUser('${u.id}','brand',this.value)">
+      <td data-label="${t('labelLoginBranch')}"><select onchange="updateUser('${u.id}','branchId',this.value)">${branchOptionsWithAll(u.branchId)}</select></td>
+      <td data-label="${t('labelAllowedBrand')}"><select onchange="updateUser('${u.id}','brand',this.value)">
         <option value="" ${!u.brand?'selected':''}>${t('brandAny')}</option>
         <option value="aventus" ${u.brand==='aventus'?'selected':''}>Aventus</option>
         <option value="chickenville" ${u.brand==='chickenville'?'selected':''}>Chicken Ville</option>
       </select></td>
-      <td>${u.locked ? badge(t('accountLocked'),'critical') : badge(t('accountActive'),'good')}</td>
+      <td data-label="${t('thAccountStatus')}">${u.locked ? badge(t('accountLocked'),'critical') : badge(t('accountActive'),'good')}</td>
       <td>
         <button onclick="saveUserRow('${u.id}')">${t('btnSaveUser')}</button>
         ${u.locked ? `<button onclick="unlockUser('${u.id}')">${t('btnUnlockUser')}</button>` : ''}
