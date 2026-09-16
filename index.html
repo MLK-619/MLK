@@ -799,8 +799,13 @@
 
         <!-- ============ المخزن الرئيسي ============ -->
         <section class="view" id="view-mainStore">
-          <h1 class="page-title" data-i18n="mainStoreTitle">المخزن الرئيسي</h1>
-          <p class="subtitle" data-i18n="mainStoreSubtitle">المخزون المركزي لكل المواد قبل توزيعها على الفروع — متاح لمدير العمليات والمالك فقط</p>
+          <div class="report-header-logo">
+            <div class="report-logo-mark main-store-logo-mark" id="main-store-logo-mark"></div>
+            <div>
+              <h1 class="page-title" data-i18n="mainStoreTitle">المخزن الرئيسي</h1>
+              <p class="subtitle" data-i18n="mainStoreSubtitle">المخزون المركزي لكل المواد قبل توزيعها على الفروع — متاح لمدير العمليات والمالك فقط</p>
+            </div>
+          </div>
           <div class="section">
             <div class="table-scroll">
             <table>
@@ -1249,6 +1254,19 @@
           </div>
 
           <div class="section">
+            <h2><span class="icon">🏢</span> <span data-i18n="moreGeneralLogoTitle">الشعار العام</span></h2>
+            <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreGeneralLogoDesc">شعار مستقل عن أفنتوس وتشكن فل، يظهر في صفحة المخزن الرئيسي فقط.</p>
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+              <div class="report-logo-mark main-store-logo-mark" id="general-logo-preview"></div>
+              <label class="add-btn" style="display:inline-block;cursor:pointer;">
+                <span data-i18n="btnUploadLogo">⬆️ رفع شعار جديد</span>
+                <input type="file" accept="image/*" onchange="uploadGeneralLogo(this.files[0])" style="display:none;">
+              </label>
+              <button class="clear-btn" onclick="resetGeneralLogo()" data-i18n="btnResetLogo">↩️ استعادة الشعار الافتراضي</button>
+            </div>
+          </div>
+
+          <div class="section">
             <h2><span class="icon">🎨</span> <span data-i18n="moreThemeTitle">ألوان الثيم</span></h2>
             <p class="subtitle" style="margin-bottom:14px;" data-i18n="moreThemeDesc">غيّر اللون الأساسي ولون التدرج لهذا البراند.</p>
             <div style="display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;">
@@ -1526,6 +1544,7 @@ const I18N = {
     moreSearchTitle:'بحث شامل', moreSearchPh:'ابحث بالاسم في الفروع، الموردين، المخزون، المشتريات...',
     moreLogoTitle:'شعار العلامة التجارية', moreLogoDesc:'غيّر الشعار الذي يظهر في شاشة الدخول، الشريط الجانبي، وأعلى صفحة التقارير.',
     moreLogoBrandNote:'الشعار الحالي لِـ:',
+    moreGeneralLogoTitle:'الشعار العام', moreGeneralLogoDesc:'شعار مستقل عن أفنتوس وتشكن فل، يظهر في صفحة المخزن الرئيسي فقط.',
     btnUploadLogo:'⬆️ رفع شعار جديد', btnResetLogo:'↩️ استعادة الشعار الافتراضي',
     moreThemeTitle:'ألوان الثيم', moreThemeDesc:'غيّر اللون الأساسي ولون التدرج لهذا البراند.',
     moreOrderTitle:'ترتيب أقسام التقرير والتكاليف التشغيلية',
@@ -1718,6 +1737,7 @@ const I18N = {
     moreSearchTitle:'Global Search', moreSearchPh:'Search by name across branches, suppliers, inventory, purchases...',
     moreLogoTitle:'Brand Logo', moreLogoDesc:'Change the logo shown on the login screen, the sidebar, and at the top of the Reports page.',
     moreLogoBrandNote:'Currently editing logo for:',
+    moreGeneralLogoTitle:'General Logo', moreGeneralLogoDesc:'A logo independent of Aventus and Chicken Ville, shown only on the Main Store page.',
     btnUploadLogo:'⬆️ Upload New Logo', btnResetLogo:'↩️ Restore Default Logo',
     moreThemeTitle:'Theme Colors', moreThemeDesc:'Change the accent and gradient colors for this brand.',
     moreOrderTitle:'Report & Operating Costs Section Order',
@@ -1878,7 +1898,7 @@ const PERMS = {
   manager:    {nav:['dashboard','branches','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],                   costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false},
   accountant: {nav:['dashboard','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],                              costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false},
   staff:      {nav:['sales','cashPurchases','stock'],                                                                                  costSubtabs:[],                                       deleteInvoice:false, editBranches:false},
-  operationsManager: {nav:['mainStore'],                                                                                               costSubtabs:[],                                       deleteInvoice:false, editBranches:false},
+  operationsManager: {nav:['dashboard','mainStore'],                                                                                    costSubtabs:[],                                       deleteInvoice:false, editBranches:false},
   viewer:     {nav:['dashboard','branches','costs','cashPurchases','stock','sales','systemSales','profit','suppliers','reports'],   costSubtabs:['salaries','rents','purchases','other','housingRent'], deleteInvoice:false, editBranches:false, readOnly:true},
 };
 function activeBranchId(){ return (session && session.branchId) || null; }
@@ -2040,7 +2060,7 @@ function defaultState(){
     sales: [],
     settings: {
       visaPct: 1.5, talabatPct: 20, zadPct: 15, snoonuPct: 0, tmdonePct: 0, discounts: 0,
-      customLogo: { aventus: null, chickenville: null }, customTheme: { aventus: {}, chickenville: {} },
+      customLogo: { aventus: null, chickenville: null, general: null }, customTheme: { aventus: {}, chickenville: {} },
       reportOrder: ['systemSales','annual','branchSales','paymentMethods','expenses','profit','rents','housingRent','purchases','other','suppliers','notes'],
       costsOrder: ['salaries','rents','purchases','other','housingRent'],
       customExpenseCategories: [],
@@ -2061,6 +2081,7 @@ function normalizeSettings(settings){
   if(typeof settings.customLogo === 'string' || !settings.customLogo){
     settings.customLogo = { aventus: (typeof settings.customLogo === 'string' ? settings.customLogo : null), chickenville: null };
   }
+  if(settings.customLogo.general === undefined) settings.customLogo.general = null;
   settings.customTheme = settings.customTheme || {};
   settings.customTheme.aventus = settings.customTheme.aventus || {};
   settings.customTheme.chickenville = settings.customTheme.chickenville || {};
@@ -3188,6 +3209,7 @@ function removeMainStoreItem(id){
   renderMainStore();
 }
 function renderMainStore(){
+  renderMainStoreLogo();
   document.getElementById('main-store-body').innerHTML = state.mainStore.map(i => `
     <tr data-id="${i.id}">
       <td><input type="text" value="${escapeHtml(i.name)}" placeholder="${t('placeholderMaterialName')}" oninput="updateMainStoreItem('${i.id}','name',this.value)"></td>
@@ -3837,6 +3859,7 @@ function renderMore(){
   document.getElementById('global-search-input').value = '';
   document.getElementById('global-search-results').innerHTML = '';
   renderReportLogo();
+  renderMainStoreLogo();
   renderThemeColorInputs();
   renderCloudBackupsList();
   renderReportOrderSettings();
@@ -3866,6 +3889,14 @@ const DEFAULT_REPORT_LOGOS = {
   <circle cx="104" cy="80" r="3" fill="#1e3a8a"/>
   <text x="100" y="128" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="17" letter-spacing="1.5" font-weight="bold">CHICKEN</text>
   <text x="100" y="146" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="17" letter-spacing="1.5" font-weight="bold">VILLE</text>
+</svg>`,
+  general: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="96" fill="#374151" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+  <rect x="62" y="86" width="76" height="48" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <path d="M56 90 L100 58 L144 90" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="90" y="104" width="20" height="30" fill="#ffffff"/>
+  <text x="100" y="156" text-anchor="middle" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="14" letter-spacing="1.5" font-weight="bold">AL MUZN</text>
 </svg>`,
 };
 function renderReportLogo(){
@@ -3905,6 +3936,37 @@ function resetReportLogo(){
   saveState();
   renderReportLogo();
   applyBrandDisplay();
+  logAction('logChangeLogo');
+}
+
+function renderMainStoreLogo(){
+  const custom = state.settings.customLogo && state.settings.customLogo.general;
+  const html = custom
+    ? `<img src="${custom}" alt="logo" style="width:100%;height:100%;object-fit:cover;">`
+    : DEFAULT_REPORT_LOGOS.general;
+  document.querySelectorAll('.main-store-logo-mark').forEach(el => { el.innerHTML = html; });
+}
+function uploadGeneralLogo(file){
+  if(!file || session.role !== 'owner') return;
+  const finish = (url) => {
+    state.settings.customLogo.general = url;
+    saveState();
+    renderMainStoreLogo();
+    logAction('logChangeLogo');
+  };
+  if(cloudReady && cloudStorage){
+    const ref = cloudStorage.ref().child('logos/general-' + Date.now());
+    ref.put(file).then(() => ref.getDownloadURL()).then(finish)
+      .catch(err => { console.error('Logo upload to Storage failed, falling back to local', err); readLogoAsDataUrl(file, finish); });
+  }else{
+    readLogoAsDataUrl(file, finish);
+  }
+}
+function resetGeneralLogo(){
+  if(session.role !== 'owner') return;
+  state.settings.customLogo.general = null;
+  saveState();
+  renderMainStoreLogo();
   logAction('logChangeLogo');
 }
 
