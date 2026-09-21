@@ -1064,6 +1064,30 @@ function afterCloudDataChange(){
 function markCustomerReady(){
   if(isCustomerMode){ custDataReady = true; renderCustomerApp(); }
 }
+/* Merge helper: combines a server payload and a local payload without silently
+   dropping either side's data — critical because two devices can each save
+   (a new order, an uploaded product image...) around the same moment, and a
+   plain "last write wins" overwrite would erase whichever one lost the race. */
+function mergeById(serverArr, localArr){
+  const map = new Map();
+  (serverArr||[]).forEach(item=>{ if(item && item.id!==undefined) map.set(item.id, item); });
+  (localArr||[]).forEach(item=>{ if(item && item.id!==undefined) map.set(item.id, item); });
+  return Array.from(map.values());
+}
+function mergeStatePayloads(server, local){
+  server = server || {}; local = local || {};
+  return Object.assign({}, server, local, {
+    staff: mergeById(server.staff, local.staff),
+    categories: mergeById(server.categories, local.categories),
+    products: mergeById(server.products, local.products),
+    inventory: mergeById(server.inventory, local.inventory),
+    orders: mergeById(server.orders, local.orders),
+    heldOrders: mergeById(server.heldOrders, local.heldOrders),
+    kitchenTickets: mergeById(server.kitchenTickets, local.kitchenTickets),
+    tables: (local.tables && local.tables.length) ? local.tables : server.tables,
+    nextOrderNumber: Math.max(server.nextOrderNumber||1001, local.nextOrderNumber||1001)
+  });
+}
 function subscribeCloud(){
   if(cloudUnsub) cloudUnsub();
   cloudUnsub = fbDb.collection('posData').doc('store').onSnapshot(doc=>{
@@ -1073,7 +1097,7 @@ function subscribeCloud(){
       const remote = doc.data();
       if(remote.updatedAt && remote.updatedAt > (state._updatedAt||0)){
         const localFbConfig = state.settings.firebaseConfig;
-        state = remote.payload;
+        state = mergeStatePayloads(remote.payload, state);
         state._updatedAt = remote.updatedAt;
         if(!state.kitchenTickets) state.kitchenTickets = [];
         state.settings = Object.assign({}, DEFAULT_DATA.settings, state.settings, {firebaseConfig: localFbConfig});
@@ -1106,12 +1130,29 @@ function cloudPayload(){
 function pushCloud(immediate){
   if(!fbDb || !fbAuthReady) return;
   const doWrite = ()=>{
-    fbDb.collection('posData').doc('store').set({payload: cloudPayload(), updatedAt: state._updatedAt})
-      .catch(err=>{
-        console.error('cloud push failed', err);
-        cloudStatus='error'; updateCloudStatusUI();
-        scheduleCloudRetry();
-      });
+    const docRef = fbDb.collection('posData').doc('store');
+    const myPayload = cloudPayload();
+    fbDb.runTransaction(tx=>tx.get(docRef).then(doc=>{
+      const serverPayload = doc.exists ? doc.data().payload : null;
+      const merged = serverPayload ? mergeStatePayloads(serverPayload, myPayload) : myPayload;
+      const newTs = Date.now();
+      tx.set(docRef, {payload: merged, updatedAt: newTs});
+      return {merged, newTs, gotServerExtras: serverPayload ? JSON.stringify(merged)!==JSON.stringify(myPayload) : false};
+    })).then(({merged, newTs, gotServerExtras})=>{
+      const localFbConfig = state.settings.firebaseConfig;
+      state = merged;
+      state._updatedAt = newTs;
+      if(!state.kitchenTickets) state.kitchenTickets = [];
+      state.settings = Object.assign({}, DEFAULT_DATA.settings, state.settings, {firebaseConfig: localFbConfig});
+      const json = JSON.stringify(state);
+      localStorage.setItem(LS_KEY, json);
+      try{ localStorage.setItem(LS_BACKUP_KEY, json); }catch(e){}
+      if(gotServerExtras) afterCloudDataChange();
+    }).catch(err=>{
+      console.error('cloud push failed', err);
+      cloudStatus='error'; updateCloudStatusUI();
+      scheduleCloudRetry();
+    });
   };
   if(immediate){ doWrite(); return; }
   clearTimeout(cloudPushTimer);
