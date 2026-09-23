@@ -578,12 +578,16 @@ const T = {
     download_backup_btn:'تنزيل نسخة احتياطية', restore_backup_btn:'استعادة من ملف',
     confirm_restore_backup:'سيتم استبدال جميع البيانات الحالية بمحتوى الملف. متابعة؟',
     toast_restore_success:'تم استعادة البيانات بنجاح', toast_restore_failed:'ملف النسخة الاحتياطية غير صالح',
+    cloud_backups_title:'نسخ احتياطية سحابية تلقائية', cloud_backups_note:'يحفظ النظام نسخة تلقائيًا من بياناتك كل فترة قصيرة أثناء الاتصال السحابي. لو صار خلل أو ضاعت بيانات، اختر نسخة من القائمة واضغط استرجاع.',
+    refresh_backups_btn:'🔄 تحديث القائمة', no_backups_yet:'لا توجد نسخ احتياطية سحابية بعد — تحتاج اتصال سحابي فعّال أولاً',
+    restore_this_backup_btn:'استرجاع', backups_requires_cloud:'هذي الميزة تحتاج اتصال سحابي (Firebase) مفعّل',
     alert_tone_title:'نغمة التنبيه', alert_tone_classic:'كلاسيكي', alert_tone_bell:'جرس',
     alert_tone_siren:'إنذار', alert_tone_chime:'رنين لطيف', test_sound_btn:'🔊 تجربة الصوت',
     menu_qr_title:'باركود طلب الزبائن', menu_qr_note:'اطبع هذا الباركود وضعه على الطاولات — يقدر الزبون يمسحه بجواله ويطلب مباشرة من المنيو دون تحميل أي تطبيق.',
     print_qr_btn:'🖨️ طباعة الباركود', copy_link_btn:'📋 نسخ الرابط', toast_link_copied:'تم نسخ الرابط',
     nav_customer_orders:'طلبات الزبائن', customer_orders_title:'طلبات الزبائن الواردة',
     customer_orders_none:'لا توجد طلبات واردة حاليًا', receive_order_btn:'✅ استلام الطلب',
+    incoming_orders_error_prefix:'تعذّر تحميل طلبات الزبائن', incoming_orders_permission_hint:'حدّث قواعد Firestore بالإعدادات لتشمل incomingOrders',
     decline_order_btn:'رفض', toast_order_received:'تم استلام الطلب وإضافته للسلة',
     incoming_order_table_note:'ملاحظة الزبون', minutes_ago_suffix:'د',
     customer_order_title:'اطلب الآن', customer_order_sub:'اختر ما يعجبك وأضفه للسلة',
@@ -763,12 +767,16 @@ const T = {
     download_backup_btn:'Download Backup', restore_backup_btn:'Restore From File',
     confirm_restore_backup:'This will replace all current data with the file contents. Continue?',
     toast_restore_success:'Data restored successfully', toast_restore_failed:'Invalid backup file',
+    cloud_backups_title:'Automatic Cloud Backups', cloud_backups_note:'The system automatically saves a snapshot of your data every so often while connected to the cloud. If something goes wrong or data is lost, pick a snapshot below and restore it.',
+    refresh_backups_btn:'🔄 Refresh List', no_backups_yet:'No cloud backups yet — needs an active cloud connection first',
+    restore_this_backup_btn:'Restore', backups_requires_cloud:'This feature needs an active cloud (Firebase) connection',
     alert_tone_title:'Alert Tone', alert_tone_classic:'Classic', alert_tone_bell:'Bell',
     alert_tone_siren:'Siren', alert_tone_chime:'Soft Chime', test_sound_btn:'🔊 Test Sound',
     menu_qr_title:'Customer Order QR Code', menu_qr_note:'Print this QR code and place it on tables — customers can scan it with their phone and order straight from the menu, no app needed.',
     print_qr_btn:'🖨️ Print QR Code', copy_link_btn:'📋 Copy Link', toast_link_copied:'Link copied',
     nav_customer_orders:'Customer Orders', customer_orders_title:'Incoming Customer Orders',
     customer_orders_none:'No incoming orders right now', receive_order_btn:'✅ Receive Order',
+    incoming_orders_error_prefix:'Could not load customer orders', incoming_orders_permission_hint:'Update your Firestore rules in Settings to include incomingOrders',
     decline_order_btn:'Decline', toast_order_received:'Order received and added to cart',
     incoming_order_table_note:'Customer note', minutes_ago_suffix:'min',
     customer_order_title:'Order Now', customer_order_sub:'Pick what you like and add it to your cart',
@@ -967,6 +975,25 @@ function save(){
   try{ localStorage.setItem(LS_BACKUP_KEY, json); }catch(e){}
   if(state.settings.storageMode==='cloud' && state.settings.firebaseConfig) pushCloud(false);
 }
+/* Adopt a fully-restored state (from a downloaded file or a cloud backup snapshot).
+   Unlike a normal save(), this force-overwrites the cloud copy instead of merging —
+   a restore is a deliberate "I want exactly this" action, not an incremental change. */
+function adoptRestoredState(payload){
+  const localFbConfig = state.settings.firebaseConfig;
+  state = payload;
+  if(!state.kitchenTickets) state.kitchenTickets = [];
+  state.settings = Object.assign({}, DEFAULT_DATA.settings, state.settings, {firebaseConfig: localFbConfig});
+  state._updatedAt = Date.now();
+  const json = JSON.stringify(state);
+  localStorage.setItem(LS_KEY, json);
+  try{ localStorage.setItem(LS_BACKUP_KEY, json); }catch(e){}
+  if(fbDb && fbAuthReady){
+    fbDb.collection('posData').doc('store').set({payload: cloudPayload(), updatedAt: state._updatedAt})
+      .catch(err=>console.error('restore push failed', err));
+  }
+  cart = freshCart(); saveCart();
+  renderAll();
+}
 
 /* ============================================================
    CLOUD SYNC (Firebase / Firestore) — opt-in, configured in Settings
@@ -1148,6 +1175,7 @@ function pushCloud(immediate){
       localStorage.setItem(LS_KEY, json);
       try{ localStorage.setItem(LS_BACKUP_KEY, json); }catch(e){}
       if(gotServerExtras) afterCloudDataChange();
+      maybeSaveCloudBackupSnapshot(merged, newTs);
     }).catch(err=>{
       console.error('cloud push failed', err);
       cloudStatus='error'; updateCloudStatusUI();
@@ -1157,6 +1185,39 @@ function pushCloud(immediate){
   if(immediate){ doWrite(); return; }
   clearTimeout(cloudPushTimer);
   cloudPushTimer = setTimeout(doWrite, 1000);
+}
+/* ============================================================
+   VERSIONED CLOUD BACKUPS — periodic point-in-time snapshots,
+   restorable if today's live data is ever lost or corrupted
+   ============================================================ */
+let lastCloudBackupAt = 0;
+const CLOUD_BACKUP_MIN_INTERVAL_MS = 2*60*1000; // throttle to one snapshot per 2 minutes at most
+const MAX_CLOUD_BACKUPS = 60; // roughly 2 hours of continuous activity, or spans much longer during quieter periods
+function maybeSaveCloudBackupSnapshot(payload, ts){
+  if(!fbDb || !fbAuthReady) return;
+  if(ts - lastCloudBackupAt < CLOUD_BACKUP_MIN_INTERVAL_MS) return;
+  lastCloudBackupAt = ts;
+  const snapshotPayload = JSON.parse(JSON.stringify(payload));
+  fbDb.collection('backups').doc(String(ts)).set({payload: snapshotPayload, createdAt: ts}).then(()=>{
+    fbDb.collection('backups').orderBy('createdAt','desc').get().then(snap=>{
+      snap.docs.slice(MAX_CLOUD_BACKUPS).forEach(d=>d.ref.delete().catch(()=>{}));
+    }).catch(()=>{});
+  }).catch(err=>console.error('backup snapshot failed', err));
+}
+function listCloudBackups(){
+  if(!fbDb || !fbAuthReady) return Promise.resolve([]);
+  return fbDb.collection('backups').orderBy('createdAt','desc').limit(MAX_CLOUD_BACKUPS).get()
+    .then(snap=>snap.docs.map(d=>({id:d.id, createdAt:d.data().createdAt})))
+    .catch(err=>{ console.error('list backups failed', err); return []; });
+}
+function restoreCloudBackup(id){
+  if(!fbDb) return;
+  fbDb.collection('backups').doc(id).get().then(doc=>{
+    if(!doc.exists){ showToast(t('toast_restore_failed')); return; }
+    if(!confirm(t('confirm_restore_backup'))) return;
+    adoptRestoredState(doc.data().payload);
+    showToast(t('toast_restore_success'));
+  }).catch(err=>{ console.error('restore cloud backup failed', err); showToast(t('toast_restore_failed')); });
 }
 function disconnectCloud(){
   if(cloudUnsub){ cloudUnsub(); cloudUnsub = null; }
@@ -1176,10 +1237,12 @@ let incomingOrdersUnsub = null;
 let incomingOrders = [];
 let _incomingKnownIds = new Set();
 let _incomingFirstSnapshot = true;
+let incomingOrdersError = null;
 function subscribeIncomingOrders(){
   if(!fbDb || !fbAuthReady) return;
   if(incomingOrdersUnsub) incomingOrdersUnsub();
   incomingOrdersUnsub = fbDb.collection('incomingOrders').where('status','==','pending').onSnapshot(snap=>{
+    incomingOrdersError = null;
     const docs = snap.docs.map(d=>Object.assign({fid:d.id}, d.data()));
     const newOnes = docs.filter(d=>!_incomingKnownIds.has(d.fid));
     _incomingKnownIds = new Set(docs.map(d=>d.fid));
@@ -1190,7 +1253,11 @@ function subscribeIncomingOrders(){
       renderNav();
       if(currentView==='customerOrders') renderAll();
     }
-  }, err=>console.error('incoming orders snapshot error', err));
+  }, err=>{
+    console.error('incoming orders snapshot error', err);
+    incomingOrdersError = (err && err.code) || 'unknown';
+    if(currentStaff && currentView==='customerOrders') renderAll();
+  });
 }
 function receiveIncomingOrder(fid){
   const order = incomingOrders.find(o=>o.fid===fid);
@@ -1212,6 +1279,7 @@ function declineIncomingOrder(fid){
 function renderCustomerOrdersView(){
   return `
   <div class="section-head"><div class="section-title">${t('customer_orders_title')}</div></div>
+  ${incomingOrdersError?`<div class="alert-banner">⚠️ ${t('incoming_orders_error_prefix')}: ${incomingOrdersError}${incomingOrdersError==='permission-denied'?' — '+t('incoming_orders_permission_hint'):''}</div>`:''}
   ${!incomingOrders.length?`<div class="card" style="text-align:center;padding:60px 20px;color:var(--muted);font-size:1.1rem;">${t('customer_orders_none')}</div>`:`
   <div class="kitchen-grid">${incomingOrders.map(o=>renderIncomingOrderCard(o)).join('')}</div>`}
   `;
@@ -2993,6 +3061,9 @@ service cloud.firestore {
     match /incomingOrders/{doc} {
       allow read, write: if request.auth != null;
     }
+    match /backups/{doc} {
+      allow read, write: if request.auth != null;
+    }
   }
 }</div>
     </details>
@@ -3004,6 +3075,12 @@ service cloud.firestore {
       <button type="button" class="btn btn-outline" id="downloadBackupBtn">⬇️ ${t('download_backup_btn')}</button>
       <label class="btn btn-outline" style="cursor:pointer;display:inline-flex;align-items:center;">⬆️ ${t('restore_backup_btn')}<input type="file" accept="application/json" id="restoreBackupFile" style="display:none;"></label>
     </div>
+  </div>
+  <div class="card" style="margin-top:16px;">
+    <div class="section-title" style="font-size:1rem;margin-bottom:14px;">${t('cloud_backups_title')}</div>
+    <div style="color:var(--muted);font-size:.8rem;margin-bottom:10px;">${t('cloud_backups_note')}</div>
+    <button type="button" class="btn btn-outline btn-sm" id="refreshBackupsBtn">${t('refresh_backups_btn')}</button>
+    <div id="cloudBackupsList" style="margin-top:12px;"></div>
   </div>
   <div class="grid-2" style="margin-top:16px;">
     <div class="card">
@@ -3343,13 +3420,26 @@ function attachViewHandlers(){
         const data = JSON.parse(ev.target.result);
         if(!data.settings || !data.products) throw new Error('invalid');
         if(!confirm(t('confirm_restore_backup'))) return;
-        state = data;
-        if(!state.kitchenTickets) state.kitchenTickets = [];
-        save(); cart = freshCart(); saveCart(); renderAll();
+        adoptRestoredState(data);
         showToast(t('toast_restore_success'));
       }catch(err){ showToast(t('toast_restore_failed')); }
     };
     reader.readAsText(file);
+  });
+  const refreshBackupsBtn = root.querySelector('#refreshBackupsBtn');
+  if(refreshBackupsBtn) refreshBackupsBtn.addEventListener('click', ()=>{
+    const listEl = document.getElementById('cloudBackupsList');
+    if(!fbDb || !fbAuthReady){ listEl.innerHTML = `<div class="cart-empty">${t('backups_requires_cloud')}</div>`; return; }
+    listEl.innerHTML = `<div class="cart-empty">…</div>`;
+    listCloudBackups().then(list=>{
+      if(!list.length){ listEl.innerHTML = `<div class="cart-empty">${t('no_backups_yet')}</div>`; return; }
+      listEl.innerHTML = list.map(b=>`
+        <div class="bar-row" style="justify-content:space-between;">
+          <span>${formatDateTime(b.createdAt)}</span>
+          <button type="button" class="btn btn-sm btn-outline" data-restore-backup="${b.id}">${t('restore_this_backup_btn')}</button>
+        </div>`).join('');
+      listEl.querySelectorAll('[data-restore-backup]').forEach(b=>b.addEventListener('click', ()=>restoreCloudBackup(b.dataset.restoreBackup)));
+    });
   });
   const saveSettingsBtn = root.querySelector('#saveSettingsBtn'); if(saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettingsForm);
   const resetBtn = root.querySelector('#resetDataBtn'); if(resetBtn) resetBtn.addEventListener('click', ()=>{
